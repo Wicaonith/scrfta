@@ -5,7 +5,7 @@ import { chromium } from "playwright";
 import { BASE_URL, LIST_PATH, REGIONS, DEPARTEMENTS, DEFAULT_REGION } from "./config.js";
 import { parseDates } from "./dates.js";
 import { analyseMandats } from "./analyse.js";
-import { writeOutputs } from "./output.js";
+import { writeOutputs, completerDepartement } from "./output.js";
 
 // ---------------------------------------------------------------- CLI
 const args = parseArgs(process.argv.slice(2));
@@ -22,7 +22,6 @@ if (args.help) {
   --no-details         Ne pas visiter les fiches /epreuve/<id>
   --no-mandats         Ne pas télécharger ni analyser les mandats PDF
   --no-ocr             Ne pas passer les pages scannées des mandats à l'OCR (Tesseract)
-  --llm                Structurer chaque mandat avec Claude (nécessite ANTHROPIC_API_KEY)
   --headed            Lancer le navigateur visible (utile si Cloudflare bloque le mode headless)
   --browser <name>     chromium (défaut) | chrome | msedge
   --out <dir>          Dossier de sortie (défaut : output)
@@ -78,10 +77,11 @@ try {
   }
 
   await browser.close();
+  selection.forEach(completerDepartement);
 
   // ---------------------------------------------------------------- Mandats
   if (!args["no-mandats"]) {
-    await analyseMandats(selection, { outDir, ocr: !args["no-ocr"], llm: !!args.llm, log });
+    await analyseMandats(selection, { outDir, ocr: !args["no-ocr"], log });
   }
 
   // ---------------------------------------------------------------- Sorties

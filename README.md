@@ -27,9 +27,6 @@ Récupère les compétitions à venir publiées sur <https://www.ffta.fr/competi
      - arbitres, blasons, distances, contacts, buvette.
      Quand un mandat couvre un week-end alors que l'épreuve ffta.fr ne fait qu'un jour, les départs de l'autre
      jour sont marqués `hors_epreuve`.
-  4. **Optionnel, LLM** ([src/llm.js](src/llm.js)) : le texte du mandat est envoyé à Claude avec un schéma de
-     sortie strict calqué sur un formulaire de saisie (départs, tarifs, inscription, lieu, rythme…). Résultat
-     mis en cache dans `output/llm-cache/` pour ne jamais payer deux fois le même mandat.
 
 ## Installation
 
@@ -39,21 +36,11 @@ npm install
 
 (le `postinstall` télécharge Chromium pour Playwright)
 
-Pour l'analyse LLM, définir une clé API Anthropic :
-
-```powershell
-$env:ANTHROPIC_API_KEY = "sk-ant-..."
-```
-
-Le modèle utilisé est `claude-opus-5` (modifiable avec la variable `SCRFTA_LLM_MODEL`).
-
 ## Utilisation
 
 ```bash
 npm run scrape            # scrape + mandats (texte, OCR, heuristiques)
-npm run scrape:llm        # idem + structuration par Claude
 npm run reparse           # ré-analyse les mandats d'un output existant sans re-scraper
-npm run reparse:llm       # idem avec Claude
 ```
 
 Options de `node src/scrape.js` (`--help`) :
@@ -68,21 +55,19 @@ Options de `node src/scrape.js` (`--help`) :
 | `--no-details` | Ne pas visiter les fiches détaillées |
 | `--no-mandats` | Ne pas télécharger / analyser les mandats |
 | `--no-ocr` | Désactiver l'OCR des pages scannées |
-| `--llm` | Structurer chaque mandat avec Claude |
 | `--headed` | Navigateur visible (si Cloudflare bloque le headless) |
 | `--browser chrome` | Utiliser Chrome / Edge installé plutôt que le Chromium de Playwright |
 | `--out <dir>` | Dossier de sortie (défaut `output`) |
 
-Options de `node src/reparse.js` : `--out`, `--llm`, `--no-ocr`, `--force` (ré-extrait même si déjà analysé),
+Options de `node src/reparse.js` : `--out`, `--no-ocr`, `--force` (ré-extrait même si déjà analysé),
 `--id 24876,26477` (ne traiter que ces épreuves).
 
 ## Sorties
 
-- `output/competitions.json` : toutes les données (liste + fiche + mandat avec texte intégral et structure LLM).
+- `output/competitions.json` : toutes les données (liste + fiche + mandat avec texte intégral).
 - `output/competitions.csv` : une ligne par compétition (séparateur `;`, UTF-8 BOM, ouvrable dans Excel).
   Si le fichier est verrouillé (ouvert dans Excel), une copie horodatée est écrite à côté.
 - `output/mandats/*.pdf` : les mandats téléchargés (non retéléchargés s'ils existent déjà).
-- `output/llm-cache/*.json` : réponses de Claude, clé = hash du texte du mandat.
 
 Structure d'une compétition dans le JSON :
 
@@ -121,28 +106,18 @@ Structure d'une compétition dans le JSON :
       "date_limite_inscription": "...", "emails": [], "telephones": [], "urls": [],
       "dates": [], "arbitres": "...", "distances": [], "blasons": [], "buvette": true, "adresse": "..."
     },
-    "llm": {            // présent avec --llm
-      "modele": "claude-opus-5", "usage": { "input_tokens": 0, "output_tokens": 0, "cache_read_input_tokens": 0 },
-      "titre", "organisateur", "discipline", "lieu": { "nom", "adresse", "code_postal", "ville", "gps" },
-      "dates": { "debut", "fin", "texte" },
-      "departs": [{ "nom", "date", "heure_greffe", "heure_echauffement", "heure_debut_tirs", "heure_debut", "jauge", "cibles", "archers_par_cible", "categories" }],
-      "tarifs": [{ "nb_departs", "adulte", "jeune", "detail" }], "autres_tarifs": [],
-      "inscription": { "mode", "url", "email", "adresse_postale", "contact_nom", "contact_telephone", "date_limite", "date_limite_texte", "paiement", "consignes" },
-      "rythme", "distances", "blasons", "arbitres", "selectif", "championnat_support", "duels",
-      "restauration", "hebergement", "informations_complementaires"
-    },
     "texte": "… texte intégral du PDF (mise en page conservée) …"
   }
 }
 ```
 
-Dans le CSV, les colonnes `mandat_*` utilisent les heuristiques (`mandat_departs`, `mandat_nb_departs`,
-`mandat_depart1_datetime`, `mandat_jauge`, `mandat_tarifs`, `mandat_date_limite_iso`…) et la structure LLM
-quand elle existe.
+Dans le CSV, une ligne par compétition avec notamment `departement` / `departement_nom` (déduits du code postal de
+l'adresse, sinon du comité départemental), et les colonnes `mandat_*` : `mandat_departs`, `mandat_nb_departs`,
+`mandat_depart1_datetime`, `mandat_jauge`, `mandat_tarifs`, `mandat_inscription_mode`, `mandat_date_limite_iso`…
 
 ## Limites
 
-- Les mandats sont des documents libres : les heuristiques couvrent les mises en page courantes, l'analyse LLM
-  est nettement plus fiable pour les cas atypiques (tableaux complexes, texte OCR bruité).
+- Les mandats sont des documents libres : les heuristiques couvrent les mises en page courantes (tableaux
+  d'horaires et de tarifs, mentions d'inscription), pas les affiches purement graphiques.
 - L'OCR ne peut rien contre des affiches très graphiques (texte sur image de fond, polices décoratives).
 - Un même PDF partagé par plusieurs épreuves (concours sur deux jours) n'est analysé qu'une fois par exécution.

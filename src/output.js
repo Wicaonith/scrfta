@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { departementDe } from "./config.js";
 
 /** Écrit competitions.json et competitions.csv dans outDir. */
 export async function writeOutputs(outDir, meta, competitions) {
@@ -28,12 +29,8 @@ async function writeSafe(file, content) {
 
 const join = (arr, sep = " | ") => (Array.isArray(arr) && arr.length ? arr.join(sep) : "");
 
-/** Résumé d'un tarif : adulte / jeune par nombre de départs. */
+/** Résumé des tarifs : adulte / jeune par nombre de départs. */
 function tarifsResume(c) {
-  const llm = c.mandat?.llm?.tarifs;
-  if (llm?.length) {
-    return llm.map((t) => `${t.nb_departs} départ${t.nb_departs > 1 ? "s" : ""} : adulte ${t.adulte ?? "?"} € / jeune ${t.jeune ?? "?"} €`).join(" | ");
-  }
   const grille = c.mandat?.infos?.tarifs?.grille;
   if (grille?.length) {
     return grille.map((t) => `${t.nb_departs} départ${t.nb_departs > 1 ? "s" : ""} : adulte ${t.adulte ?? "?"} € / jeune ${t.jeune ?? "?"} €`).join(" | ");
@@ -54,7 +51,7 @@ function tarifsResume(c) {
 
 /** Départs de l'épreuve : ceux du mandat qui tombent dans ses dates (tous si aucun ne correspond). */
 export function departsEpreuve(c) {
-  const all = c.mandat?.llm?.departs?.length ? c.mandat.llm.departs : c.mandat?.infos?.departs || [];
+  const all = c.mandat?.infos?.departs || [];
   const dedans = all.filter((d) => !d.hors_epreuve);
   return dedans.length ? dedans : all;
 }
@@ -82,6 +79,8 @@ export function toCsv(rows) {
     ["type", (c) => c.type],
     ["duels", (c) => c.detail?.champs?.duels],
     ["organisateur", (c) => c.organisateur],
+    ["departement", (c) => c.departement?.code],
+    ["departement_nom", (c) => c.departement?.nom],
     ["ville", (c) => c.ville],
     ["lieu", (c) => c.detail?.champs?.lieu],
     ["adresse", (c) => c.detail?.adresse?.join(", ")],
@@ -94,28 +93,21 @@ export function toCsv(rows) {
     ["mandat_url", (c) => c.mandat_url],
     ["mandat_fichier", (c) => c.mandat?.fichier],
     ["mandat_ocr", (c) => (c.mandat ? (c.mandat.ocr ? "oui" : "non") : "")],
-    ["mandat_llm", (c) => (c.mandat?.llm ? "oui" : c.mandat?.llm_erreur ? "erreur" : "")],
-    ["mandat_lieu", (c) => c.mandat?.llm?.lieu && [c.mandat.llm.lieu.nom, c.mandat.llm.lieu.adresse, c.mandat.llm.lieu.code_postal, c.mandat.llm.lieu.ville].filter(Boolean).join(", ")],
     ["mandat_departs", departsResume],
     ["mandat_nb_departs", (c) => departsEpreuve(c).length || ""],
     ["mandat_depart1_datetime", (c) => departsEpreuve(c)[0]?.datetime],
     ["mandat_jauge", (c) => c.mandat?.infos?.jauge?.places],
     ["mandat_cibles", (c) => c.mandat?.infos?.jauge?.cibles],
     ["mandat_tarifs", tarifsResume],
-    ["mandat_autres_tarifs", (c) => join(c.mandat?.llm?.autres_tarifs)],
-    ["mandat_inscription_mode", (c) => c.mandat?.llm?.inscription?.mode ?? c.mandat?.infos?.inscription?.mode],
-    ["mandat_inscription_url", (c) => c.mandat?.llm?.inscription?.url ?? join(c.mandat?.infos?.inscription?.urls)],
-    ["mandat_inscription_email", (c) => c.mandat?.llm?.inscription?.email ?? join(c.mandat?.infos?.inscription?.emails)],
-    ["mandat_date_limite_iso", (c) => c.mandat?.llm?.inscription?.date_limite ?? c.mandat?.infos?.date_limite_iso],
+    ["mandat_inscription_mode", (c) => c.mandat?.infos?.inscription?.mode],
+    ["mandat_inscription_url", (c) => join(c.mandat?.infos?.inscription?.urls)],
+    ["mandat_inscription_email", (c) => join(c.mandat?.infos?.inscription?.emails)],
+    ["mandat_date_limite_iso", (c) => c.mandat?.infos?.date_limite_iso],
     ["mandat_date_limite", (c) => c.mandat?.infos?.date_limite_inscription],
-    ["mandat_paiement", (c) => c.mandat?.llm?.inscription?.paiement],
-    ["mandat_rythme", (c) => c.mandat?.llm?.rythme],
-    ["mandat_distances", (c) => join(c.mandat?.llm?.distances ?? c.mandat?.infos?.distances)],
-    ["mandat_blasons", (c) => join(c.mandat?.llm?.blasons ?? c.mandat?.infos?.blasons)],
-    ["mandat_arbitres", (c) => join(c.mandat?.llm?.arbitres) || c.mandat?.infos?.arbitres],
-    ["mandat_selectif", (c) => (c.mandat?.llm ? (c.mandat.llm.selectif === null ? "" : c.mandat.llm.selectif ? "oui" : "non") : "")],
-    ["mandat_restauration", (c) => c.mandat?.llm?.restauration],
-    ["mandat_infos_complementaires", (c) => c.mandat?.llm?.informations_complementaires],
+    ["mandat_distances", (c) => join(c.mandat?.infos?.distances)],
+    ["mandat_blasons", (c) => join(c.mandat?.infos?.blasons)],
+    ["mandat_arbitres", (c) => c.mandat?.infos?.arbitres],
+    ["mandat_buvette", (c) => (c.mandat ? (c.mandat.infos?.buvette ? "oui" : "non") : "")],
     ["mandat_emails", (c) => join(c.mandat?.infos?.emails)],
     ["mandat_telephones", (c) => join(c.mandat?.infos?.telephones)],
   ];
@@ -127,4 +119,14 @@ export function toCsv(rows) {
   const lines = [cols.map((c) => c[0]).join(";")];
   for (const r of rows) lines.push(cols.map(([, f]) => esc(f(r))).join(";"));
   return lines.join("\r\n");
+}
+
+/** Renseigne c.departement = { code, nom } à partir de l'adresse (code postal) ou du comité départemental. */
+export function completerDepartement(c) {
+  const adresse = (c.detail?.adresse || []).join(" ");
+  const cp = adresse.match(/\b(\d{5})\b/);
+  let dep = cp ? departementDe({ codePostal: cp[1] }) : null;
+  if (!dep) dep = departementDe({ comite: c.detail?.champs?.comite_departemental });
+  c.departement = dep;
+  return c;
 }

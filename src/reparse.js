@@ -2,12 +2,12 @@
 /**
  * Ré-analyse les mandats d'un competitions.json existant sans re-scraper le site.
  *
- *   node src/reparse.js [--out output] [--llm] [--no-ocr] [--force] [--id 24876,26477]
+ *   node src/reparse.js [--out output] [--no-ocr] [--force] [--id 24876,26477]
  */
 import fs from "node:fs/promises";
 import path from "node:path";
 import { analyseMandats } from "./analyse.js";
-import { writeOutputs } from "./output.js";
+import { writeOutputs, completerDepartement } from "./output.js";
 
 const args = parseArgs(process.argv.slice(2));
 const outDir = path.resolve(args.out || "output");
@@ -22,11 +22,12 @@ log(`${selection.length} compétitions, ${selection.filter((c) => c.mandat_url).
 await analyseMandats(selection, {
   outDir,
   ocr: !args["no-ocr"],
-  llm: !!args.llm,
   force: !!args.force,
   log,
 });
 
+selection.forEach(completerDepartement);
+selection.forEach(completerDepartement);
 const files = await writeOutputs(outDir, meta, competitions);
 log(`Écrit : ${files.jsonFile}`);
 log(`Écrit : ${files.csvFile}`);
