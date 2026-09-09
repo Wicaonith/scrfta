@@ -27,7 +27,8 @@ export async function extractPdfText(file, { ocr = true, minCharsPerPage = 80 } 
     .map((t, i) => (t.replace(/\s/g, "").length < minCharsPerPage ? i : -1))
     .filter((i) => i >= 0);
 
-  let ocrPages = [];
+  const ocrPages = [];
+  const ocrOut = [];
   if (ocr && scannedPages.length) {
     const ocrTexts = await ocrPdf(file, scannedPages);
     for (const i of scannedPages) {
@@ -35,10 +36,17 @@ export async function extractPdfText(file, { ocr = true, minCharsPerPage = 80 } 
       if (t.replace(/\s/g, "").length > pages[i].replace(/\s/g, "").length) {
         pages[i] = t;
         ocrPages.push(i + 1);
+        ocrOut.push(t);
       }
     }
   }
-  return { text: pages.join("\n\n"), pages: pages.length, ocr: ocrPages.length > 0, ocr_pages: ocrPages };
+  return {
+    text: pages.join("\n\n"),
+    pages: pages.length,
+    ocr: ocrPages.length > 0,
+    ocr_pages: ocrPages,
+    ocr_text: ocrOut.join("\n\n"),
+  };
 }
 
 /** Regroupe les items pdf.js en lignes puis en colonnes. */

@@ -6,20 +6,46 @@ import { parseDateFr, addDays } from "./dates.js";
 const UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36";
 
-/** Télécharge le PDF de mandat (extranet.ffta.fr n'est pas derrière le challenge Cloudflare). */
+/**
+ * Télécharge le PDF de mandat (extranet.ffta.fr n'est pas derrière le challenge Cloudflare).
+ * Un fichier déjà présent est retéléchargé seulement si le serveur annonce un Last-Modified plus récent.
+ * Renvoie { file, modifie_le (ISO ou null), retelecharge }.
+ */
 export async function downloadMandat(url, destDir) {
   const name = path.basename(new URL(url).pathname);
   const dest = path.join(destDir, name);
+  const meta = dest + ".json";
+  let existing = null;
   try {
     await fs.access(dest);
-    return dest; // déjà téléchargé
+    existing = JSON.parse(await fs.readFile(meta, "utf8").catch(() => "{}"));
   } catch {}
+
+  let lastModified = null;
+  if (existing) {
+    try {
+      const head = await fetch(url, { method: "HEAD", headers: { "User-Agent": UA } });
+      lastModified = toIso(head.headers.get("last-modified"));
+    } catch {}
+    if (!lastModified || lastModified === existing.modifie_le) {
+      return { file: dest, modifie_le: existing.modifie_le || lastModified, retelecharge: false };
+    }
+  }
+
   const res = await fetch(url, { headers: { "User-Agent": UA } });
   if (!res.ok) throw new Error(`HTTP ${res.status} pour ${url}`);
   const ct = res.headers.get("content-type") || "";
   if (!ct.includes("pdf")) throw new Error(`Type inattendu (${ct}) pour ${url}`);
   await fs.writeFile(dest, Buffer.from(await res.arrayBuffer()));
-  return dest;
+  const modifie_le = toIso(res.headers.get("last-modified"));
+  await fs.writeFile(meta, JSON.stringify({ url, modifie_le, telecharge_le: new Date().toISOString() }, null, 2));
+  return { file: dest, modifie_le, retelecharge: !!existing };
+}
+
+function toIso(httpDate) {
+  if (!httpDate) return null;
+  const d = new Date(httpDate);
+  return Number.isNaN(d.getTime()) ? null : d.toISOString();
 }
 
 /**
@@ -27,15 +53,17 @@ export async function downloadMandat(url, destDir) {
  * et quelques informations structurées par heuristiques.
  */
 export async function parseMandat(file, { ocr = true, contexte = {} } = {}) {
-  const { text: raw, pages, ocr: ocrUsed, ocr_pages } = await extractPdfText(file, { ocr });
+  const { text: raw, pages, ocr: ocrUsed, ocr_pages, ocr_text } = await extractPdfText(file, { ocr });
   const text = normalize(raw);
+  const texte_ocr = ocrUsed ? normalize(ocr_text) : "";
   return {
     fichier: path.basename(file),
     pages,
     ocr: ocrUsed,
     ocr_pages,
-    infos: extractInfos(text, contexte),
+    infos: extractInfos(text, { ...contexte, texte_ocr }),
     texte: text,
+    texte_ocr,
   };
 }
 
@@ -133,6 +161,12 @@ function extractInfos(text, contexte = {}) {
   infos.jauge = extractJauge(text);
   infos.departs = extractDeparts(text, ref, infos.jauge);
 
+  // ---- Fiabilité : cohérence des valeurs et absence de bruit OCR à la source
+  const ocrTxt = contexte.texte_ocr || "";
+  const vientDeOcr = (l) => !!ocrTxt && !!l && ocrTxt.includes(l.trim());
+  infos.tarifs.fiable = fiabiliteTarifs(infos.tarifs, vientDeOcr);
+  infos.departs_fiable = fiabiliteDeparts(infos.departs, vientDeOcr, text);
+
   // ---- Buvette / restauration
   infos.buvette = /buvette|restauration|sandwich|repas/.test(lower);
 
@@ -141,6 +175,40 @@ function extractInfos(text, contexte = {}) {
   if (adresse) infos.adresse = adresse[0].trim();
 
   return infos;
+}
+
+// ---------------------------------------------------------------- Fiabilité
+
+/**
+ * Grille tarifaire jugée fiable si : non vide, montants plausibles (2 à 60 €), jeune ≤ adulte,
+ * montants croissants avec le nombre de départs, et aucune ligne source issue de l'OCR.
+ */
+function fiabiliteTarifs(tarifs, vientDeOcr) {
+  const g = tarifs.grille;
+  if (!g.length) return false;
+  const vals = g.flatMap((t) => [t.adulte, t.jeune]).filter((v) => v !== null);
+  if (!vals.length || vals.some((v) => v < 2 || v > 60)) return false;
+  for (const t of g) if (t.adulte !== null && t.jeune !== null && t.jeune > t.adulte) return false;
+  for (let i = 1; i < g.length; i++) {
+    const a = g[i - 1], b = g[i];
+    if (a.adulte !== null && b.adulte !== null && b.adulte < a.adulte) return false;
+    if (a.jeune !== null && b.jeune !== null && b.jeune < a.jeune) return false;
+  }
+  if (tarifs.lignes.some((l) => MONTANT.test(l) && vientDeOcr(l))) return false;
+  return true;
+}
+
+/** Départs jugés fiables si chacun a une date et une heure plausible (6h-20h) et qu'aucune ligne d'horaire ne vient de l'OCR. */
+function fiabiliteDeparts(departs, vientDeOcr, text) {
+  if (!departs.length) return false;
+  for (const d of departs) {
+    if (!d.datetime) return false;
+    const h = Number(d.heure_debut.slice(0, 2));
+    if (h < 6 || h > 20) return false;
+  }
+  const horaires = lines(text).filter((l) => ROW_LABELS.some(([, re]) => re.test(l)) && HEURE.test(l));
+  if (horaires.some(vientDeOcr)) return false;
+  return true;
 }
 
 // ---------------------------------------------------------------- Départs

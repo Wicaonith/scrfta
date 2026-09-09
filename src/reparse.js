@@ -7,7 +7,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { analyseMandats } from "./analyse.js";
-import { writeOutputs, completerDepartement } from "./output.js";
+import { writeOutputs, completerCompetitions } from "./output.js";
 
 const args = parseArgs(process.argv.slice(2));
 const outDir = path.resolve(args.out || "output");
@@ -26,8 +26,7 @@ await analyseMandats(selection, {
   log,
 });
 
-selection.forEach(completerDepartement);
-selection.forEach(completerDepartement);
+completerCompetitions(selection, new Map(competitions.map((c) => [String(c.id), c])));
 const files = await writeOutputs(outDir, meta, competitions);
 log(`Écrit : ${files.jsonFile}`);
 log(`Écrit : ${files.csvFile}`);

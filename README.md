@@ -111,9 +111,20 @@ Structure d'une compétition dans le JSON :
 }
 ```
 
-Dans le CSV, une ligne par compétition avec notamment `departement` / `departement_nom` (déduits du code postal de
-l'adresse, sinon du comité départemental), et les colonnes `mandat_*` : `mandat_departs`, `mandat_nb_departs`,
-`mandat_depart1_datetime`, `mandat_jauge`, `mandat_tarifs`, `mandat_inscription_mode`, `mandat_date_limite_iso`…
+Dans le CSV, une ligne par compétition. Colonnes notables :
+
+| Colonne | Contenu |
+| --- | --- |
+| `id` | Identifiant d'épreuve ffta.fr, stable |
+| `date_debut` / `date_fin` | ISO ; `date_fin` = `date_debut` pour un concours d'un jour |
+| `discipline`, `discipline_code`, `discipline_id`, `discipline_base`, `para` | Libellé ffta.fr, code court stable du projet (`salle`, `tae`, `campagne`, `3d`, `nature`, `beursault`…), id de taxonomie ffta.fr, libellé sans la mention para, `para` oui/non |
+| `departement` / `departement_nom` | Déduits du code postal de l'adresse, sinon du comité départemental |
+| `epreuve_vue_le` / `epreuve_maj_le` / `epreuve_hash` | Première apparition dans un export, dernière modification constatée de la fiche (comparaison d'empreinte avec l'export précédent), empreinte |
+| `mandat_modifie_le` | `Last-Modified` du PDF côté serveur ; le PDF est retéléchargé s'il change |
+| `mandat_departs_json` | `[{"nom","debut","greffe","echauffement","tirs","places","cibles"}]` |
+| `mandat_tarifs_json` | `[{"departs":1,"public":"adulte","montant_cents":1200}, …]` |
+| `mandat_departs_fiable` / `mandat_tarifs_fiable` | oui/non : valeurs plausibles et cohérentes, aucune ligne source issue de l'OCR |
+| `mandat_departs`, `mandat_tarifs`, `mandat_inscription_*`, `mandat_date_limite_iso`… | Versions lisibles des mêmes informations |
 
 ## Limites
 

@@ -5,7 +5,7 @@ import { chromium } from "playwright";
 import { BASE_URL, LIST_PATH, REGIONS, DEPARTEMENTS, DEFAULT_REGION } from "./config.js";
 import { parseDates } from "./dates.js";
 import { analyseMandats } from "./analyse.js";
-import { writeOutputs, completerDepartement } from "./output.js";
+import { writeOutputs, completerCompetitions, chargerPrecedent } from "./output.js";
 
 // ---------------------------------------------------------------- CLI
 const args = parseArgs(process.argv.slice(2));
@@ -77,7 +77,7 @@ try {
   }
 
   await browser.close();
-  selection.forEach(completerDepartement);
+  completerCompetitions(selection, await chargerPrecedent(outDir));
 
   // ---------------------------------------------------------------- Mandats
   if (!args["no-mandats"]) {

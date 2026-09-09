@@ -16,13 +16,14 @@ export async function analyseMandats(competitions, { outDir, ocr = true, force =
 
   await mapLimit(cibles, concurrency, async (c) => {
     try {
-      const file = await downloadMandat(c.mandat_url, mandatDir);
+      const { file, modifie_le, retelecharge } = await downloadMandat(c.mandat_url, mandatDir);
       const key = path.basename(file);
       if (!parCache.has(key)) {
         parCache.set(
           key,
           (async () => {
-            if (!force && c.mandat?.texte && c.mandat.infos?.inscription) return c.mandat; // déjà analysé
+            // Déjà analysé (format courant) et PDF inchangé : on réutilise
+            if (!force && !retelecharge && c.mandat?.texte && c.mandat.infos?.departs && "texte_ocr" in c.mandat) return c.mandat;
             const m = await parseMandat(file, { ocr });
             m.fichier = path.relative(outDir, file).replace(/\\/g, "/");
             return m;
@@ -31,9 +32,13 @@ export async function analyseMandats(competitions, { outDir, ocr = true, force =
       }
       const base = await parCache.get(key);
       // Les départs et dates limites dépendent des dates de l'épreuve : recalcul par compétition
-      c.mandat = { ...base, infos: reextractInfos(base.texte, { date_debut: c.date_debut, date_fin: c.date_fin }) };
+      c.mandat = {
+        ...base,
+        modifie_le,
+        infos: reextractInfos(base.texte, { date_debut: c.date_debut, date_fin: c.date_fin, texte_ocr: base.texte_ocr }),
+      };
       delete c.mandat_erreur;
-      log(`mandat OK ${c.id} (${c.mandat.pages} p.${c.mandat.ocr ? ", OCR p." + c.mandat.ocr_pages.join(",") : ""})`);
+      log(`mandat OK ${c.id} (${c.mandat.pages} p.${c.mandat.ocr ? ", OCR p." + c.mandat.ocr_pages.join(",") : ""}${retelecharge ? ", retéléchargé" : ""})`);
     } catch (e) {
       c.mandat_erreur = String(e.message || e);
       log(`  ! erreur mandat ${c.id} : ${c.mandat_erreur}`);

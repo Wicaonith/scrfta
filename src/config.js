@@ -90,6 +90,41 @@ export function departementDe({ codePostal, comite } = {}) {
   return null;
 }
 
+/**
+ * Disciplines telles que libellées sur ffta.fr (liste et filtre <select name="discipline">).
+ * id   = identifiant de taxonomie ffta.fr (valeur du filtre, stable côté site)
+ * code = code court stable de ce projet ; base = libellé sans la mention para ; para = discipline para-tir
+ */
+export const DISCIPLINES = {
+  "Tir à 18m": { id: 103, code: "salle", base: "Tir à 18m", para: false },
+  "Para-tir à l'arc à 18m": { id: 118, code: "salle", base: "Tir à 18m", para: true },
+  "Tir à l'arc extérieur": { id: 102, code: "tae", base: "Tir à l'arc extérieur", para: false },
+  "Para-tir à l'arc en extérieur": { id: 117, code: "tae", base: "Tir à l'arc extérieur", para: true },
+  "Tir en campagne": { id: 107, code: "campagne", base: "Tir en campagne", para: false },
+  "Tir 3d": { id: 108, code: "3d", base: "Tir 3D", para: false },
+  "Tir beursault": { id: 110, code: "beursault", base: "Tir beursault", para: false },
+  "Tir nature": { id: 109, code: "nature", base: "Tir nature", para: false },
+  "Run archery": { id: 116, code: "run_archery", base: "Run archery", para: false },
+  "Jeunes": { id: 113, code: "jeunes", base: "Jeunes", para: false },
+  "Tournoi poussin": { id: 115, code: "poussin", base: "Tournoi poussin", para: false },
+  "Loisirs": { id: 111, code: "loisir", base: "Loisirs", para: false },
+  "Loisirs débutant": { id: 407, code: "loisir_debutant", base: "Loisirs débutant", para: false },
+  "Loisirs confirmé": { id: 406, code: "loisir_confirme", base: "Loisirs confirmé", para: false },
+  "Loisirs débutant et confirmé": { id: 408, code: "loisir_debutant_confirme", base: "Loisirs débutant et confirmé", para: false },
+  "Rencontres clubs loisirs": { id: 114, code: "rencontre_clubs", base: "Rencontres clubs loisirs", para: false },
+  "Divers": { id: 112, code: "divers", base: "Divers", para: false },
+};
+
+/** Discipline structurée à partir du libellé ffta.fr (insensible à la casse et aux accents). */
+export function disciplineDe(libelle) {
+  if (!libelle) return null;
+  const key = sansAccents(libelle);
+  for (const [nom, d] of Object.entries(DISCIPLINES)) if (sansAccents(nom) === key) return { libelle: nom, ...d };
+  // Inconnue : on déduit au moins le para et un code approché
+  const para = /^para/i.test(libelle);
+  return { libelle, id: null, code: sansAccents(libelle).replace(/^para tir a l arc (a |en )?/, "").replace(/\s+/g, "_"), base: libelle.replace(/^Para-tir à l'arc (à |en )?/i, ""), para };
+}
+
 export const BASE_URL = "https://www.ffta.fr";
 export const LIST_PATH = "/competitions";
 export const DEFAULT_REGION = "Pays de la Loire";

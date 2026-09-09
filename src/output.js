@@ -1,6 +1,46 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { departementDe } from "./config.js";
+import crypto from "node:crypto";
+import { departementDe, disciplineDe } from "./config.js";
+
+/** Charge l'export précédent (pour le suivi des modifications) ; vide s'il n'existe pas. */
+export async function chargerPrecedent(outDir) {
+  try {
+    const data = JSON.parse(await fs.readFile(path.join(outDir, "competitions.json"), "utf8"));
+    return new Map((data.competitions || []).map((c) => [String(c.id), c]));
+  } catch {
+    return new Map();
+  }
+}
+
+/**
+ * Complète chaque compétition : département, discipline structurée, date_fin garantie,
+ * empreinte de la fiche et dates de suivi (epreuve_vue_le : première apparition,
+ * epreuve_maj_le : dernière modification constatée de la fiche fédérale).
+ */
+export function completerCompetitions(competitions, precedent = new Map(), maintenant = new Date().toISOString()) {
+  for (const c of competitions) {
+    completerDepartement(c);
+    c.discipline_info = disciplineDe(c.discipline);
+    if (c.date_debut && !c.date_fin) c.date_fin = c.date_debut;
+    c.epreuve_hash = empreinte(c);
+    const prev = precedent.get(String(c.id));
+    c.epreuve_vue_le = prev?.epreuve_vue_le || maintenant;
+    c.epreuve_maj_le = prev && prev.epreuve_hash === c.epreuve_hash ? prev.epreuve_maj_le || prev.epreuve_vue_le || maintenant : maintenant;
+  }
+  return competitions;
+}
+
+/** Empreinte du contenu de la fiche fédérale (hors données dérivées et mandat analysé). */
+function empreinte(c) {
+  const d = c.detail || {};
+  const base = {
+    titre: c.titre, dates: c.dates_texte, statut: d.statut || c.statut, discipline: c.discipline, type: c.type,
+    organisateur: c.organisateur, ville: c.ville, email: c.email, site: c.site, mandat_url: c.mandat_url,
+    champs: d.champs, adresse: d.adresse, contacts: d.contacts, documents: d.documents,
+  };
+  return crypto.createHash("sha1").update(JSON.stringify(base)).digest("hex").slice(0, 16);
+}
 
 /** Écrit competitions.json et competitions.csv dans outDir. */
 export async function writeOutputs(outDir, meta, competitions) {
@@ -56,6 +96,32 @@ export function departsEpreuve(c) {
   return dedans.length ? dedans : all;
 }
 
+/** Tarifs structurés : [{ departs, public, montant_cents }]. */
+export function tarifsJson(c) {
+  const grille = c.mandat?.infos?.tarifs?.grille || [];
+  const out = [];
+  for (const t of grille) {
+    if (t.adulte !== null) out.push({ departs: t.nb_departs, public: "adulte", montant_cents: Math.round(t.adulte * 100) });
+    if (t.jeune !== null) out.push({ departs: t.nb_departs, public: "jeune", montant_cents: Math.round(t.jeune * 100) });
+  }
+  return out;
+}
+
+/** Départs structurés : [{ nom, debut, greffe, echauffement, tirs, places, cibles }]. */
+export function departsJson(c) {
+  return departsEpreuve(c).map((d) => ({
+    nom: d.nom,
+    debut: d.datetime,
+    greffe: d.heure_greffe,
+    echauffement: d.heure_echauffement,
+    tirs: d.heure_debut_tirs,
+    places: d.jauge ?? null,
+    cibles: d.cibles ?? null,
+  }));
+}
+
+const ouiNon = (v) => (v === true ? "oui" : v === false ? "non" : "");
+
 function departsResume(c) {
   const departs = departsEpreuve(c);
   if (departs?.length) {
@@ -75,6 +141,10 @@ export function toCsv(rows) {
     ["dates_texte", (c) => c.dates_texte],
     ["statut", (c) => c.detail?.statut || c.statut],
     ["discipline", (c) => c.detail?.champs?.discipline || c.discipline],
+    ["discipline_code", (c) => c.discipline_info?.code],
+    ["discipline_id", (c) => c.discipline_info?.id],
+    ["discipline_base", (c) => c.discipline_info?.base],
+    ["para", (c) => ouiNon(c.discipline_info?.para)],
     ["championnat", (c) => c.detail?.champs?.championnat],
     ["type", (c) => c.type],
     ["duels", (c) => c.detail?.champs?.duels],
@@ -90,15 +160,23 @@ export function toCsv(rows) {
     ["telephone", (c) => c.detail?.contacts?.tel],
     ["site", (c) => c.site || c.detail?.contacts?.site],
     ["url", (c) => c.url],
+    ["epreuve_vue_le", (c) => c.epreuve_vue_le],
+    ["epreuve_maj_le", (c) => c.epreuve_maj_le],
+    ["epreuve_hash", (c) => c.epreuve_hash],
     ["mandat_url", (c) => c.mandat_url],
     ["mandat_fichier", (c) => c.mandat?.fichier],
-    ["mandat_ocr", (c) => (c.mandat ? (c.mandat.ocr ? "oui" : "non") : "")],
+    ["mandat_modifie_le", (c) => c.mandat?.modifie_le],
+    ["mandat_ocr", (c) => (c.mandat ? ouiNon(!!c.mandat.ocr) : "")],
     ["mandat_departs", departsResume],
+    ["mandat_departs_json", (c) => (c.mandat ? JSON.stringify(departsJson(c)) : "")],
+    ["mandat_departs_fiable", (c) => (c.mandat ? ouiNon(!!c.mandat.infos?.departs_fiable) : "")],
     ["mandat_nb_departs", (c) => departsEpreuve(c).length || ""],
     ["mandat_depart1_datetime", (c) => departsEpreuve(c)[0]?.datetime],
     ["mandat_jauge", (c) => c.mandat?.infos?.jauge?.places],
     ["mandat_cibles", (c) => c.mandat?.infos?.jauge?.cibles],
     ["mandat_tarifs", tarifsResume],
+    ["mandat_tarifs_json", (c) => (c.mandat ? JSON.stringify(tarifsJson(c)) : "")],
+    ["mandat_tarifs_fiable", (c) => (c.mandat ? ouiNon(!!c.mandat.infos?.tarifs?.fiable) : "")],
     ["mandat_inscription_mode", (c) => c.mandat?.infos?.inscription?.mode],
     ["mandat_inscription_url", (c) => join(c.mandat?.infos?.inscription?.urls)],
     ["mandat_inscription_email", (c) => join(c.mandat?.infos?.inscription?.emails)],
