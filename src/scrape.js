@@ -2,7 +2,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { chromium } from "playwright";
-import { BASE_URL, LIST_PATH, REGIONS, DEPARTEMENTS, DEFAULT_REGION, estInterne } from "./config.js";
+import { BASE_URL, LIST_PATH, DEFAULT_REGION, estInterne } from "./config.js";
+import { resoudreFiltres, aideFiltres } from "./filtres.js";
 import { parseDates } from "./dates.js";
 import { analyseMandats } from "./analyse.js";
 import { writeOutputs, completerCompetitions, chargerPrecedent } from "./output.js";
@@ -12,12 +13,20 @@ const args = parseArgs(process.argv.slice(2));
 if (args.help) {
   console.log(`Usage: node src/scrape.js [options]
 
-  --region "<nom>"     Région à filtrer (défaut : "${DEFAULT_REGION}").
-                       Régions : ${Object.keys(REGIONS).join(", ")}
-  --dep 45,50          Ids ffta.fr de départements (remplace --region)
+Filtres de la page ffta.fr/competitions :
+  --region "<nom>"     Une ou plusieurs régions séparées par des virgules (défaut : "${DEFAULT_REGION}"),
+                       ou "france" pour tout le calendrier
+  --dep 44,49          Numéros de départements (remplace --region)
   --start YYYY-MM-DD   Date de début (défaut : aujourd'hui)
   --end YYYY-MM-DD     Date de fin (défaut : +1 an)
-  --discipline <id>    Id de discipline ffta.fr (103 = 18m, 102 = TAE, 107 = campagne, 108 = 3D, 109 = nature, 110 = beursault...)
+  --discipline <code>  salle, tae, campagne, 3d, nature, beursault, run_archery, jeunes, loisir… (ou libellé ffta.fr)
+  --univers <code>     cibles, parcours, para, run_archery, beursault
+  --search "<texte>"   Recherche libre (titre, club, ville)
+  --restreint [0|1]    Calendrier restreint uniquement (1) ou exclu (0)
+  --sort desc          Ordre décroissant de date
+  --list-filters       Affiche toutes les valeurs acceptées et quitte
+
+Traitement :
   --limit N            Ne traiter que N compétitions (debug)
   --no-details         Ne pas visiter les fiches /epreuve/<id>
   --inclure-internes   Garder les concours internes (« INTERNE » dans le titre), exclus par défaut
@@ -29,16 +38,24 @@ if (args.help) {
 `);
   process.exit(0);
 }
+if (args["list-filters"]) {
+  console.log(aideFiltres());
+  process.exit(0);
+}
 
 const outDir = path.resolve(args.out || "output");
 await fs.mkdir(path.join(outDir, "mandats"), { recursive: true });
 
-const regionName = args.region || DEFAULT_REGION;
-const depIds = args.dep ? String(args.dep).split(",") : REGIONS[regionName];
-if (!depIds) {
-  console.error(`Région inconnue : ${regionName}. Régions disponibles : ${Object.keys(REGIONS).join(", ")}`);
+let filtres;
+try {
+  filtres = resoudreFiltres(args);
+} catch (e) {
+  console.error(e.message);
+  console.error("Utilisez --list-filters pour voir les valeurs acceptées.");
   process.exit(1);
 }
+const { depIds, params } = filtres;
+log(`Filtres : ${JSON.stringify(filtres.description)}`);
 
 // ---------------------------------------------------------------- Navigateur
 const browser = await chromium.launch({
@@ -57,7 +74,7 @@ const page = await context.newPage();
 
 try {
   // ---------------------------------------------------------------- Liste
-  let competitions = await scrapeList(page, depIds, args);
+  let competitions = await scrapeList(page, depIds, params);
   log(`${competitions.length} compétitions trouvées`);
   if (!args["inclure-internes"]) {
     const internes = competitions.filter(estInterne);
@@ -93,7 +110,7 @@ try {
   // ---------------------------------------------------------------- Sorties
   const files = await writeOutputs(
     outDir,
-    { region: args.dep ? null : regionName, departements: depIds.map((d) => DEPARTEMENTS[d] || d) },
+    { filtres: filtres.description, parametres: { dep: depIds, ...params } },
     selection
   );
   log(`Écrit : ${files.jsonFile}`);
@@ -116,23 +133,21 @@ async function gotoAndWait(page, url) {
   throw new Error("Bloqué par le challenge Cloudflare (essayez --headed ou --browser chrome)");
 }
 
-function listUrl(depIds, pageNum, args) {
+function listUrl(depIds, pageNum, params) {
   const u = new URL(LIST_PATH, BASE_URL);
   depIds.forEach((d) => u.searchParams.append("dep[]", d));
-  if (args.start) u.searchParams.set("start", args.start);
-  if (args.end) u.searchParams.set("end", args.end);
-  if (args.discipline) u.searchParams.set("discipline", args.discipline);
+  for (const [k, v] of Object.entries(params)) u.searchParams.set(k, v);
   u.searchParams.set("page", String(pageNum));
   return u.toString();
 }
 
-async function scrapeList(page, depIds, args) {
+async function scrapeList(page, depIds, params) {
   const all = [];
   const seen = new Set();
   let pageNum = 0;
   let lastPage = 0;
   do {
-    const url = listUrl(depIds, pageNum, args);
+    const url = listUrl(depIds, pageNum, params);
     log(`liste page ${pageNum + 1}${lastPage ? "/" + (lastPage + 1) : ""} : ${url}`);
     await gotoAndWait(page, url);
     await page.waitForSelector("article.competition_item, .view-empty, .view-competitions", { timeout: 30000 });

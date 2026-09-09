@@ -125,6 +125,15 @@ export function disciplineDe(libelle) {
   return { libelle, id: null, code: sansAccents(libelle).replace(/^para tir a l arc (a |en )?/, "").replace(/\s+/g, "_"), base: libelle.replace(/^Para-tir à l'arc (à |en )?/i, ""), para };
 }
 
+/** Univers FFTA (filtre <select name="univers">). */
+export const UNIVERS = {
+  cibles: { id: 299, nom: "Tir sur cibles" },
+  parcours: { id: 300, nom: "Tir de parcours" },
+  para: { id: 297, nom: "Para-tir à l'arc" },
+  run_archery: { id: 298, nom: "Run Archery" },
+  beursault: { id: 301, nom: "Tir beursault & tradition" },
+};
+
 /** Concours internes à un club (réservés à ses adhérents) : ffta.fr ne les marque que dans le titre. */
 export const INTERNE_RE = /\binterne\b/i;
 export const estInterne = (c) => INTERNE_RE.test(c.titre || "");

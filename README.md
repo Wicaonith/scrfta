@@ -43,14 +43,33 @@ npm run scrape            # scrape + mandats (texte, OCR, heuristiques)
 npm run reparse           # ré-analyse les mandats d'un output existant sans re-scraper
 ```
 
-Options de `node src/scrape.js` (`--help`) :
+Sans option, le scrapper prend les Pays de la Loire sur les 12 prochains mois. Tous les filtres de la page
+ffta.fr/competitions sont disponibles (`node src/scrape.js --help`, `--list-filters` pour les valeurs acceptées) :
+
+| Filtre | Description |
+| --- | --- |
+| `--region "<nom>"` | Une ou plusieurs régions séparées par des virgules (`"Bretagne, Pays de la Loire"`), ou `france` pour tout le calendrier |
+| `--dep 44,49` | Numéros de départements (`2A`, `974`… acceptés), remplace `--region` |
+| `--start` / `--end` | Bornes de dates `YYYY-MM-DD` (défaut : aujourd'hui → +1 an) |
+| `--discipline <code>` | `salle`, `tae`, `campagne`, `3d`, `nature`, `beursault`, `run_archery`, `jeunes`, `poussin`, `loisir`… ou libellé ffta.fr |
+| `--univers <code>` | `cibles`, `parcours`, `para`, `run_archery`, `beursault` |
+| `--search "<texte>"` | Recherche libre du site (titre, club, ville) |
+| `--restreint [0|1]` | Calendrier restreint uniquement (1) ou exclu (0) |
+| `--sort desc` | Ordre décroissant de date |
+
+Exemples :
+
+```bash
+node src/scrape.js                                        # Pays de la Loire, 12 mois
+node src/scrape.js --region "Bretagne, Pays de la Loire"  # deux régions
+node src/scrape.js --dep 44,85 --discipline salle         # salle en 44 et 85
+node src/scrape.js --region france --univers para --start 2027-01-01 --end 2027-03-31
+```
+
+Options de traitement :
 
 | Option | Description |
 | --- | --- |
-| `--region "<nom>"` | Région (défaut `Pays de la Loire`) |
-| `--dep 45,50` | Identifiants ffta.fr de départements (remplace `--region`) |
-| `--start` / `--end` | Bornes de dates `YYYY-MM-DD` (défaut : aujourd'hui → +1 an) |
-| `--discipline <id>` | 103 = 18 m, 102 = TAE, 107 = campagne, 108 = 3D, 109 = nature, 110 = beursault… |
 | `--limit N` | Ne traiter que N compétitions |
 | `--no-details` | Ne pas visiter les fiches détaillées |
 | `--inclure-internes` | Garder les concours internes à un club (« INTERNE » dans le titre), exclus par défaut |
