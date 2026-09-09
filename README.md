@@ -53,13 +53,14 @@ Options de `node src/scrape.js` (`--help`) :
 | `--discipline <id>` | 103 = 18 m, 102 = TAE, 107 = campagne, 108 = 3D, 109 = nature, 110 = beursault… |
 | `--limit N` | Ne traiter que N compétitions |
 | `--no-details` | Ne pas visiter les fiches détaillées |
+| `--inclure-internes` | Garder les concours internes à un club (« INTERNE » dans le titre), exclus par défaut |
 | `--no-mandats` | Ne pas télécharger / analyser les mandats |
 | `--no-ocr` | Désactiver l'OCR des pages scannées |
 | `--headed` | Navigateur visible (si Cloudflare bloque le headless) |
 | `--browser chrome` | Utiliser Chrome / Edge installé plutôt que le Chromium de Playwright |
 | `--out <dir>` | Dossier de sortie (défaut `output`) |
 
-Options de `node src/reparse.js` : `--out`, `--no-ocr`, `--force` (ré-extrait même si déjà analysé),
+Options de `node src/reparse.js` : `--out`, `--no-ocr`, `--inclure-internes`, `--force` (ré-extrait même si déjà analysé),
 `--id 24876,26477` (ne traiter que ces épreuves).
 
 ## Sorties

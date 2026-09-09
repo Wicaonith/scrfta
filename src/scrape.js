@@ -2,7 +2,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { chromium } from "playwright";
-import { BASE_URL, LIST_PATH, REGIONS, DEPARTEMENTS, DEFAULT_REGION } from "./config.js";
+import { BASE_URL, LIST_PATH, REGIONS, DEPARTEMENTS, DEFAULT_REGION, estInterne } from "./config.js";
 import { parseDates } from "./dates.js";
 import { analyseMandats } from "./analyse.js";
 import { writeOutputs, completerCompetitions, chargerPrecedent } from "./output.js";
@@ -20,6 +20,7 @@ if (args.help) {
   --discipline <id>    Id de discipline ffta.fr (103 = 18m, 102 = TAE, 107 = campagne, 108 = 3D, 109 = nature, 110 = beursault...)
   --limit N            Ne traiter que N compétitions (debug)
   --no-details         Ne pas visiter les fiches /epreuve/<id>
+  --inclure-internes   Garder les concours internes (« INTERNE » dans le titre), exclus par défaut
   --no-mandats         Ne pas télécharger ni analyser les mandats PDF
   --no-ocr             Ne pas passer les pages scannées des mandats à l'OCR (Tesseract)
   --headed            Lancer le navigateur visible (utile si Cloudflare bloque le mode headless)
@@ -56,8 +57,13 @@ const page = await context.newPage();
 
 try {
   // ---------------------------------------------------------------- Liste
-  const competitions = await scrapeList(page, depIds, args);
+  let competitions = await scrapeList(page, depIds, args);
   log(`${competitions.length} compétitions trouvées`);
+  if (!args["inclure-internes"]) {
+    const internes = competitions.filter(estInterne);
+    competitions = competitions.filter((c) => !estInterne(c));
+    if (internes.length) log(`${internes.length} concours internes exclus : ${internes.map((c) => c.id).join(", ")}`);
+  }
 
   const selection = args.limit ? competitions.slice(0, Number(args.limit)) : competitions;
 

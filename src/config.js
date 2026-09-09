@@ -125,6 +125,10 @@ export function disciplineDe(libelle) {
   return { libelle, id: null, code: sansAccents(libelle).replace(/^para tir a l arc (a |en )?/, "").replace(/\s+/g, "_"), base: libelle.replace(/^Para-tir à l'arc (à |en )?/i, ""), para };
 }
 
+/** Concours internes à un club (réservés à ses adhérents) : ffta.fr ne les marque que dans le titre. */
+export const INTERNE_RE = /\binterne\b/i;
+export const estInterne = (c) => INTERNE_RE.test(c.titre || "");
+
 export const BASE_URL = "https://www.ffta.fr";
 export const LIST_PATH = "/competitions";
 export const DEFAULT_REGION = "Pays de la Loire";

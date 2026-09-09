@@ -2,19 +2,25 @@
 /**
  * Ré-analyse les mandats d'un competitions.json existant sans re-scraper le site.
  *
- *   node src/reparse.js [--out output] [--no-ocr] [--force] [--id 24876,26477]
+ *   node src/reparse.js [--out output] [--no-ocr] [--force] [--id 24876,26477] [--inclure-internes]
  */
 import fs from "node:fs/promises";
 import path from "node:path";
 import { analyseMandats } from "./analyse.js";
 import { writeOutputs, completerCompetitions } from "./output.js";
+import { estInterne } from "./config.js";
 
 const args = parseArgs(process.argv.slice(2));
 const outDir = path.resolve(args.out || "output");
 const jsonFile = path.join(outDir, "competitions.json");
 
 const data = JSON.parse(await fs.readFile(jsonFile, "utf8"));
-const { competitions, genere_le, nb, ...meta } = data;
+let { competitions, genere_le, nb, ...meta } = data;
+if (!args["inclure-internes"]) {
+  const internes = competitions.filter(estInterne);
+  competitions = competitions.filter((c) => !estInterne(c));
+  if (internes.length) log(`${internes.length} concours internes exclus : ${internes.map((c) => c.id).join(", ")}`);
+}
 const ids = args.id ? String(args.id).split(",") : null;
 const selection = ids ? competitions.filter((c) => ids.includes(String(c.id))) : competitions;
 
