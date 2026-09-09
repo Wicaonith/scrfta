@@ -1,0 +1,23 @@
+{
+  "name": "scrffta",
+  "version": "1.0.0",
+  "description": "Scrapper des compétitions FFTA (ffta.fr/competitions) avec récupération et analyse des mandats",
+  "main": "src/scrape.js",
+  "type": "module",
+  "scripts": {
+    "scrape": "node src/scrape.js",
+    "scrape:llm": "node src/scrape.js --llm",
+    "reparse": "node src/reparse.js",
+    "reparse:llm": "node src/reparse.js --llm",
+    "postinstall": "playwright install chromium"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.124.0",
+    "pdf-to-img": "^7.0.0",
+    "pdfjs-dist": "^6.2.108",
+    "playwright": "^1.50.0",
+    "tesseract.js": "^7.0.0",
+    "zod": "^4.5.4"
+  }
+}

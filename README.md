@@ -1,93 +1,148 @@
-# ScrFta
+# ScrFta – scrapper des compétitions FFTA
 
+Récupère les compétitions à venir publiées sur <https://www.ffta.fr/competitions>, leur fiche détaillée
+(`/epreuve/<id>`) et leur mandat (PDF hébergé sur `extranet.ffta.fr`), filtrées par région
+(par défaut **Pays de la Loire** : 44, 49, 53, 72, 85).
 
+## Fonctionnement
 
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://gitlab.com/wicaonith/scrfta.git
-git branch -M main
-git push -uf origin main
-```
-
-## Integrate with your tools
-
-* [Set up project integrations](https://gitlab.com/wicaonith/scrfta/-/settings/integrations)
-
-## Collaborate with your team
-
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+- `www.ffta.fr` est protégé par un challenge Cloudflare : les requêtes HTTP simples renvoient une page
+  « Just a moment… ». Le scrapper pilote donc un Chromium headless via **Playwright**, qui passe le challenge.
+- La liste est une vue Drupal filtrable par paramètres GET (`dep[]`, `start`, `end`, `discipline`, `page`).
+  Le mapping région → identifiants de départements est dans [src/config.js](src/config.js)
+  (repris de `drupalSettings.ffta_regions` du site).
+- Les PDF de mandat sont téléchargés directement (pas de Cloudflare sur l'extranet) puis analysés en trois couches :
+  1. **Texte positionnel** ([src/pdf.js](src/pdf.js)) : les mots sont regroupés par ligne et par colonne avec
+     pdf.js, les colonnes étant séparées par ` | `. Les tableaux (« Adultes | 9 € | 16 € ») sont ainsi conservés.
+  2. **OCR** : toute page (quasi) vide de texte est rendue en image et passée à **Tesseract** (français) via
+     `tesseract.js`. Les données de langue sont téléchargées une fois dans `.tessdata/`.
+  3. **Heuristiques** ([src/mandat.js](src/mandat.js)), sans aucun appel réseau ni token :
+     - grille tarifaire normalisée (adulte / jeune par nombre de départs), quelle que soit l'orientation du tableau ;
+     - **départs** reconstitués à partir des lignes « Ouverture du greffe | 13h00 | 8h30 | 13h30 »,
+       « Échauffement | … », « Début des tirs | … » : un départ par colonne, nom et date pris dans l'en-tête
+       (« Samedi après-midi », « DEPART 2 - 20/09 ») ou déduits (jour suivant quand l'heure repart en arrière),
+       avec `datetime` ISO prêt pour un formulaire ;
+     - jauge (« 96 archers par départ », « 3 x 48 places », « limité à 120 tireurs ») et nombre de cibles ;
+     - moyen d'inscription (lien, URL courte, mail, courrier), date limite en texte et en ISO (`date_limite_iso`) ;
+     - arbitres, blasons, distances, contacts, buvette.
+     Quand un mandat couvre un week-end alors que l'épreuve ffta.fr ne fait qu'un jour, les départs de l'autre
+     jour sont marqués `hors_epreuve`.
+  4. **Optionnel, LLM** ([src/llm.js](src/llm.js)) : le texte du mandat est envoyé à Claude avec un schéma de
+     sortie strict calqué sur un formulaire de saisie (départs, tarifs, inscription, lieu, rythme…). Résultat
+     mis en cache dans `output/llm-cache/` pour ne jamais payer deux fois le même mandat.
 
 ## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+```bash
+npm install
+```
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+(le `postinstall` télécharge Chromium pour Playwright)
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+Pour l'analyse LLM, définir une clé API Anthropic :
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+```powershell
+$env:ANTHROPIC_API_KEY = "sk-ant-..."
+```
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+Le modèle utilisé est `claude-opus-5` (modifiable avec la variable `SCRFTA_LLM_MODEL`).
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+## Utilisation
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+```bash
+npm run scrape            # scrape + mandats (texte, OCR, heuristiques)
+npm run scrape:llm        # idem + structuration par Claude
+npm run reparse           # ré-analyse les mandats d'un output existant sans re-scraper
+npm run reparse:llm       # idem avec Claude
+```
 
-## License
-For open source projects, say how it is licensed.
+Options de `node src/scrape.js` (`--help`) :
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+| Option | Description |
+| --- | --- |
+| `--region "<nom>"` | Région (défaut `Pays de la Loire`) |
+| `--dep 45,50` | Identifiants ffta.fr de départements (remplace `--region`) |
+| `--start` / `--end` | Bornes de dates `YYYY-MM-DD` (défaut : aujourd'hui → +1 an) |
+| `--discipline <id>` | 103 = 18 m, 102 = TAE, 107 = campagne, 108 = 3D, 109 = nature, 110 = beursault… |
+| `--limit N` | Ne traiter que N compétitions |
+| `--no-details` | Ne pas visiter les fiches détaillées |
+| `--no-mandats` | Ne pas télécharger / analyser les mandats |
+| `--no-ocr` | Désactiver l'OCR des pages scannées |
+| `--llm` | Structurer chaque mandat avec Claude |
+| `--headed` | Navigateur visible (si Cloudflare bloque le headless) |
+| `--browser chrome` | Utiliser Chrome / Edge installé plutôt que le Chromium de Playwright |
+| `--out <dir>` | Dossier de sortie (défaut `output`) |
+
+Options de `node src/reparse.js` : `--out`, `--llm`, `--no-ocr`, `--force` (ré-extrait même si déjà analysé),
+`--id 24876,26477` (ne traiter que ces épreuves).
+
+## Sorties
+
+- `output/competitions.json` : toutes les données (liste + fiche + mandat avec texte intégral et structure LLM).
+- `output/competitions.csv` : une ligne par compétition (séparateur `;`, UTF-8 BOM, ouvrable dans Excel).
+  Si le fichier est verrouillé (ouvert dans Excel), une copie horodatée est écrite à côté.
+- `output/mandats/*.pdf` : les mandats téléchargés (non retéléchargés s'ils existent déjà).
+- `output/llm-cache/*.json` : réponses de Claude, clé = hash du texte du mandat.
+
+Structure d'une compétition dans le JSON :
+
+```jsonc
+{
+  "id": "24879",
+  "url": "https://www.ffta.fr/epreuve/24879",
+  "titre": "TIR 3D à LA GARNACHE",
+  "dates_texte": "Du 19 au 20 septembre 2026",
+  "date_debut": "2026-09-19", "date_fin": "2026-09-20",
+  "statut": "valid", "univers": "parcours",
+  "discipline": "Tir 3d", "type": "Individuel",
+  "organisateur": "LES GARNA'ARCHERS", "ville": "LA GARNACHE",
+  "email": "...", "site": "...", "mandat_url": "https://extranet.ffta.fr/medias/documents_epreuves/....pdf",
+  "detail": {
+    "statut": "Validée",
+    "champs": { "discipline", "championnat", "duels", "comite_regional", "comite_departemental", "organisateur", "lieu" },
+    "adresse": ["Zone de loisirs de l'équaizière", "85710 LA GARNACHE", "FRANCE"],
+    "contacts": { "tel", "mail", "site" },
+    "documents": []
+  },
+  "mandat": {
+    "fichier": "mandats/....pdf", "pages": 3, "ocr": false, "ocr_pages": [],
+    "infos": {
+      "tarifs": {
+        "grille": [{ "nb_departs": 1, "adulte": 10, "jeune": 8 }, { "nb_departs": 2, "adulte": 16, "jeune": 12 }],
+        "tableaux": [ /* tableaux bruts reconstitués */ ],
+        "lignes": [ /* lignes contenant un montant */ ]
+      },
+      "departs": [{ "nom": "DEPART 1", "date": "2026-09-19", "heure_greffe": "13:00", "heure_echauffement": "13:00",
+                    "heure_debut_tirs": "14:00", "heure_debut": "13:00", "datetime": "2026-09-19T13:00", "jauge": null, "cibles": null }],
+      "jauge": { "places": null, "cibles": null, "archers_par_cible": null, "texte": "..." },
+      "date_limite_iso": "2026-09-16",
+      "inscription": { "mode": "mail", "urls": [], "emails": ["..."], "texte": ["Les inscriptions sont à ..."] },
+      "horaires": ["Ouverture du greffe | 13h00-13h30 | 07h45-08h15", "..."],
+      "date_limite_inscription": "...", "emails": [], "telephones": [], "urls": [],
+      "dates": [], "arbitres": "...", "distances": [], "blasons": [], "buvette": true, "adresse": "..."
+    },
+    "llm": {            // présent avec --llm
+      "modele": "claude-opus-5", "usage": { "input_tokens": 0, "output_tokens": 0, "cache_read_input_tokens": 0 },
+      "titre", "organisateur", "discipline", "lieu": { "nom", "adresse", "code_postal", "ville", "gps" },
+      "dates": { "debut", "fin", "texte" },
+      "departs": [{ "nom", "date", "heure_greffe", "heure_echauffement", "heure_debut_tirs", "heure_debut", "jauge", "cibles", "archers_par_cible", "categories" }],
+      "tarifs": [{ "nb_departs", "adulte", "jeune", "detail" }], "autres_tarifs": [],
+      "inscription": { "mode", "url", "email", "adresse_postale", "contact_nom", "contact_telephone", "date_limite", "date_limite_texte", "paiement", "consignes" },
+      "rythme", "distances", "blasons", "arbitres", "selectif", "championnat_support", "duels",
+      "restauration", "hebergement", "informations_complementaires"
+    },
+    "texte": "… texte intégral du PDF (mise en page conservée) …"
+  }
+}
+```
+
+Dans le CSV, les colonnes `mandat_*` utilisent les heuristiques (`mandat_departs`, `mandat_nb_departs`,
+`mandat_depart1_datetime`, `mandat_jauge`, `mandat_tarifs`, `mandat_date_limite_iso`…) et la structure LLM
+quand elle existe.
+
+## Limites
+
+- Les mandats sont des documents libres : les heuristiques couvrent les mises en page courantes, l'analyse LLM
+  est nettement plus fiable pour les cas atypiques (tableaux complexes, texte OCR bruité).
+- L'OCR ne peut rien contre des affiches très graphiques (texte sur image de fond, polices décoratives).
+- Un même PDF partagé par plusieurs épreuves (concours sur deux jours) n'est analysé qu'une fois par exécution.
