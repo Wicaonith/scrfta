@@ -12,8 +12,8 @@
     "voir": "node src/ouvrir.js",
     "test": "node --test \"test/*.test.js\"",
     "snapshot": "node scripts/update-snapshot.mjs",
-    "test:coverage": "node --test --experimental-test-coverage \"test/*.test.js\"",
-    "test:ci": "node --test --experimental-test-coverage --test-reporter=spec --test-reporter-destination=stdout --test-reporter=junit --test-reporter-destination=junit.xml \"test/*.test.js\""
+    "test:coverage": "node --test --experimental-test-coverage --test-coverage-exclude=\"test/**\" --test-coverage-lines=90 --test-coverage-functions=90 \"test/*.test.js\"",
+    "test:ci": "node --test --experimental-test-coverage --test-coverage-exclude=\"test/**\" --test-coverage-lines=90 --test-coverage-functions=90 --test-reporter=spec --test-reporter-destination=stdout --test-reporter=junit --test-reporter-destination=junit.xml \"test/*.test.js\""
   },
   "license": "MIT",
   "dependencies": {

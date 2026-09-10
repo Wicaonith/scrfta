@@ -1,8 +1,12 @@
 // Tests de la mise en page : c'est l'algorithme par lequel passe chaque tableau de chaque mandat.
 // Il travaille sur les « items » de pdf.js, qu'on peut fabriquer sans PDF réel.
-import { test, describe } from "node:test";
+import { test, describe, before, after } from "node:test";
 import assert from "node:assert/strict";
-import { layoutText } from "../src/pdf.js";
+import fs from "node:fs/promises";
+import path from "node:path";
+import os from "node:os";
+import { layoutText, extractPdfText } from "../src/pdf.js";
+import { creerPdf } from "./fixtures/pdf.js";
 
 /** Fabrique un item pdf.js : un mot posé à la position (x, y), de largeur w et de corps h. */
 const mot = (str, x, y, w = str.length * 6, h = 10) => ({
@@ -91,5 +95,62 @@ describe("cas limites", () => {
   test("les séparateurs redondants sont nettoyés", () => {
     const out = layoutText([mot("A", 10, 100, 10), mot("B", 300, 100, 10)]);
     assert.equal(out.includes("| |"), false);
+  });
+});
+
+describe("lecture d'un PDF de bout en bout", () => {
+  let dossier;
+
+  before(async () => {
+    dossier = await fs.mkdtemp(path.join(os.tmpdir(), "scrfta-pdf-"));
+  });
+  after(async () => {
+    await fs.rm(dossier, { recursive: true, force: true });
+  });
+
+  /** Écrit un PDF fabriqué dans le dossier temporaire et renvoie son chemin. */
+  async function ecrire(nom, pages) {
+    const f = path.join(dossier, nom);
+    await fs.writeFile(f, creerPdf(pages));
+    return f;
+  }
+
+  test("les colonnes sont reconstituées depuis un vrai fichier", async () => {
+    const f = await ecrire("colonnes.pdf", [
+      [
+        { texte: "Ouverture du greffe", x: 60, y: 700 },
+        { texte: "8h30", x: 400, y: 700 },
+        { texte: "Debut des tirs", x: 60, y: 670 },
+        { texte: "9h15", x: 400, y: 670 },
+      ],
+    ]);
+    const r = await extractPdfText(f, { ocr: false });
+    assert.equal(r.text, "Ouverture du greffe | 8h30\nDebut des tirs | 9h15");
+    assert.equal(r.pages, 1);
+    assert.equal(r.ocr, false);
+    assert.deepEqual(r.ocr_pages, []);
+  });
+
+  test("les pages sont lues dans l'ordre et séparées", async () => {
+    const f = await ecrire("deux-pages.pdf", [
+      [{ texte: "Premiere page", x: 60, y: 700 }],
+      [{ texte: "Seconde page", x: 60, y: 700 }],
+    ]);
+    const r = await extractPdfText(f, { ocr: false });
+    assert.equal(r.pages, 2);
+    assert.equal(r.text, "Premiere page\n\nSeconde page");
+  });
+
+  test("une page presque vide n'est pas envoyée à l'OCR quand il est désactivé", async () => {
+    const f = await ecrire("vide.pdf", [[{ texte: "Peu de texte", x: 60, y: 700 }]]);
+    const r = await extractPdfText(f, { ocr: false });
+    assert.equal(r.ocr, false);
+    assert.equal(r.text, "Peu de texte");
+  });
+
+  test("les parenthèses et antislashs du texte ne cassent pas le fichier", async () => {
+    const f = await ecrire("echappement.pdf", [[{ texte: "Tarif (adulte) 9 EUR", x: 60, y: 700 }]]);
+    const r = await extractPdfText(f, { ocr: false });
+    assert.equal(r.text, "Tarif (adulte) 9 EUR");
   });
 });

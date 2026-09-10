@@ -409,21 +409,27 @@ Fichiers du projet :
 npm test
 ```
 
-Lance `node --test`, le lanceur intégré à Node : aucune dépendance de test à installer. 178 tests,
+Lance `node --test`, le lanceur intégré à Node : aucune dépendance de test à installer. 184 tests,
 moins d'une seconde, sans réseau ni navigateur.
 
 ```bash
 npm run test:coverage
 ```
 
-ajoute le rapport de couverture : environ 93 % des lignes des modules chargés par les tests.
+ajoute le rapport de couverture : environ 96 % des lignes de `src/`. Les fichiers de test sont exclus du
+calcul, sans quoi ils gonfleraient le chiffre en se comptant eux-mêmes. Le pipeline échoue si la couverture
+passe sous 90 %.
 
-Deux précisions sur ce chiffre. Il porte sur les modules que les tests chargent réellement ; la couche de
-scraping (`src/scrape.js`, `src/analyse.js`) n'y figure pas du tout, puisqu'elle exige le réseau et un
-navigateur. Et ce qui reste non couvert l'est volontairement : la lecture d'un vrai PDF et la reconnaissance
-de caractères, qui demandent des fichiers et Tesseract, ainsi que le repli sur une copie horodatée quand le
-CSV est verrouillé par Excel, qu'on ne peut pas simuler de façon portable. Ce dernier a été vérifié à la main,
-il se déclenche à chaque fois que le fichier est ouvert pendant un relevé.
+La lecture des PDF est testée de bout en bout : `test/fixtures/pdf.js` fabrique à la volée un PDF minimal
+mais valide, dont chaque mot est posé à une position choisie. Aucun fichier binaire n'est stocké dans le dépôt,
+et la reconstitution des lignes et des colonnes est vérifiée sur un vrai fichier.
+
+Deux zones restent volontairement non couvertes. La reconnaissance de caractères, qui demanderait de
+télécharger Tesseract et des images à chaque exécution du pipeline. Et le repli sur une copie horodatée quand
+le CSV est verrouillé par Excel, qu'on ne peut pas simuler de façon portable ; il a été vérifié à la main,
+il se déclenche à chaque fois que le fichier est ouvert pendant un relevé. La couche de scraping
+(`src/scrape.js`, `src/analyse.js`) n'entre pas non plus dans le calcul, puisqu'elle exige le réseau et un
+navigateur.
 
 | Fichier | Ce qu'il couvre |
 | --- | --- |
@@ -433,7 +439,7 @@ il se déclenche à chaque fois que le fichier est ouvert pendant un relevé.
 | `test/mandat.test.js` | Les heuristiques d'extraction, sur des mandats synthétiques reproduisant les mises en page réelles |
 | `test/output.test.js` | Échappement CSV, formes JSON, regroupement des épreuves, suivi des modifications |
 | `test/historique.test.js` | Comparaison entre deux relevés |
-| `test/pdf.test.js` | Le regroupement des mots en lignes et en colonnes, cœur de la lecture des tableaux |
+| `test/pdf.test.js` | Le regroupement des mots en lignes et en colonnes, et la lecture d'un vrai PDF |
 | `test/fichiers.test.js` | Écriture des sorties, archivage des relevés, téléchargement d'un mandat (réseau simulé) |
 | `test/snapshot.test.js` | Non-régression sur les vrais mandats déjà téléchargés |
 

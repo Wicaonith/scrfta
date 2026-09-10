@@ -1,6 +1,10 @@
-import { test, describe } from "node:test";
+import { test, describe, before, after } from "node:test";
 import assert from "node:assert/strict";
-import { reextractInfos } from "../src/mandat.js";
+import fs from "node:fs/promises";
+import path from "node:path";
+import os from "node:os";
+import { reextractInfos, parseMandat } from "../src/mandat.js";
+import { creerPdf, mandatSimple } from "./fixtures/pdf.js";
 import * as f from "./fixtures/mandats.js";
 
 const lire = (fixture) => reextractInfos(fixture.texte, fixture.contexte);
@@ -190,5 +194,50 @@ describe("indicateurs de fiabilité", () => {
     assert.equal(infos.departs_fiable, false);
     assert.equal(infos.tarifs.fiable, false);
     assert.equal(infos.date_limite_iso, null);
+  });
+});
+
+describe("analyse d'un mandat depuis un vrai fichier PDF", () => {
+  let dossier;
+  before(async () => {
+    dossier = await fs.mkdtemp(path.join(os.tmpdir(), "scrfta-mandat-"));
+  });
+  after(async () => {
+    await fs.rm(dossier, { recursive: true, force: true });
+  });
+
+  test("le PDF est lu et les informations en sont extraites", async () => {
+    const fichier = path.join(dossier, "mandat.pdf");
+    await fs.writeFile(fichier, creerPdf(mandatSimple));
+
+    const m = await parseMandat(fichier, {
+      ocr: false,
+      contexte: { date_debut: "2026-10-17", date_fin: "2026-10-17" },
+    });
+
+    assert.equal(m.fichier, "mandat.pdf");
+    assert.equal(m.pages, 1);
+    assert.equal(m.ocr, false);
+    assert.equal(m.texte_ocr, "");
+    assert.match(m.texte, /LES ARCHERS DE TESTVILLE/);
+
+    assert.equal(m.infos.departs.length, 1);
+    assert.equal(m.infos.departs[0].heure_greffe, "08:30");
+    assert.equal(m.infos.departs[0].heure_debut_tirs, "09:15");
+    assert.equal(m.infos.date_limite_iso, "2026-10-12");
+    assert.equal(m.infos.inscription.mode, "mail");
+    assert.ok(m.infos.emails.includes("concours@archers-testville.fr"));
+    assert.equal(m.infos.buvette, true);
+  });
+
+  test("le texte est normalisé : espaces multiples et lignes vides réduits", async () => {
+    const fichier = path.join(dossier, "espaces.pdf");
+    await fs.writeFile(
+      fichier,
+      creerPdf([[{ texte: "Un    texte     espace", x: 60, y: 700 }, { texte: "Suite", x: 60, y: 600 }]])
+    );
+    const m = await parseMandat(fichier, { ocr: false });
+    assert.equal(m.texte.includes("  "), false, "aucune suite de deux espaces");
+    assert.equal(/\n{3,}/.test(m.texte), false, "jamais plus d'une ligne vide d'affilée");
   });
 });
