@@ -49,8 +49,12 @@ export async function extractPdfText(file, { ocr = true, minCharsPerPage = 80 } 
   };
 }
 
-/** Regroupe les items pdf.js en lignes puis en colonnes. */
-function layoutText(items) {
+/**
+ * Regroupe les items pdf.js en lignes (coordonnée verticale) puis en colonnes (écart horizontal).
+ * Les colonnes éloignées sont séparées par « | » pour que les tableaux restent exploitables.
+ * Exportée pour pouvoir être testée sans PDF réel.
+ */
+export function layoutText(items) {
   const words = items
     .filter((it) => it.str && it.str.trim())
     .map((it) => ({

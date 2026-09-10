@@ -216,3 +216,50 @@ describe("completerCompetitions — suivi des modifications", () => {
     assert.equal(l[0].discipline_info.code, "salle");
   });
 });
+
+describe("colonnes de repli quand la grille n'a pas pu être normalisée", () => {
+  test("les tableaux bruts prennent le relais pour les tarifs", () => {
+    const m = {
+      fichier: "mandats/x.pdf",
+      infos: {
+        tarifs: { grille: [], tableaux: [{ categorie: "Adultes", "1 tir": 9 }], lignes: [], fiable: false },
+        departs: [],
+        jauge: { places: null, cibles: null },
+        inscription: { mode: null, urls: [], emails: [] },
+      },
+    };
+    const csv = toCsv([concours({ mandat: m })]);
+    const i = csv.split("\r\n")[0].split(";").indexOf("mandat_tarifs");
+    assert.match(csv.split("\r\n")[1].split(";")[i], /Adultes 1 tir : 9 €/);
+  });
+
+  test("les lignes brutes prennent le relais si aucun tableau n'a été reconstitué", () => {
+    const m = {
+      fichier: "mandats/x.pdf",
+      infos: {
+        tarifs: { grille: [], tableaux: [], lignes: ["Adulte : 13 € par départ"], fiable: false },
+        departs: [],
+        jauge: { places: null, cibles: null },
+        inscription: { mode: null, urls: [], emails: [] },
+      },
+    };
+    const csv = toCsv([concours({ mandat: m })]);
+    assert.match(csv, /Adulte : 13 € par départ/);
+  });
+
+  test("les horaires bruts prennent le relais si aucun départ n'a été reconstitué", () => {
+    const m = {
+      fichier: "mandats/x.pdf",
+      infos: {
+        tarifs: { grille: [], tableaux: [], lignes: [] },
+        departs: [],
+        horaires: ["Ouverture du greffe 7 h 30", "Début des tirs 9 h"],
+        jauge: { places: null, cibles: null },
+        inscription: { mode: null, urls: [], emails: [] },
+      },
+    };
+    const csv = toCsv([concours({ mandat: m })]);
+    const i = csv.split("\r\n")[0].split(";").indexOf("mandat_departs");
+    assert.match(csv.split("\r\n")[1].split(";")[i], /Ouverture du greffe 7 h 30/);
+  });
+});

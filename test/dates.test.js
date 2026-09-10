@@ -79,3 +79,10 @@ describe("addDays", () => {
   test("recule", () => assert.equal(addDays("2026-01-01", -1), "2025-12-31"));
   test("année bissextile", () => assert.equal(addDays("2028-02-28", 1), "2028-02-29"));
 });
+
+describe("jour de semaine introuvable dans la période", () => {
+  test("aucun samedi entre le lundi et le mardi : aucune date inventée", () => {
+    // 19 et 20 octobre 2026 sont un lundi et un mardi
+    assert.equal(parseDateFr("Samedi matin", { debut: "2026-10-19", fin: "2026-10-20" }).date, null);
+  });
+});

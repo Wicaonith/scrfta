@@ -409,16 +409,21 @@ Fichiers du projet :
 npm test
 ```
 
-Lance `node --test`, le lanceur intégré à Node : aucune dépendance de test à installer. 141 tests,
+Lance `node --test`, le lanceur intégré à Node : aucune dépendance de test à installer. 178 tests,
 moins d'une seconde, sans réseau ni navigateur.
 
 ```bash
 npm run test:coverage
 ```
 
-ajoute le rapport de couverture, environ 83 % des lignes. Ce pourcentage porte sur les modules que les tests
-chargent : l'analyse des mandats, les dates, les filtres, les sorties et la comparaison. La couche de scraping
-(`src/scrape.js`, `src/analyse.js`) n'y figure pas, puisqu'elle exige le réseau et un navigateur.
+ajoute le rapport de couverture : environ 93 % des lignes des modules chargés par les tests.
+
+Deux précisions sur ce chiffre. Il porte sur les modules que les tests chargent réellement ; la couche de
+scraping (`src/scrape.js`, `src/analyse.js`) n'y figure pas du tout, puisqu'elle exige le réseau et un
+navigateur. Et ce qui reste non couvert l'est volontairement : la lecture d'un vrai PDF et la reconnaissance
+de caractères, qui demandent des fichiers et Tesseract, ainsi que le repli sur une copie horodatée quand le
+CSV est verrouillé par Excel, qu'on ne peut pas simuler de façon portable. Ce dernier a été vérifié à la main,
+il se déclenche à chaque fois que le fichier est ouvert pendant un relevé.
 
 | Fichier | Ce qu'il couvre |
 | --- | --- |
@@ -428,6 +433,8 @@ chargent : l'analyse des mandats, les dates, les filtres, les sorties et la comp
 | `test/mandat.test.js` | Les heuristiques d'extraction, sur des mandats synthétiques reproduisant les mises en page réelles |
 | `test/output.test.js` | Échappement CSV, formes JSON, regroupement des épreuves, suivi des modifications |
 | `test/historique.test.js` | Comparaison entre deux relevés |
+| `test/pdf.test.js` | Le regroupement des mots en lignes et en colonnes, cœur de la lecture des tableaux |
+| `test/fichiers.test.js` | Écriture des sorties, archivage des relevés, téléchargement d'un mandat (réseau simulé) |
 | `test/snapshot.test.js` | Non-régression sur les vrais mandats déjà téléchargés |
 
 Les mandats des tests sont **synthétiques** : clubs, adresses et contacts inventés, aucune donnée personnelle
