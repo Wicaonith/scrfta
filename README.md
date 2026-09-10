@@ -416,9 +416,13 @@ moins d'une seconde, sans réseau ni navigateur.
 npm run test:coverage
 ```
 
-ajoute le rapport de couverture : environ 96 % des lignes de `src/`. Les fichiers de test sont exclus du
-calcul, sans quoi ils gonfleraient le chiffre en se comptant eux-mêmes. Le pipeline échoue si la couverture
-passe sous 90 %.
+ajoute le rapport de couverture : environ 98 % des lignes de `src/`, 88 % des branches. Les fichiers de test
+sont exclus du calcul, sans quoi ils gonfleraient le chiffre en se comptant eux-mêmes. Le pipeline échoue si
+la couverture passe sous 90 %.
+
+Une mise en garde sur le pourcentage de lignes : Node compte les lignes de commentaire comme couvertes dès
+lors qu'elles se trouvent dans une fonction exercée. Le code étant abondamment documenté, ce chiffre est
+flatteur. **La couverture des branches, 88 %, est la mesure honnête** : elle ne dépend que du code exécuté.
 
 La lecture des PDF est testée de bout en bout : `test/fixtures/pdf.js` fabrique à la volée un PDF minimal
 mais valide, dont chaque mot est posé à une position choisie. Aucun fichier binaire n'est stocké dans le dépôt,

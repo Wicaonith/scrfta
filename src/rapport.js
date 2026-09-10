@@ -1,15 +1,48 @@
 #!/usr/bin/env node
 /**
- * Génère output/rapport/index.html : les différences entre snapshots successifs de output/historique/,
- * avec un menu pour choisir la période, et l'état courant du calendrier.
+ * @file Génération de la page de suivi des changements.
  *
- *   node src/rapport.js [--out output]
+ * Produit `output/rapport/index.html`, une page **entièrement autonome** : les données y sont
+ * embarquées dans une balise de script, si bien qu'elle s'ouvre par un double-clic, sans serveur,
+ * sans connexion et sans installation. On peut l'envoyer par courriel ou la copier sur une clé.
+ *
+ * Ce choix est délibéré. Le public visé, des responsables de clubs, n'a ni serveur ni envie d'en
+ * administrer un. Un fichier unique qu'on ouvre dans son navigateur est ce qui demande le moins.
+ * La même page peut par ailleurs être déposée telle quelle sur un hébergement statique.
+ *
+ * ## Contenu
+ *
+ * Trois onglets : les changements sur une période choisie dans un menu, le calendrier courant avec
+ * un filtre texte, et l'historique des relevés.
+ *
+ * ## Utilisation
+ *
+ * ```
+ * node src/rapport.js [--out output]
+ * ```
+ *
+ * Appelée aussi automatiquement en fin de `scrape` et de `reparse`.
  */
+
 import fs from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { listerSnapshots, chargerSnapshot, comparer } from "./historique.js";
 
+/**
+ * Compare tous les relevés archivés et écrit la page de suivi.
+ *
+ * Chaque couple de relevés consécutifs devient une « période ». Elles sont présentées de la plus
+ * récente à la plus ancienne, l'ordre dans lequel on les consulte.
+ *
+ * Un fichier `diffs.json` est écrit à côté de la page : il contient les mêmes données, à
+ * disposition d'un traitement automatique qui voudrait, par exemple, envoyer un courriel
+ * récapitulatif.
+ *
+ * @param {string} outDir dossier de sortie
+ * @param {(msg: string) => void} [log]
+ * @returns {Promise<string|null>} chemin de la page écrite, ou `null` si aucun relevé n'est archivé
+ */
 export async function genererRapport(outDir, log = () => {}) {
   const snapshots = await listerSnapshots(outDir);
   if (!snapshots.length) {
@@ -19,11 +52,16 @@ export async function genererRapport(outDir, log = () => {}) {
   const charges = [];
   for (const s of snapshots) charges.push({ date: s.date, competitions: await chargerSnapshot(s.fichier) });
 
+  // Une période par couple de relevés consécutifs. Avec un seul relevé, la liste reste vide et la
+  // page invite simplement à revenir après le suivant.
   const periodes = [];
   for (let i = 1; i < charges.length; i++) {
     const diff = comparer(charges[i - 1].competitions, charges[i].competitions);
     periodes.push({ de: charges[i - 1].date, a: charges[i].date, ...diff });
   }
+
+  // Le dernier relevé fournit l'onglet « calendrier actuel », réduit aux colonnes affichées :
+  // la page embarque ses données, inutile d'y recopier le texte intégral des mandats.
   const dernier = charges[charges.length - 1];
   const etat = dernier.competitions.map((c) => ({
     id: String(c.id),
@@ -56,8 +94,21 @@ export async function genererRapport(outDir, log = () => {}) {
   return file;
 }
 
+/**
+ * Compose la page HTML autonome.
+ *
+ * Tout tient dans un seul fichier : styles, script et données. Aucune bibliothèque externe, aucune
+ * police à télécharger, ce qui garantit que la page fonctionne hors ligne et ne vieillit pas.
+ *
+ * Le thème suit les préférences du système, clair ou sombre, par variables CSS.
+ *
+ * @param {object} data données préparées par `genererRapport`
+ * @returns {string} le document HTML complet
+ */
 function rendreHtml(data) {
-  // Les données sont embarquées dans la page : aucun serveur ni réseau nécessaire pour la consulter.
+  // Les données sont sérialisées dans une balise script de type `application/json`, que le
+  // navigateur n'exécute pas. L'échappement de `<` empêche qu'une valeur contenant `</script>`
+  // referme la balise prématurément, ce qui casserait la page.
   const json = JSON.stringify(data).replace(/</g, "\\u003c");
   return `<!doctype html>
 <html lang="fr">
@@ -229,7 +280,14 @@ document.getElementById('hist').innerHTML = '<tr><th>Relevé</th><th>Concours</t
 `;
 }
 
-// ---------------------------------------------------------------- CLI
+// ---------------------------------------------------------------- Utilisation en ligne de commande
+//
+// Ce fichier est à la fois un module, importé par `scrape.js` et `reparse.js`, et un programme
+// exécutable. La condition distingue les deux cas : elle n'est vraie que si ce fichier est celui
+// que Node a été chargé de lancer.
+//
+// La conversion en URL est nécessaire sous Windows, où `process.argv[1]` vaut « D:\... » alors que
+// `import.meta.url` vaut « file:///D:/... ». Comparer les deux directement échouerait toujours.
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
   const args = process.argv.slice(2);
   const i = args.indexOf("--out");
