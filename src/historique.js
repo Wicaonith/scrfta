@@ -1,9 +1,48 @@
-// Archivage des exports (un snapshot daté par run) et comparaison entre deux snapshots.
+/**
+ * @file Archivage des relevés et comparaison entre deux relevés successifs.
+ *
+ * ## À quoi cela sert
+ *
+ * Un calendrier de compétitions bouge tout le temps : des concours s'ajoutent, d'autres sont
+ * annulés, des clubs publient leur mandat, corrigent un tarif ou repoussent une date limite.
+ * Recevoir chaque semaine la liste complète n'apprend rien ; savoir **ce qui a changé** est
+ * exactement ce dont un responsable de club a besoin.
+ *
+ * Chaque exécution archive donc une copie datée du relevé, et ce module sait comparer deux de ces
+ * copies. `rapport.js` en fait ensuite une page consultable.
+ *
+ * ## Cinq catégories de changement
+ *
+ * | Catégorie          | Ce qu'elle recouvre                                        |
+ * | ------------------ | ---------------------------------------------------------- |
+ * | `apparus`          | concours ajoutés au calendrier                             |
+ * | `disparus`         | concours retirés, souvent annulés                          |
+ * | `modifies`         | fiche changée : lieu, dates, contacts…                     |
+ * | `mandats_publies`  | le club a mis son invitation en ligne, l'inscription ouvre |
+ * | `mandats_modifies` | tarifs, horaires ou date limite revus                      |
+ *
+ * La quatrième est celle qu'on attend le plus : c'est le moment où un concours devient réellement
+ * ouvert aux inscriptions.
+ */
+
 import fs from "node:fs/promises";
 import path from "node:path";
 import { departsEpreuve, tarifsJson } from "./output.js";
 
-/** Copie competitions.json dans output/historique/AAAA-MM-JJ.json (écrase le snapshot du même jour). */
+/**
+ * Archive le relevé courant sous une copie datée.
+ *
+ * Le nom du fichier est la date du jour, si bien que **deux relevés le même jour ne produisent
+ * qu'une archive**, la seconde écrasant la première. C'est voulu : l'unité de comparaison est la
+ * journée, et relancer une collecte après un incident ne doit pas polluer l'historique d'un
+ * faux changement.
+ *
+ * Le paramètre `date` est injecté pour que les tests puissent simuler plusieurs jours.
+ *
+ * @param {string} outDir dossier de sortie
+ * @param {Date} [date] date de l'archive, aujourd'hui par défaut
+ * @returns {Promise<string>} chemin de l'archive écrite
+ */
 export async function archiver(outDir, date = new Date()) {
   const dir = path.join(outDir, "historique");
   await fs.mkdir(dir, { recursive: true });
@@ -12,7 +51,19 @@ export async function archiver(outDir, date = new Date()) {
   return path.join(dir, nom);
 }
 
-/** Liste des snapshots disponibles, du plus ancien au plus récent : [{ date, fichier }]. */
+/**
+ * Liste les relevés archivés, du plus ancien au plus récent.
+ *
+ * Le filtre sur le nom de fichier est important : le dossier peut contenir des notes ou des
+ * fichiers déposés à la main, qui feraient échouer la lecture. Le format `AAAA-MM-JJ` a en outre
+ * la propriété de se trier chronologiquement par simple ordre alphabétique.
+ *
+ * Un dossier absent renvoie une liste vide plutôt qu'une erreur : c'est le cas normal du premier
+ * relevé.
+ *
+ * @param {string} outDir dossier de sortie
+ * @returns {Promise<{date: string, fichier: string}[]>}
+ */
 export async function listerSnapshots(outDir) {
   const dir = path.join(outDir, "historique");
   let files = [];
@@ -35,6 +86,17 @@ export async function chargerSnapshot(fichier) {
 // ---------------------------------------------------------------- Comparaison
 
 /** Champs de la fiche comparés, avec leur libellé pour le rapport. */
+/**
+ * Champs de la fiche suivis d'un relevé à l'autre.
+ *
+ * Chaque entrée associe une clé technique à un libellé affichable et à une fonction d'extraction.
+ * Le libellé est ce que verra l'utilisateur dans le rapport, d'où sa rédaction en français courant.
+ *
+ * Seuls figurent ici les champs dont un changement intéresse quelqu'un qui suit le calendrier.
+ * Ajouter un champ à cette table suffit à le faire apparaître dans les comparaisons.
+ *
+ * @type {Object<string, [string, (c: import("./types.js").Competition) => unknown]>}
+ */
 const CHAMPS_FICHE = {
   titre: ["Titre", (c) => c.titre],
   dates: ["Dates", (c) => c.dates_texte],
@@ -52,7 +114,16 @@ const CHAMPS_FICHE = {
   mandat_url: ["Lien du mandat", (c) => c.mandat_url],
 };
 
-/** Éléments du mandat comparés (résumés en texte pour une comparaison simple). */
+/**
+ * Éléments du mandat suivis d'un relevé à l'autre.
+ *
+ * Chaque valeur est **réduite à une chaîne de caractères** avant comparaison. Comparer directement
+ * des tableaux d'objets obligerait à une comparaison en profondeur, sensible à l'ordre des clés et
+ * pénible à afficher. Une chaîne se compare d'un signe égal et se montre telle quelle à
+ * l'utilisateur, ce qui suffit largement pour signaler « les tarifs ont changé ».
+ *
+ * @type {Object<string, [string, (c: import("./types.js").Competition) => unknown]>}
+ */
 const CHAMPS_MANDAT = {
   mandat_modifie_le: ["PDF modifié le", (c) => c.mandat?.modifie_le?.slice(0, 10)],
   departs: ["Départs", (c) => departsEpreuve(c).map((d) => `${d.nom} ${d.datetime || ""}`.trim()).join(" | ")],
@@ -65,8 +136,27 @@ const CHAMPS_MANDAT = {
   }],
 };
 
+/**
+ * Ramène les trois façons d'exprimer l'absence à une seule.
+ *
+ * Sans cela, une valeur passée de la chaîne vide à `null` serait signalée comme un changement,
+ * alors que rien n'a bougé du point de vue de l'utilisateur. Ce genre de faux positif décrédibilise
+ * vite un rapport de changements.
+ *
+ * @param {unknown} v
+ * @returns {string|null}
+ */
 const norm = (v) => (v === undefined || v === null || v === "" ? null : String(v));
 
+/**
+ * Compare deux versions d'une même compétition sur un ensemble de champs.
+ *
+ * @param {Object<string, [string, (c: any) => unknown]>} defs table de champs à comparer
+ * @param {import("./types.js").Competition} avant version du relevé précédent
+ * @param {import("./types.js").Competition} apres version du relevé courant
+ * @returns {{champ: string, libelle: string, avant: string|null, apres: string|null}[]}
+ *          uniquement les champs qui diffèrent
+ */
 function comparerChamps(defs, avant, apres) {
   const out = [];
   for (const [cle, [libelle, get]] of Object.entries(defs)) {
@@ -78,12 +168,29 @@ function comparerChamps(defs, avant, apres) {
 }
 
 /**
- * Compare deux listes de compétitions.
- * Renvoie { apparus, disparus, modifies, mandats_publies, mandats_modifies, resume }.
+ * Compare deux relevés et classe les changements en cinq catégories.
+ *
+ * Les épreuves sont appariées par leur identifiant ffta.fr, stable dans le temps. Celles présentes
+ * d'un seul côté sont apparues ou ont disparu ; celles présentes des deux côtés sont examinées
+ * champ par champ.
+ *
+ * Tous les résultats sont triés par date de concours, l'ordre dans lequel un lecteur les parcourt
+ * naturellement.
+ *
+ * @param {import("./types.js").Competition[]} avant relevé le plus ancien
+ * @param {import("./types.js").Competition[]} apres relevé le plus récent
+ * @returns {{apparus: object[], disparus: object[], modifies: object[],
+ *            mandats_publies: object[], mandats_modifies: object[], resume: object}}
  */
 export function comparer(avant, apres) {
   const A = new Map(avant.map((c) => [String(c.id), c]));
   const B = new Map(apres.map((c) => [String(c.id), c]));
+
+  /**
+   * Réduit une compétition à ce qu'il faut pour l'identifier dans un rapport.
+   * Le rapport embarque ses données dans la page : inutile d'y recopier les mandats entiers.
+   * @param {import("./types.js").Competition} c
+   */
   const resume = (c) => ({
     id: String(c.id),
     titre: c.titre,
@@ -102,21 +209,29 @@ export function comparer(avant, apres) {
   const modifies = [];
   const mandats_publies = [];
   const mandats_modifies = [];
+
   for (const [id, b] of B) {
     const a = A.get(id);
-    if (!a) continue;
+    if (!a) continue; // épreuve nouvelle, déjà classée dans `apparus`
+
     const fiche = comparerChamps(CHAMPS_FICHE, a, b);
+
     if (!a.mandat && b.mandat) {
+      // Le mandat vient d'être publié : on montre son contenu, c'est l'information attendue
       mandats_publies.push({ ...resume(b), mandat: extraitMandat(b) });
     } else if (a.mandat && b.mandat) {
+      // Mandat déjà connu : on ne signale que ce qui a bougé dedans
       const m = comparerChamps(CHAMPS_MANDAT, a, b);
       if (m.length) mandats_modifies.push({ ...resume(b), changements: m });
     }
-    // Le lien du mandat est déjà couvert par "mandats publiés"
+
+    // La publication d'un mandat ajoute forcément son lien à la fiche. Le signaler une seconde
+    // fois dans « fiches modifiées » ferait doublon avec « mandats publiés », plus parlant.
     const ficheSansMandat = fiche.filter((ch) => !(ch.champ === "mandat_url" && !a.mandat && b.mandat));
     if (ficheSansMandat.length) modifies.push({ ...resume(b), changements: ficheSansMandat });
   }
 
+  /** Trie par date de concours, l'ordre de lecture naturel. */
   const tri = (l) => l.sort((x, y) => (x.date_debut || "").localeCompare(y.date_debut || ""));
   return {
     apparus: tri(apparus),
@@ -136,6 +251,16 @@ export function comparer(avant, apres) {
   };
 }
 
+/**
+ * Résume un mandat fraîchement publié, pour l'afficher dans le rapport.
+ *
+ * On retient ce qui décide un club à inscrire ses archers : quand tirer, combien ça coûte, jusqu'à
+ * quand s'inscrire et comment. Les indicateurs de fiabilité accompagnent ces valeurs, afin que le
+ * rapport puisse signaler celles qui méritent une vérification dans le PDF.
+ *
+ * @param {import("./types.js").Competition} c
+ * @returns {object} résumé destiné à l'affichage
+ */
 function extraitMandat(c) {
   const i = c.mandat?.infos || {};
   return {
