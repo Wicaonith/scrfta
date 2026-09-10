@@ -397,6 +397,51 @@ Fichiers du projet :
 | `src/ouvrir.js` | Ouvre la page de suivi dans le navigateur par défaut (`npm run voir`) |
 | `src/rapport.js` | Génération de la page HTML autonome de suivi |
 | `scripts/apercu-rapport.mjs` | Ouvre la page dans Chromium headless, vérifie les erreurs JS, capture d'écran |
+| `scripts/update-snapshot.mjs` | Régénère l'instantané de non-régression des mandats |
+| `test/` | La suite de tests (voir ci-dessous) |
+
+
+### Tests
+
+```bash
+npm test
+```
+
+Lance `node --test`, le lanceur intégré à Node : aucune dépendance de test à installer. Environ 145 tests,
+moins d'une seconde, sans réseau ni navigateur.
+
+| Fichier | Ce qu'il couvre |
+| --- | --- |
+| `test/dates.test.js` | Les formats de dates de ffta.fr et des mandats, la déduction d'année et de jour |
+| `test/config.test.js` | Cohérence des tables région / département / discipline, détection du para et des concours internes |
+| `test/filtres.test.js` | Options de la ligne de commande vers paramètres du site, et messages d'erreur |
+| `test/mandat.test.js` | Les heuristiques d'extraction, sur des mandats synthétiques reproduisant les mises en page réelles |
+| `test/output.test.js` | Échappement CSV, formes JSON, regroupement des épreuves, suivi des modifications |
+| `test/historique.test.js` | Comparaison entre deux relevés |
+| `test/snapshot.test.js` | Non-régression sur les vrais mandats déjà téléchargés |
+
+Les mandats des tests sont **synthétiques** : clubs, adresses et contacts inventés, aucune donnée personnelle
+réelle dans le dépôt.
+
+Le test de non-régression rejoue l'extraction sur les mandats de `output/` et compare à
+`test/snapshot/extraction.json`. Comme `output/` n'est pas versionné, ce test est ignoré sur un dépôt
+fraîchement cloné : il protège la machine de développement et le serveur. Après une modification volontaire
+des heuristiques :
+
+```bash
+npm run snapshot
+```
+
+puis relire le diff git : chaque écart est soit une amélioration voulue, soit une régression. L'instantané ne
+contient que des valeurs dérivées (tarifs, horaires, dates), jamais de mail ni de téléphone, et un test le
+vérifie.
+
+### Alerte quand le site change
+
+Aucun test ne détecte une modification du site de la FFTA. Ce qui la détecte, c'est le code de retour :
+`npm run scrape` sort en erreur si aucun concours n'est trouvé, ou si leur nombre a chuté de plus de moitié
+depuis le relevé précédent. Sur un serveur, cron envoie alors un mail automatiquement. `--zero-ok` désactive
+ce contrôle quand un résultat vide est attendu.
 
 ---
 

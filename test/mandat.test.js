@@ -1,0 +1,194 @@
+import { test, describe } from "node:test";
+import assert from "node:assert/strict";
+import { reextractInfos } from "../src/mandat.js";
+import * as f from "./fixtures/mandats.js";
+
+const lire = (fixture) => reextractInfos(fixture.texte, fixture.contexte);
+
+describe("mandat en colonnes : un départ par colonne, dates dans l'en-tête", () => {
+  const infos = lire(f.colonnes);
+
+  test("trois départs, aux bonnes dates", () => {
+    assert.equal(infos.departs.length, 3);
+    assert.deepEqual(
+      infos.departs.map((d) => d.date),
+      ["2026-10-17", "2026-10-18", "2026-10-18"]
+    );
+  });
+
+  test("horaires de greffe, échauffement et tirs par départ", () => {
+    assert.deepEqual(
+      infos.departs.map((d) => d.heure_greffe),
+      ["13:00", "07:45", "13:00"]
+    );
+    assert.deepEqual(
+      infos.departs.map((d) => d.heure_debut_tirs),
+      ["14:00", "08:45", "14:00"]
+    );
+    assert.equal(infos.departs[0].datetime, "2026-10-17T13:00");
+  });
+
+  test("noms repris de l'en-tête, sans la date accolée", () => {
+    assert.deepEqual(
+      infos.departs.map((d) => d.nom),
+      ["DEPART 1", "DEPART 2", "DEPART 3"]
+    );
+  });
+
+  test("grille tarifaire par nombre de départs", () => {
+    assert.deepEqual(infos.tarifs.grille, [
+      { nb_departs: 1, adulte: 10, jeune: 8 },
+      { nb_departs: 2, adulte: 16, jeune: 12 },
+      { nb_departs: 3, adulte: 22, jeune: 16 },
+    ]);
+  });
+
+  test("jauge, date limite et mode d'inscription", () => {
+    assert.equal(infos.jauge.places, 96);
+    assert.equal(infos.date_limite_iso, "2026-10-14");
+    assert.equal(infos.inscription.mode, "mail");
+    assert.ok(infos.inscription.emails.includes("concours@archers-testville.fr"));
+  });
+
+  test("les valeurs sont jugées fiables", () => {
+    assert.equal(infos.tarifs.fiable, true);
+    assert.equal(infos.departs_fiable, true);
+  });
+});
+
+describe("mandat avec tarifs en colonnes Adulte / Jeune", () => {
+  const infos = lire(f.tarifsAdulteJeune);
+
+  test("deux départs le même jour", () => {
+    assert.equal(infos.departs.length, 2);
+    assert.deepEqual(
+      infos.departs.map((d) => d.date),
+      ["2026-09-20", "2026-09-20"]
+    );
+    assert.deepEqual(
+      infos.departs.map((d) => d.heure_greffe),
+      ["08:30", "13:15"]
+    );
+  });
+
+  test("le tableau est lu dans le bon sens : 1 tir puis 2 tirs", () => {
+    assert.deepEqual(infos.tarifs.grille, [
+      { nb_departs: 1, adulte: 9, jeune: 7 },
+      { nb_departs: 2, adulte: 16, jeune: 12 },
+    ]);
+  });
+
+  test("distances et blasons relevés", () => {
+    assert.ok(infos.distances.includes("70m"));
+    assert.ok(infos.blasons.some((b) => /122/.test(b)));
+  });
+
+  test("date limite d'inscription", () => {
+    assert.equal(infos.date_limite_iso, "2026-09-15");
+  });
+});
+
+describe("mandat avec départs décrits ligne par ligne", () => {
+  const infos = lire(f.lignes);
+
+  test("deux départs, horaires de greffe et d'échauffement", () => {
+    assert.equal(infos.departs.length, 2);
+    assert.deepEqual(
+      infos.departs.map((d) => d.heure_greffe),
+      ["08:00", "13:30"]
+    );
+    assert.deepEqual(
+      infos.departs.map((d) => d.heure_echauffement),
+      ["08:30", "14:00"]
+    );
+  });
+
+  test("jauge par départ", () => {
+    assert.equal(infos.jauge.places, 15);
+    assert.equal(infos.departs[0].jauge, 15);
+  });
+
+  test("grille tarifaire", () => {
+    assert.deepEqual(infos.tarifs.grille, [
+      { nb_departs: 1, adulte: 9, jeune: 7 },
+      { nb_departs: 2, adulte: 16, jeune: 12 },
+    ]);
+  });
+
+  test("buvette détectée", () => assert.equal(infos.buvette, true));
+});
+
+describe("mandat avec tarifs rédigés en phrases", () => {
+  const infos = lire(f.enLigne);
+
+  test("deux départs sur la même ligne, matin et après-midi", () => {
+    assert.equal(infos.departs.length, 2);
+    assert.deepEqual(
+      infos.departs.map((d) => d.heure_greffe),
+      ["07:30", "12:45"]
+    );
+  });
+
+  test("tarifs extraits des phrases", () => {
+    assert.deepEqual(infos.tarifs.grille, [
+      { nb_departs: 1, adulte: 12, jeune: 7 },
+      { nb_departs: 2, adulte: 18, jeune: 12 },
+    ]);
+  });
+
+  test("nombre de cibles", () => assert.equal(infos.jauge.cibles, 24));
+
+  test("inscription par lien, y compris une URL courte", () => {
+    assert.equal(infos.inscription.mode, "url");
+    assert.ok(infos.inscription.urls.includes("https://urlz.fr/aBcDeF"));
+  });
+
+  test("date limite", () => assert.equal(infos.date_limite_iso, "2026-09-06"));
+});
+
+describe("pièges à éviter", () => {
+  const infos = lire(f.piegePenalite);
+
+  test("une pénalité de désistement n'est pas un tarif d'inscription", () => {
+    assert.deepEqual(infos.tarifs.grille, []);
+    assert.equal(
+      infos.tarifs.lignes.some((l) => /factur/i.test(l)),
+      false,
+      "les lignes de pénalité ne doivent pas figurer parmi les tarifs"
+    );
+  });
+
+  test("la date limite est celle des inscriptions, pas celle du désistement", () => {
+    assert.equal(infos.date_limite_iso, "2026-10-21");
+  });
+
+  test("le départ reste correctement lu", () => {
+    assert.equal(infos.departs.length, 1);
+    assert.equal(infos.departs[0].datetime, "2026-10-24T13:30");
+  });
+});
+
+describe("indicateurs de fiabilité", () => {
+  test("une grille incohérente (jeune plus cher que l'adulte) est signalée", () => {
+    const infos = lire(f.tarifsIncoherents);
+    assert.equal(infos.tarifs.fiable, false);
+  });
+
+  test("un texte issu de l'OCR rend la grille non fiable", () => {
+    const infos = reextractInfos(f.lignes.texte, {
+      ...f.lignes.contexte,
+      texte_ocr: f.lignes.texte, // tout le texte provient de la reconnaissance de caractères
+    });
+    assert.equal(infos.tarifs.fiable, false);
+    assert.equal(infos.departs_fiable, false);
+  });
+
+  test("un mandat sans horaire ni tarif ne prétend rien", () => {
+    const infos = reextractInfos("Concours de test\nRenseignements au club.", { date_debut: "2027-01-01" });
+    assert.deepEqual(infos.departs, []);
+    assert.deepEqual(infos.tarifs.grille, []);
+    assert.equal(infos.departs_fiable, false);
+    assert.equal(infos.tarifs.fiable, false);
+    assert.equal(infos.date_limite_iso, null);
+  });
+});

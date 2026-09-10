@@ -174,8 +174,11 @@ function extractInfos(text, contexte = {}) {
   infos.departs = extractDeparts(text, ref, infos.jauge);
 
   // ---- Fiabilité : cohérence des valeurs et absence de bruit OCR à la source
-  const ocrTxt = contexte.texte_ocr || "";
-  const vientDeOcr = (l) => !!ocrTxt && !!l && ocrTxt.includes(l.trim());
+  // Les lignes comparées ont pu être normalisées (séparateurs de colonnes remplacés par des espaces) :
+  // on aplatit les deux côtés de la même façon, sinon la comparaison échoue toujours.
+  const aplatir = (s) => String(s || "").replace(/\s*\|\s*/g, " ").trim();
+  const ocrTxt = aplatir(contexte.texte_ocr);
+  const vientDeOcr = (l) => !!ocrTxt && !!l && ocrTxt.includes(aplatir(l));
   infos.tarifs.fiable = fiabiliteTarifs(infos.tarifs, vientDeOcr);
   infos.departs_fiable = fiabiliteDeparts(infos.departs, vientDeOcr, text);
 

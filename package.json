@@ -9,7 +9,9 @@
     "reparse": "node src/reparse.js",
     "postinstall": "node scripts/install-hooks.mjs && playwright install chromium",
     "rapport": "node src/rapport.js",
-    "voir": "node src/ouvrir.js"
+    "voir": "node src/ouvrir.js",
+    "test": "node --test",
+    "snapshot": "node scripts/update-snapshot.mjs"
   },
   "license": "MIT",
   "dependencies": {

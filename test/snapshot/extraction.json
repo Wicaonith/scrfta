@@ -1,0 +1,713 @@
+{
+  "genere_le": "2026-09-10T12:57:02.849Z",
+  "nb": 18,
+  "mandats": [
+    {
+      "id": "24875",
+      "titre": "CONCOURS 3D à VALLET",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 12,
+          "jeune": 7
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 18,
+          "jeune": 12
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "MATIN",
+          "debut": "2026-09-13T07:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "APRÈS-MIDI",
+          "debut": "2026-09-13T12:45",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": 24,
+      "date_limite": "2026-09-06",
+      "inscription_mode": "url",
+      "nb_urls_inscription": 1,
+      "nb_emails_inscription": 1,
+      "distances": [],
+      "blasons": [],
+      "buvette": true
+    },
+    {
+      "id": "24876",
+      "titre": "CHAMPIONNAT REGIONAL BEURSAULT à LA FLECHE",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 9,
+          "jeune": 7
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 16,
+          "jeune": 12
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-09-13T08:00",
+          "places": 15,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-09-13T13:30",
+          "places": 15,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": 15,
+      "cibles": null,
+      "date_limite": "2026-09-09",
+      "inscription_mode": "courrier",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 0,
+      "distances": [],
+      "blasons": [],
+      "buvette": true
+    },
+    {
+      "id": "24879",
+      "titre": "TIR 3D à LA GARNACHE",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 10,
+          "jeune": 8
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 16,
+          "jeune": 12
+        },
+        {
+          "nb_departs": 3,
+          "adulte": 22,
+          "jeune": 16
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "DEPART 1",
+          "debut": "2026-09-19T13:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "DEPART 2",
+          "debut": "2026-09-20T07:45",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "DEPART 3",
+          "debut": "2026-09-20T13:00",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-09-16",
+      "inscription_mode": "mail",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 0,
+      "distances": [],
+      "blasons": [],
+      "buvette": true
+    },
+    {
+      "id": "24887",
+      "titre": "CONCOURS TAE DE SEPTEMBRE à FONTENAY LE COMTE",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 9,
+          "jeune": 7
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 16,
+          "jeune": 12
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-09-20T08:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-09-20T13:15",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-09-15",
+      "inscription_mode": "mail",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 1,
+      "distances": [],
+      "blasons": [],
+      "buvette": true
+    },
+    {
+      "id": "26473",
+      "titre": "WEEK-END TIR EN CAMPAGNE à SAUMUR",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 12,
+          "jeune": 10
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 20,
+          "jeune": 16
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "SAMEDI",
+          "debut": "2026-10-03T11:00",
+          "places": 96,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "DIMANCHE",
+          "debut": "2026-10-04T09:00",
+          "places": 96,
+          "hors_epreuve": true
+        }
+      ],
+      "departs_fiable": true,
+      "places": 96,
+      "cibles": 12,
+      "date_limite": "2026-09-29",
+      "inscription_mode": "url",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 1,
+      "distances": [],
+      "blasons": [],
+      "buvette": true
+    },
+    {
+      "id": "26474",
+      "titre": "WEEK-END TIR EN CAMPAGNE à SAUMUR",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 12,
+          "jeune": 10
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 20,
+          "jeune": 16
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "SAMEDI",
+          "debut": "2026-10-03T11:00",
+          "places": 96,
+          "hors_epreuve": true
+        },
+        {
+          "nom": "DIMANCHE",
+          "debut": "2026-10-04T09:00",
+          "places": 96,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": 96,
+      "cibles": 12,
+      "date_limite": "2026-09-29",
+      "inscription_mode": "url",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 1,
+      "distances": [],
+      "blasons": [],
+      "buvette": true
+    },
+    {
+      "id": "26475",
+      "titre": "CONCOURS SELECTIF SALLE à LE POIRE SUR VIE",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 9,
+          "jeune": 7
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 15,
+          "jeune": 11
+        },
+        {
+          "nb_departs": 3,
+          "adulte": 21,
+          "jeune": 15
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Samedi après-midi",
+          "debut": "2026-10-10T14:00",
+          "places": 48,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Dimanche matin",
+          "debut": "2026-10-11T08:00",
+          "places": 48,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Dimanche après-midi",
+          "debut": "2026-10-11T13:30",
+          "places": 48,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": 48,
+      "cibles": null,
+      "date_limite": "2026-10-07",
+      "inscription_mode": null,
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 0,
+      "distances": [
+        "18m",
+        "10m"
+      ],
+      "blasons": [
+        "blason de 40cm (tri-spots sur demande),",
+        "blason de 60cm, U11* sur blason de 60cm",
+        "blason de 60",
+        "blason de 40cm, (tri-spots sur demande)"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26476",
+      "titre": "CONCOURS SALLE CANDE 10 ET 11 OCT 2026 à CANDE",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 9,
+          "jeune": 9
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 15,
+          "jeune": 15
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-10-10T14:15",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-10-11T08:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 3",
+          "debut": "2026-10-11T13:00",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-10-09",
+      "inscription_mode": null,
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 0,
+      "distances": [],
+      "blasons": [
+        "blason tri spot » sur le bulletin",
+        "Blason"
+      ],
+      "buvette": false
+    },
+    {
+      "id": "26477",
+      "titre": "TIR 3D MESLINOIS à LOUVERNE",
+      "ocr": true,
+      "tarifs": [],
+      "tarifs_fiable": false,
+      "departs": [],
+      "departs_fiable": false,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-10-07",
+      "inscription_mode": "mail",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 2,
+      "distances": [
+        "600m",
+        "500m"
+      ],
+      "blasons": [],
+      "buvette": true
+    },
+    {
+      "id": "26481",
+      "titre": "TIR 3D GENESTOIS à ECHOLOGIA LOUVERNÉ",
+      "ocr": true,
+      "tarifs": [],
+      "tarifs_fiable": false,
+      "departs": [],
+      "departs_fiable": false,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-10-07",
+      "inscription_mode": "mail",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 2,
+      "distances": [
+        "600m",
+        "500m"
+      ],
+      "blasons": [],
+      "buvette": true
+    },
+    {
+      "id": "26484",
+      "titre": "TIR EN SALLE 18 M à PORNIC",
+      "ocr": false,
+      "tarifs": [],
+      "tarifs_fiable": false,
+      "departs": [
+        {
+          "nom": "Samedi Après-midi",
+          "debut": "2026-10-17T13:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Dimanche matin",
+          "debut": "2026-10-18T08:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Dimanche Après-midi",
+          "debut": "2026-10-18T13:30",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-10-12",
+      "inscription_mode": "url",
+      "nb_urls_inscription": 1,
+      "nb_emails_inscription": 0,
+      "distances": [
+        "18m",
+        "360M"
+      ],
+      "blasons": [
+        "blason de 40 cm"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26485",
+      "titre": "TIR EN SALLE 18 M à PORNIC",
+      "ocr": false,
+      "tarifs": [],
+      "tarifs_fiable": false,
+      "departs": [
+        {
+          "nom": "Samedi Après-midi",
+          "debut": "2026-10-17T13:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Dimanche matin",
+          "debut": "2026-10-18T08:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Dimanche Après-midi",
+          "debut": "2026-10-18T13:30",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-10-12",
+      "inscription_mode": "url",
+      "nb_urls_inscription": 1,
+      "nb_emails_inscription": 0,
+      "distances": [
+        "18m",
+        "360M"
+      ],
+      "blasons": [
+        "blason de 40 cm"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26492",
+      "titre": "TARGET À LA TURBALLE à LA TURBALLE",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 17,
+          "jeune": 14
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Samedi",
+          "debut": "2026-10-24T09:00",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-10-19",
+      "inscription_mode": "mail",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 1,
+      "distances": [],
+      "blasons": [
+        "Blason suivant catégorie, possibilité de tirer sur tri spot en ligne pour les classiques (à préciser)"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26493",
+      "titre": "TOURNOI DES DAMES à LE MANS",
+      "ocr": false,
+      "tarifs": [],
+      "tarifs_fiable": false,
+      "departs": [
+        {
+          "nom": "Samedi 24 octobre 2026",
+          "debut": "2026-10-24T13:30",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-10-21",
+      "inscription_mode": null,
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 0,
+      "distances": [
+        "18m"
+      ],
+      "blasons": [
+        "Blasons selon règlementation FFTA. Trispots disponibles sur demande.",
+        "Blason Montant"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26494",
+      "titre": "TOURNOI DES DAMES à LE MANS",
+      "ocr": false,
+      "tarifs": [],
+      "tarifs_fiable": false,
+      "departs": [
+        {
+          "nom": "Samedi 24 octobre 2026",
+          "debut": "2026-10-24T13:30",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-10-21",
+      "inscription_mode": null,
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 0,
+      "distances": [
+        "18m"
+      ],
+      "blasons": [
+        "Blasons selon règlementation FFTA. Trispots disponibles sur demande.",
+        "Blason Montant"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26496",
+      "titre": "LA TURBALLE EN SALLE à LA TURBALLE",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 9,
+          "jeune": 6
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 13,
+          "jeune": 9
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-10-25T08:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-10-25T13:00",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-10-19",
+      "inscription_mode": "mail",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 1,
+      "distances": [
+        "18M"
+      ],
+      "blasons": [
+        "Blason suivant catégorie (Possibilité de demander à tirer sur Trispot Vegas)."
+      ],
+      "buvette": true
+    },
+    {
+      "id": "27656",
+      "titre": "CONCOURS NATURE LE MANS à LE MANS",
+      "ocr": false,
+      "tarifs": [],
+      "tarifs_fiable": false,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-10-24T07:30",
+          "places": 84,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": 84,
+      "cibles": 21,
+      "date_limite": null,
+      "inscription_mode": null,
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 0,
+      "distances": [],
+      "blasons": [],
+      "buvette": true
+    },
+    {
+      "id": "27657",
+      "titre": "CONCOURS 3D LE MANS à LE MANS",
+      "ocr": true,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 13,
+          "jeune": 9
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 20,
+          "jeune": 13
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-10-25T07:30",
+          "places": 120,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-10-25T11:30",
+          "places": 120,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": 120,
+      "cibles": 24,
+      "date_limite": null,
+      "inscription_mode": null,
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 0,
+      "distances": [],
+      "blasons": [],
+      "buvette": true
+    }
+  ]
+}

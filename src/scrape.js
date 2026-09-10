@@ -34,7 +34,8 @@ Traitement :
   --inclure-internes   Garder les concours internes (« INTERNE » dans le titre), exclus par défaut
   --no-mandats         Ne pas télécharger ni analyser les mandats PDF
   --no-ocr             Ne pas passer les pages scannées des mandats à l'OCR (Tesseract)
-  --no-rapport         Ne pas archiver le snapshot du jour ni régénérer output/rapport/index.html
+  --no-rapport         Ne pas archiver le relevé du jour ni régénérer output/rapport/index.html
+  --zero-ok            Ne pas sortir en erreur si aucun concours n'est trouvé (filtres volontairement étroits)
   --headed            Lancer le navigateur visible (utile si Cloudflare bloque le mode headless)
   --browser <name>     chromium (défaut) | chrome | msedge
   --out <dir>          Dossier de sortie (défaut : output)
@@ -85,6 +86,24 @@ try {
     if (internes.length) log(`${internes.length} concours internes exclus : ${internes.map((c) => c.id).join(", ")}`);
   }
 
+  // ---------------------------------------------------------------- Alerte
+  // Un scrapper casse silencieusement quand le site change : mieux vaut un code d'erreur
+  // que dix relevés vides publiés sans que personne ne s'en aperçoive.
+  const precedent = await chargerPrecedent(outDir);
+  if (!args["zero-ok"] && !args.limit) {
+    if (competitions.length === 0) {
+      log("! ALERTE : aucun concours trouvé.");
+      log("  Soit les filtres sont trop restrictifs, soit la structure du site a changé.");
+      log("  Ajoutez --zero-ok si ce résultat est normal.");
+      process.exitCode = 1;
+    } else if (precedent.size >= 10 && competitions.length < precedent.size / 2) {
+      log(`! ALERTE : ${competitions.length} concours trouvés, contre ${precedent.size} au relevé précédent.`);
+      log("  Vérifiez le site avant d'utiliser ce relevé. Normal si vous avez changé de filtres.");
+      log("  Ajoutez --zero-ok pour ignorer.");
+      process.exitCode = 1;
+    }
+  }
+
   const selection = args.limit ? competitions.slice(0, Number(args.limit)) : competitions;
 
   // ---------------------------------------------------------------- Détails
@@ -103,7 +122,7 @@ try {
   }
 
   await browser.close();
-  completerCompetitions(selection, await chargerPrecedent(outDir));
+  completerCompetitions(selection, precedent);
 
   // ---------------------------------------------------------------- Mandats
   if (!args["no-mandats"]) {

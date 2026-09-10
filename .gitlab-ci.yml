@@ -1,0 +1,23 @@
+# Lance la suite de tests à chaque poussée sur main et sur chaque merge request.
+#
+# Pour que ce pipeline s'exécute, CI/CD doit être activé :
+# Settings → General → Visibility, project features, permissions → CI/CD.
+#
+# --ignore-scripts saute le postinstall : ni Chromium ni hooks git ne sont utiles ici,
+# les tests ne touchent ni au réseau ni au navigateur.
+
+default:
+  image: node:22-alpine
+  interruptible: true
+
+stages:
+  - test
+
+tests:
+  stage: test
+  script:
+    - npm ci --ignore-scripts
+    - npm test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
