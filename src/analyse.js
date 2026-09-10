@@ -16,7 +16,7 @@ export async function analyseMandats(competitions, { outDir, ocr = true, force =
 
   await mapLimit(cibles, concurrency, async (c) => {
     try {
-      const { file, modifie_le, retelecharge } = await downloadMandat(c.mandat_url, mandatDir);
+      const { file, modifie_le, retelecharge, hash } = await downloadMandat(c.mandat_url, mandatDir);
       const key = path.basename(file);
       if (!parCache.has(key)) {
         parCache.set(
@@ -35,6 +35,7 @@ export async function analyseMandats(competitions, { outDir, ocr = true, force =
       c.mandat = {
         ...base,
         modifie_le,
+        hash,
         infos: reextractInfos(base.texte, { date_debut: c.date_debut, date_fin: c.date_fin, texte_ocr: base.texte_ocr }),
       };
       delete c.mandat_erreur;

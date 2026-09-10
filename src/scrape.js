@@ -6,7 +6,7 @@ import { BASE_URL, LIST_PATH, DEFAULT_REGION, estInterne } from "./config.js";
 import { resoudreFiltres, aideFiltres } from "./filtres.js";
 import { parseDates } from "./dates.js";
 import { analyseMandats } from "./analyse.js";
-import { writeOutputs, completerCompetitions, chargerPrecedent } from "./output.js";
+import { writeOutputs, completerCompetitions, chargerPrecedent, regrouperConcours } from "./output.js";
 import { archiver } from "./historique.js";
 import { genererRapport } from "./rapport.js";
 
@@ -109,6 +109,8 @@ try {
   if (!args["no-mandats"]) {
     await analyseMandats(selection, { outDir, ocr: !args["no-ocr"], log });
   }
+
+  regrouperConcours(selection);
 
   // ---------------------------------------------------------------- Sorties
   const files = await writeOutputs(

@@ -31,6 +31,74 @@ export function completerCompetitions(competitions, precedent = new Map(), maint
   return competitions;
 }
 
+/**
+ * Regroupe les épreuves ffta.fr qui correspondent à un même concours physique :
+ *  - même organisateur, même lieu, mêmes dates (ex. « Tir à 18m » et « Para-tir à l'arc à 18m » publiés en deux épreuves) ;
+ *  - ou même mandat (même contenu PDF, même s'il est publié sous deux noms), ex. un week-end publié en une épreuve par jour.
+ * Renseigne c.concours = { id, epreuves, nb_epreuves, departs } sur chaque compétition (à appeler après l'analyse des mandats).
+ */
+export function regrouperConcours(competitions) {
+  const parent = new Map();
+  const find = (k) => {
+    while (parent.get(k) !== k) {
+      parent.set(k, parent.get(parent.get(k)));
+      k = parent.get(k);
+    }
+    return k;
+  };
+  const union = (a, b) => parent.set(find(a), find(b));
+  const norm = (s) => String(s || "").toUpperCase().replace(/\s+/g, " ").trim();
+
+  for (const c of competitions) {
+    const id = String(c.id);
+    parent.set(id, id);
+    const cles = [`fiche:${norm(c.organisateur)}|${norm(c.detail?.champs?.lieu || c.ville)}|${norm(c.dates_texte)}`];
+    if (c.mandat?.hash) cles.push(`pdf:${c.mandat.hash}`);
+    for (const k of cles) {
+      if (!parent.has(k)) parent.set(k, k);
+      union(id, k);
+    }
+  }
+
+  const groupes = new Map();
+  for (const c of competitions) {
+    const r = find(String(c.id));
+    (groupes.get(r) || groupes.set(r, []).get(r)).push(c);
+  }
+
+  for (const l of groupes.values()) {
+    l.sort((a, b) => Number(a.id) - Number(b.id));
+    // Départs du concours : union des départs de tous les mandats du groupe, y compris ceux hors de l'épreuve courante
+    const departs = new Map();
+    for (const c of l) {
+      for (const d of c.mandat?.infos?.departs || []) {
+        const k = `${d.datetime || d.nom}`;
+        const entry = departs.get(k) || { nom: d.nom, debut: d.datetime, greffe: d.heure_greffe, echauffement: d.heure_echauffement, tirs: d.heure_debut_tirs, places: d.jauge ?? null, epreuves: [] };
+        // Épreuves du groupe dont les dates contiennent ce départ
+        for (const e of l) {
+          if (d.date && e.date_debut && d.date >= e.date_debut && d.date <= (e.date_fin || e.date_debut) && !entry.epreuves.includes(String(e.id))) entry.epreuves.push(String(e.id));
+        }
+        departs.set(k, entry);
+      }
+    }
+    const listeDeparts = [...departs.values()].sort((a, b) => (a.debut || "").localeCompare(b.debut || ""));
+    const epreuves = l.map((c) => ({
+      id: String(c.id),
+      titre: c.titre,
+      dates_texte: c.dates_texte,
+      date_debut: c.date_debut,
+      date_fin: c.date_fin,
+      discipline: c.discipline,
+      para: c.discipline_info?.para ?? null,
+      mandat: !!c.mandat_url,
+    }));
+    for (const c of l) {
+      c.concours = { id: String(l[0].id), nb_epreuves: l.length, epreuves, departs: listeDeparts };
+    }
+  }
+  return competitions;
+}
+
 /** Empreinte du contenu de la fiche fédérale (hors données dérivées et mandat analysé). */
 function empreinte(c) {
   const d = c.detail || {};
@@ -160,6 +228,11 @@ export function toCsv(rows) {
     ["telephone", (c) => c.detail?.contacts?.tel],
     ["site", (c) => c.site || c.detail?.contacts?.site],
     ["url", (c) => c.url],
+    ["concours_id", (c) => c.concours?.id],
+    ["concours_nb_epreuves", (c) => c.concours?.nb_epreuves],
+    ["concours_epreuves", (c) => c.concours?.epreuves.map((e) => e.id).join(" | ")],
+    ["concours_nb_departs", (c) => c.concours?.departs.length || ""],
+    ["concours_departs_json", (c) => (c.concours?.departs.length ? JSON.stringify(c.concours.departs) : "")],
     ["epreuve_vue_le", (c) => c.epreuve_vue_le],
     ["epreuve_maj_le", (c) => c.epreuve_maj_le],
     ["epreuve_hash", (c) => c.epreuve_hash],

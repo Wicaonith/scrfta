@@ -7,7 +7,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { analyseMandats } from "./analyse.js";
-import { writeOutputs, completerCompetitions } from "./output.js";
+import { writeOutputs, completerCompetitions, regrouperConcours } from "./output.js";
 import { estInterne } from "./config.js";
 import { archiver } from "./historique.js";
 import { genererRapport } from "./rapport.js";
@@ -35,6 +35,7 @@ await analyseMandats(selection, {
 });
 
 completerCompetitions(selection, new Map(competitions.map((c) => [String(c.id), c])));
+regrouperConcours(competitions);
 const files = await writeOutputs(outDir, meta, competitions);
 log(`Écrit : ${files.jsonFile}`);
 log(`Écrit : ${files.csvFile}`);

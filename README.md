@@ -109,8 +109,31 @@ n'importe quel navigateur, sans serveur ni connexion, et propose trois onglets :
 - **Calendrier actuel** : tous les concours du dernier relevé, avec un filtre texte.
 - **Historique** : le nombre de concours et de mandats à chaque relevé.
 
-Il faut au moins deux relevés pour voir des changements. `npm run rapport` régénère la page sans rien
-télécharger. `--no-rapport` désactive l'archivage et le rapport pour un lancement donné.
+Pour l'ouvrir dans le navigateur :
+
+```bash
+npm run voir
+```
+
+(ou double-cliquer sur `output/rapport/index.html`). Il faut au moins deux relevés pour voir des changements.
+`npm run rapport` régénère la page sans rien télécharger. `--no-rapport` désactive l'archivage et le rapport
+pour un lancement donné.
+
+### Un concours, plusieurs épreuves FFTA
+
+La FFTA publie souvent un même concours en plusieurs épreuves : une par jour (un week-end de campagne devient
+« samedi » et « dimanche »), ou une par championnat (le tir à 18 m et le para-tir à 18 m du même club, au même
+endroit, le même jour). Le CSV garde une ligne par épreuve, c'est l'unité du site, mais les regroupe :
+
+| Colonne | Contenu |
+| --- | --- |
+| `concours_id` | Identifiant du concours physique : le plus petit id des épreuves regroupées |
+| `concours_nb_epreuves` / `concours_epreuves` | Nombre et liste des épreuves du groupe |
+| `concours_nb_departs` / `concours_departs_json` | Tous les départs du concours, avec pour chacun les épreuves concernées (`epreuves`) |
+
+Deux épreuves sont regroupées si elles ont le même organisateur, le même lieu et les mêmes dates, ou si elles
+partagent le même mandat (même contenu PDF, même publié sous deux noms). Dans le JSON, `concours.epreuves`
+donne le détail de chaque épreuve du groupe (discipline, para, dates).
 
 ### Lancement automatique hebdomadaire (serveur Linux)
 
@@ -228,6 +251,7 @@ Une ligne par concours. Les colonnes `mandat_*` ne sont remplies que si le club 
 | `comite_regional` / `comite_departemental` | Comités FFTA |
 | `email`, `telephone`, `site` | Contacts du club |
 | `url` | Lien vers la fiche ffta.fr |
+| `concours_id`, `concours_nb_epreuves`, `concours_epreuves`, `concours_nb_departs`, `concours_departs_json` | Regroupement des épreuves d'un même concours physique (voir plus haut) |
 | `epreuve_vue_le` | Date de la première fois où ce concours est apparu dans un export |
 | `epreuve_maj_le` | Date du dernier changement constaté sur la fiche |
 | `epreuve_hash` | Empreinte de la fiche (usage technique) |
@@ -359,5 +383,6 @@ Fichiers du projet :
 | `src/dates.js` | Analyse des dates en français |
 | `src/output.js` | Département, discipline, suivi des modifications, écriture JSON et CSV |
 | `src/historique.js` | Archivage des relevés et comparaison entre deux relevés |
+| `src/ouvrir.js` | Ouvre la page de suivi dans le navigateur par défaut (`npm run voir`) |
 | `src/rapport.js` | Génération de la page HTML autonome de suivi |
 | `scripts/apercu-rapport.mjs` | Ouvre la page dans Chromium headless, vérifie les erreurs JS, capture d'écran |

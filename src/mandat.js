@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import crypto from "node:crypto";
 import { extractPdfText } from "./pdf.js";
 import { parseDateFr, addDays } from "./dates.js";
 
@@ -28,7 +29,12 @@ export async function downloadMandat(url, destDir) {
       lastModified = toIso(head.headers.get("last-modified"));
     } catch {}
     if (!lastModified || lastModified === existing.modifie_le) {
-      return { file: dest, modifie_le: existing.modifie_le || lastModified, retelecharge: false };
+      // Empreinte du contenu : un même PDF est parfois publié sous deux noms pour deux épreuves
+      if (!existing.hash) {
+        existing.hash = sha1(await fs.readFile(dest));
+        await fs.writeFile(meta, JSON.stringify(existing, null, 2));
+      }
+      return { file: dest, modifie_le: existing.modifie_le || lastModified, retelecharge: false, hash: existing.hash };
     }
   }
 
@@ -36,10 +42,16 @@ export async function downloadMandat(url, destDir) {
   if (!res.ok) throw new Error(`HTTP ${res.status} pour ${url}`);
   const ct = res.headers.get("content-type") || "";
   if (!ct.includes("pdf")) throw new Error(`Type inattendu (${ct}) pour ${url}`);
-  await fs.writeFile(dest, Buffer.from(await res.arrayBuffer()));
+  const buf = Buffer.from(await res.arrayBuffer());
+  await fs.writeFile(dest, buf);
   const modifie_le = toIso(res.headers.get("last-modified"));
-  await fs.writeFile(meta, JSON.stringify({ url, modifie_le, telecharge_le: new Date().toISOString() }, null, 2));
-  return { file: dest, modifie_le, retelecharge: !!existing };
+  const hash = sha1(buf);
+  await fs.writeFile(meta, JSON.stringify({ url, modifie_le, hash, telecharge_le: new Date().toISOString() }, null, 2));
+  return { file: dest, modifie_le, retelecharge: !!existing, hash };
+}
+
+function sha1(buf) {
+  return crypto.createHash("sha1").update(buf).digest("hex");
 }
 
 function toIso(httpDate) {
