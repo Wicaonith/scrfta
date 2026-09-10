@@ -1,5 +1,40 @@
-// Identifiants internes des départements sur ffta.fr (valeur du <select name="dep[]">)
-// Le mapping région -> départements provient de drupalSettings.ffta_regions sur /competitions.
+/**
+ * @file Tables de référence du calendrier fédéral, et adresses du site.
+ *
+ * Tout ce fichier décrit **le vocabulaire de ffta.fr**, pas celui du projet. C'est le point de
+ * contact avec le site, et donc l'endroit à mettre à jour si la fédération modifie ses listes.
+ *
+ * ## Le piège des identifiants de départements
+ *
+ * Le formulaire de recherche du site n'utilise pas les numéros de départements que tout le monde
+ * connaît. Il emploie des identifiants internes, issus de sa base de données, qui ne coïncident
+ * pas avec eux. La Loire-Atlantique, département 44, porte l'identifiant 45 ; la Vendée, 85,
+ * porte le 86. L'écart vient de la Corse, qui occupe deux entrées, 2A et 2B, là où la numérotation
+ * officielle n'en compte qu'une, décalant tout ce qui suit.
+ *
+ * D'où la table `DEPARTEMENTS`, qui traduit l'identifiant du site en numéro officiel. L'utilisateur
+ * saisit « 44 », le programme interroge le site avec « 45 », et personne n'a besoin de connaître
+ * cette bizarrerie.
+ *
+ * ## Origine des données
+ *
+ * Ces tables ne sont pas inventées, elles sont relevées sur le site lui-même :
+ * - `REGIONS` reprend l'objet `drupalSettings.ffta_regions` exposé par la page `/competitions` ;
+ * - `DEPARTEMENTS`, `DISCIPLINES` et `UNIVERS` reprennent les listes déroulantes du formulaire
+ *   de recherche.
+ *
+ * Pour les vérifier ou les mettre à jour, ouvrir <https://www.ffta.fr/competitions> et inspecter
+ * le formulaire, ou la variable `drupalSettings` dans la console du navigateur.
+ */
+
+/**
+ * Départements de chaque région, exprimés en **identifiants ffta.fr** et non en numéros officiels.
+ *
+ * Relevé depuis `drupalSettings.ffta_regions`. Sert à traduire `--region "Bretagne"` en une liste
+ * de paramètres `dep[]` à envoyer au site.
+ *
+ * @type {Object<string, string[]>}
+ */
 export const REGIONS = {
   "Auvergne-Rhône-Alpes": ["1", "3", "7", "15", "25", "39", "43", "44", "64", "70", "74", "75"],
   "Hauts-de-France": ["2", "60", "61", "63", "81"],
@@ -22,7 +57,14 @@ export const REGIONS = {
   "Nouvelle Calédonie": ["395", "399"],
 };
 
-// Identifiant ffta.fr -> numéro et nom de département (options du <select name="dep[]"> du site)
+/**
+ * Traduction des identifiants ffta.fr en départements réels.
+ *
+ * La clé est l'identifiant interne du site, la valeur le numéro officiel et le nom. Relevé depuis
+ * les options de la liste déroulante « Departement » du formulaire de recherche.
+ *
+ * @type {Object<string, import("./types.js").Departement>}
+ */
 export const DEPARTEMENTS = {
   "1": { code: "01", nom: "Ain" }, "2": { code: "02", nom: "Aisne" }, "3": { code: "03", nom: "Allier" },
   "4": { code: "04", nom: "Alpes-de-Haute-Provence" }, "5": { code: "05", nom: "Hautes-Alpes" },
@@ -61,6 +103,20 @@ export const DEPARTEMENTS = {
   "395": { code: "988", nom: "Nouvelle Calédonie" }, "399": { code: "988", nom: "Nouvelle Calédonie" },
 };
 
+/**
+ * Réduit une chaîne à sa forme comparable : sans accent, en minuscules, ponctuation ramenée
+ * à des espaces simples.
+ *
+ * Indispensable ici parce que les libellés viennent de sources qui ne s'accordent pas sur la
+ * casse ni sur les accents. « COMITE DEPARTEMENTAL DE VENDEE » sur le site, « Vendée » dans notre
+ * table : sans normalisation, aucune des deux ne reconnaîtrait l'autre.
+ *
+ * La décomposition `NFD` sépare la lettre de son accent, que la seconde expression régulière
+ * supprime ensuite. C'est ce qui fait correspondre « é » et « e ».
+ *
+ * @param {unknown} s la chaîne à normaliser
+ * @returns {string} sa forme comparable, chaîne vide si l'entrée est absente
+ */
 const sansAccents = (s) =>
   (s || "")
     .normalize("NFD")
@@ -70,11 +126,33 @@ const sansAccents = (s) =>
     .trim();
 
 /**
- * Trouve le département { code, nom } à partir d'un code postal (« 44330 »)
- * ou du libellé d'un comité (« COMITE DEPARTEMENTAL LOIRE ATLANTIQUE », « COMITE DEPARTEMENTAL DE VENDEE »).
+ * Détermine le département d'un concours, à partir de son code postal ou du nom de son comité.
+ *
+ * Le code postal est préféré quand il est disponible, parce qu'il désigne le **lieu de tir**, ce
+ * qui est l'information intéressante. Le comité départemental sert de repli : il rattache le
+ * concours administrativement, ce qui revient presque toujours au même, mais pas toujours, un club
+ * pouvant organiser une compétition dans le département voisin.
+ *
+ * ### Deux subtilités des codes postaux
+ *
+ * - **La Corse** partage le préfixe 20 entre deux départements. La frontière conventionnelle est
+ *   20200 : en dessous la Corse-du-Sud (2A), au-dessus la Haute-Corse (2B).
+ * - **L'outre-mer** se reconnaît sur trois chiffres et non deux : 97400 désigne La Réunion (974)
+ *   et non un hypothétique département 97.
+ *
+ * La recherche par comité tente d'abord une correspondance exacte, puis une correspondance
+ * partielle. Cette seconde passe rattrape les libellés enrichis, du type « COMITE DEPARTEMENTAL
+ * DE VENDEE TIR A L'ARC », où le nom du département est noyé dans une formule plus longue.
+ *
+ * @param {object} [source]
+ * @param {string} [source.codePostal] code postal du lieu de tir, cinq chiffres
+ * @param {string} [source.comite] libellé du comité départemental tel qu'affiché sur la fiche
+ * @returns {import("./types.js").Departement|null} une **copie** du département, ou `null` si rien
+ *   n'est reconnaissable. La copie évite qu'un appelant modifie par inadvertance la table partagée.
  */
 export function departementDe({ codePostal, comite } = {}) {
   const liste = Object.values(DEPARTEMENTS);
+
   if (codePostal) {
     const cp = String(codePostal);
     let code = cp.startsWith("97") || cp.startsWith("98") ? cp.slice(0, 3) : cp.slice(0, 2);
@@ -82,18 +160,32 @@ export function departementDe({ codePostal, comite } = {}) {
     const d = liste.find((x) => x.code === code);
     if (d) return { ...d };
   }
+
   if (comite) {
+    // On retire le préfixe administratif pour ne garder que le nom du département
     const lib = sansAccents(comite).replace(/^comite departemental( de| du| des| d)?\s*/, "");
     const d = liste.find((x) => sansAccents(x.nom) === lib) || liste.find((x) => lib.includes(sansAccents(x.nom)));
     if (d) return { ...d };
   }
+
   return null;
 }
 
 /**
- * Disciplines telles que libellées sur ffta.fr (liste et filtre <select name="discipline">).
- * id   = identifiant de taxonomie ffta.fr (valeur du filtre, stable côté site)
- * code = code court stable de ce projet ; base = libellé sans la mention para ; para = discipline para-tir
+ * Disciplines du calendrier, indexées par le libellé exact qu'affiche ffta.fr.
+ *
+ * Chaque entrée porte quatre informations :
+ * - `id` : identifiant de taxonomie du site, la valeur à passer au filtre `discipline` ;
+ * - `code` : code court **propre à ce projet**, stable même si la fédération renomme sa discipline.
+ *   C'est celui qu'on expose dans le CSV, précisément pour qu'un renommage côté FFTA ne casse pas
+ *   les applications qui consomment nos données ;
+ * - `base` : le libellé débarrassé de la mention para ;
+ * - `para` : vrai pour les épreuves para-tir à l'arc.
+ *
+ * Noter que les couples salle et para-salle, extérieur et para-extérieur, partagent le même `code` :
+ * c'est le même format de tir, seul le public change. Voir `disciplineDe` pour le détail.
+ *
+ * @type {Object<string, {id: number, code: string, base: string, para: boolean}>}
  */
 export const DISCIPLINES = {
   "Tir à 18m": { id: 103, code: "salle", base: "Tir à 18m", para: false },
@@ -115,17 +207,60 @@ export const DISCIPLINES = {
   "Divers": { id: 112, code: "divers", base: "Divers", para: false },
 };
 
-/** Discipline structurée à partir du libellé ffta.fr (insensible à la casse et aux accents). */
+/**
+ * Décompose un libellé de discipline en informations exploitables.
+ *
+ * ## Pourquoi cette fonction existe
+ *
+ * La FFTA encode le para-tir à l'arc **dans le libellé de la discipline** : « Tir à 18m » et
+ * « Para-tir à l'arc à 18m » sont deux disciplines distinctes de son point de vue, alors qu'il
+ * s'agit du même format de tir, ouvert à des publics différents. Toute application qui exploite
+ * ces données doit donc redécouper la chaîne pour savoir de quoi il retourne.
+ *
+ * On fait ce découpage une fois pour toutes, et on expose trois informations séparées :
+ * le `code` du format de tir, identique pour les deux, le libellé `base` sans la mention para,
+ * et un booléen `para` explicite.
+ *
+ * ## Libellés inconnus
+ *
+ * Si la fédération ajoute une discipline, la fonction ne renvoie pas `null` pour autant : elle
+ * déduit au moins le caractère para du préfixe du libellé, et fabrique un code de secours. Mieux
+ * vaut une donnée partielle qu'une absence de donnée, et la colonne `discipline` conserve de
+ * toute façon le libellé d'origine.
+ *
+ * @param {string|null|undefined} libelle libellé affiché par ffta.fr
+ * @returns {import("./types.js").DisciplineInfo|null} `null` seulement si le libellé est absent
+ */
 export function disciplineDe(libelle) {
   if (!libelle) return null;
+
   const key = sansAccents(libelle);
-  for (const [nom, d] of Object.entries(DISCIPLINES)) if (sansAccents(nom) === key) return { libelle: nom, ...d };
-  // Inconnue : on déduit au moins le para et un code approché
+  for (const [nom, d] of Object.entries(DISCIPLINES)) {
+    if (sansAccents(nom) === key) return { libelle: nom, ...d };
+  }
+
+  // Discipline absente de la table : on en déduit ce qu'on peut plutôt que d'abandonner
   const para = /^para/i.test(libelle);
-  return { libelle, id: null, code: sansAccents(libelle).replace(/^para tir a l arc (a |en )?/, "").replace(/\s+/g, "_"), base: libelle.replace(/^Para-tir à l'arc (à |en )?/i, ""), para };
+  return {
+    libelle,
+    id: null,
+    code: sansAccents(libelle).replace(/^para tir a l arc (a |en )?/, "").replace(/\s+/g, "_"),
+    base: libelle.replace(/^Para-tir à l'arc (à |en )?/i, ""),
+    para,
+  };
 }
 
-/** Univers FFTA (filtre <select name="univers">). */
+/**
+ * Univers fédéraux, le regroupement le plus large que propose la FFTA.
+ *
+ * Un univers rassemble plusieurs disciplines : « Tir de parcours » couvre le 3D, le nature et le
+ * campagne. Utile pour un filtre grossier, quand on veut « tout ce qui se tire en extérieur sur un
+ * parcours » sans énumérer les disciplines.
+ *
+ * La clé est le code court accepté par l'option `--univers`.
+ *
+ * @type {Object<string, {id: number, nom: string}>}
+ */
 export const UNIVERS = {
   cibles: { id: 299, nom: "Tir sur cibles" },
   parcours: { id: 300, nom: "Tir de parcours" },
@@ -134,10 +269,38 @@ export const UNIVERS = {
   beursault: { id: 301, nom: "Tir beursault & tradition" },
 };
 
-/** Concours internes à un club (réservés à ses adhérents) : ffta.fr ne les marque que dans le titre. */
+/**
+ * Repère les concours réservés aux adhérents d'un club.
+ *
+ * Ces concours figurent au calendrier fédéral mais ne sont pas ouverts : un archer extérieur ne
+ * peut pas s'y inscrire. Les exclure par défaut évite de proposer des compétitions inaccessibles.
+ *
+ * **Seul indice disponible : le mot « interne » dans le titre.** La FFTA ne marque cette
+ * particularité nulle part ailleurs, ni champ dédié, ni pictogramme. Le filtre « Calendrier
+ * restreint » du site ne les recense pas non plus. Un club qui omettrait le mot passerait donc
+ * au travers, limite assumée et documentée dans le README.
+ *
+ * Les limites de mot `\b` sont indispensables : sans elles, « TOURNOI INTERNATIONAL » serait
+ * écarté à tort.
+ */
 export const INTERNE_RE = /\binterne\b/i;
+
+/**
+ * @param {{titre?: string|null}} c une compétition, ou tout objet portant un titre
+ * @returns {boolean} vrai s'il s'agit d'un concours interne à un club
+ */
 export const estInterne = (c) => INTERNE_RE.test(c.titre || "");
 
+/** Racine du site fédéral. */
 export const BASE_URL = "https://www.ffta.fr";
+
+/** Chemin de la page du calendrier, sur laquelle se branchent tous les filtres. */
 export const LIST_PATH = "/competitions";
+
+/**
+ * Région retenue quand l'utilisateur n'en précise aucune.
+ *
+ * Ce projet est né d'un besoin en Pays de la Loire ; cette valeur n'a pas d'autre justification
+ * et peut être changée sans conséquence.
+ */
 export const DEFAULT_REGION = "Pays de la Loire";
