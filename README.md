@@ -4,6 +4,13 @@
 [![node](https://img.shields.io/badge/node-%3E%3D20-5FA04E?logo=node.js&logoColor=white)](https://nodejs.org)
 [![dernier commit](https://img.shields.io/gitlab/last-commit/wicaonith%2Fscrfta)](https://gitlab.com/wicaonith/scrfta/-/commits/main)
 
+> **English** — ScrFta turns the French archery federation (FFTA) competition calendar at
+> <https://www.ffta.fr/competitions> into a CSV you can open in Excel: event details, plus start times,
+> fees and entry deadlines parsed from each event's invitation PDF (*mandat*). It also reports what changed
+> from one week to the next. The documentation below is in French. To get started: `npm install`, then
+> `npm run scrape`; `node src/scrape.js --help` lists every available filter (region, department, dates,
+> discipline). MIT licensed, contributions welcome.
+
 ScrFta récupère automatiquement les compétitions publiées sur le calendrier fédéral
 <https://www.ffta.fr/competitions>, lit la fiche de chaque concours et son mandat (le PDF d'invitation du club
 organisateur), puis range le tout dans un fichier CSV ouvrable dans Excel ou LibreOffice.
