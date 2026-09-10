@@ -79,6 +79,8 @@ Dans le dossier `output/` du projet :
 | `output/competitions.csv` | Le tableau, une ligne par concours. À ouvrir dans Excel ou LibreOffice. |
 | `output/competitions.json` | Les mêmes données en détail, pour un usage informatique. |
 | `output/mandats/` | Les mandats PDF téléchargés. |
+| `output/historique/` | Un relevé daté par lancement, pour le suivi des changements. |
+| `output/rapport/index.html` | La page de suivi des changements (voir plus bas). |
 
 ### Ouvrir le CSV dans Excel
 
@@ -94,6 +96,35 @@ une copie horodatée à côté (`competitions.2026-09-10T....csv`) et le message
 Relancer `npm run scrape` autant de fois que nécessaire. Les mandats déjà téléchargés ne sont repris que s'ils
 ont changé sur le serveur, et les colonnes `epreuve_maj_le` indiquent quelles fiches ont bougé depuis
 le dernier passage.
+
+### Suivre les changements d'une semaine sur l'autre
+
+Chaque lancement archive un relevé daté dans `output/historique/` (`2026-09-10.json`, un par jour, le dernier
+du jour écrase les précédents) et régénère une page `output/rapport/index.html`. Cette page s'ouvre dans
+n'importe quel navigateur, sans serveur ni connexion, et propose trois onglets :
+
+- **Changements** : pour la période choisie dans le menu (d'un relevé au suivant), les nouveaux concours, ceux
+  retirés du calendrier, les fiches modifiées (avant / après pour chaque champ), les mandats publiés avec leurs
+  départs et tarifs, et les mandats modifiés (tarifs, départs, date limite…).
+- **Calendrier actuel** : tous les concours du dernier relevé, avec un filtre texte.
+- **Historique** : le nombre de concours et de mandats à chaque relevé.
+
+Il faut au moins deux relevés pour voir des changements. `npm run rapport` régénère la page sans rien
+télécharger. `--no-rapport` désactive l'archivage et le rapport pour un lancement donné.
+
+### Lancement automatique hebdomadaire (serveur Linux)
+
+Sur un VPS Debian ou Ubuntu : installer Node.js 20+, Git, cloner le projet, puis `npm install` et
+`npx playwright install --with-deps chromium` (bibliothèques système du navigateur). Une ligne dans `crontab -e`
+lance le relevé chaque lundi à 6 h :
+
+```
+0 6 * * 1 cd /chemin/vers/scrfta && npm run scrape >> scrape.log 2>&1
+```
+
+La page `output/rapport/index.html` peut être servie telle quelle par nginx ou Caddy, avec un mot de passe
+HTTP si elle doit rester privée. Si Cloudflare bloque le navigateur invisible depuis le serveur, lancer avec
+`xvfb-run node src/scrape.js --headed`.
 
 ---
 
@@ -327,3 +358,6 @@ Fichiers du projet :
 | `src/pdf.js` | Extraction du texte positionnel et OCR |
 | `src/dates.js` | Analyse des dates en français |
 | `src/output.js` | Département, discipline, suivi des modifications, écriture JSON et CSV |
+| `src/historique.js` | Archivage des relevés et comparaison entre deux relevés |
+| `src/rapport.js` | Génération de la page HTML autonome de suivi |
+| `scripts/apercu-rapport.mjs` | Ouvre la page dans Chromium headless, vérifie les erreurs JS, capture d'écran |

@@ -2,13 +2,15 @@
 /**
  * Ré-analyse les mandats d'un competitions.json existant sans re-scraper le site.
  *
- *   node src/reparse.js [--out output] [--no-ocr] [--force] [--id 24876,26477] [--inclure-internes]
+ *   node src/reparse.js [--out output] [--no-ocr] [--force] [--id 24876,26477] [--inclure-internes] [--no-rapport]
  */
 import fs from "node:fs/promises";
 import path from "node:path";
 import { analyseMandats } from "./analyse.js";
 import { writeOutputs, completerCompetitions } from "./output.js";
 import { estInterne } from "./config.js";
+import { archiver } from "./historique.js";
+import { genererRapport } from "./rapport.js";
 
 const args = parseArgs(process.argv.slice(2));
 const outDir = path.resolve(args.out || "output");
@@ -36,6 +38,10 @@ completerCompetitions(selection, new Map(competitions.map((c) => [String(c.id), 
 const files = await writeOutputs(outDir, meta, competitions);
 log(`Écrit : ${files.jsonFile}`);
 log(`Écrit : ${files.csvFile}`);
+if (!args["no-rapport"] && !ids && files.jsonFile.endsWith("competitions.json")) {
+  log(`Snapshot : ${await archiver(outDir)}`);
+  await genererRapport(outDir, log);
+}
 
 function parseArgs(argv) {
   const out = {};

@@ -7,6 +7,8 @@ import { resoudreFiltres, aideFiltres } from "./filtres.js";
 import { parseDates } from "./dates.js";
 import { analyseMandats } from "./analyse.js";
 import { writeOutputs, completerCompetitions, chargerPrecedent } from "./output.js";
+import { archiver } from "./historique.js";
+import { genererRapport } from "./rapport.js";
 
 // ---------------------------------------------------------------- CLI
 const args = parseArgs(process.argv.slice(2));
@@ -32,6 +34,7 @@ Traitement :
   --inclure-internes   Garder les concours internes (« INTERNE » dans le titre), exclus par défaut
   --no-mandats         Ne pas télécharger ni analyser les mandats PDF
   --no-ocr             Ne pas passer les pages scannées des mandats à l'OCR (Tesseract)
+  --no-rapport         Ne pas archiver le snapshot du jour ni régénérer output/rapport/index.html
   --headed            Lancer le navigateur visible (utile si Cloudflare bloque le mode headless)
   --browser <name>     chromium (défaut) | chrome | msedge
   --out <dir>          Dossier de sortie (défaut : output)
@@ -115,6 +118,12 @@ try {
   );
   log(`Écrit : ${files.jsonFile}`);
   log(`Écrit : ${files.csvFile}`);
+
+  // ---------------------------------------------------------------- Historique et rapport
+  if (!args["no-rapport"] && !args.limit && files.jsonFile.endsWith("competitions.json")) {
+    log(`Snapshot : ${await archiver(outDir)}`);
+    await genererRapport(outDir, log);
+  }
 } finally {
   await browser.close().catch(() => {});
 }
