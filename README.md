@@ -1,5 +1,9 @@
 # ScrFta – les concours de tir à l'arc FFTA dans un tableur
 
+[![licence](https://img.shields.io/gitlab/license/wicaonith%2Fscrfta)](LICENSE)
+[![node](https://img.shields.io/badge/node-%3E%3D20-5FA04E?logo=node.js&logoColor=white)](https://nodejs.org)
+[![dernier commit](https://img.shields.io/gitlab/last-commit/wicaonith%2Fscrfta)](https://gitlab.com/wicaonith/scrfta/-/commits/main)
+
 ScrFta récupère automatiquement les compétitions publiées sur le calendrier fédéral
 <https://www.ffta.fr/competitions>, lit la fiche de chaque concours et son mandat (le PDF d'invitation du club
 organisateur), puis range le tout dans un fichier CSV ouvrable dans Excel ou LibreOffice.
@@ -386,3 +390,13 @@ Fichiers du projet :
 | `src/ouvrir.js` | Ouvre la page de suivi dans le navigateur par défaut (`npm run voir`) |
 | `src/rapport.js` | Génération de la page HTML autonome de suivi |
 | `scripts/apercu-rapport.mjs` | Ouvre la page dans Chromium headless, vérifie les erreurs JS, capture d'écran |
+
+---
+
+## 8. Licence
+
+MIT, voir [LICENSE](LICENSE). Utilisation, modification et redistribution libres, sans garantie.
+
+Les données récupérées appartiennent à la FFTA et aux clubs organisateurs. Les exports contiennent des
+coordonnées personnelles (mails et téléphones de responsables de clubs) : ils ne doivent pas être republiés
+tels quels. Le dossier `output/` est exclu du dépôt, et un hook git refuse tout commit qui l'inclurait.

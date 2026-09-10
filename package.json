@@ -7,7 +7,7 @@
   "scripts": {
     "scrape": "node src/scrape.js",
     "reparse": "node src/reparse.js",
-    "postinstall": "playwright install chromium",
+    "postinstall": "node scripts/install-hooks.mjs && playwright install chromium",
     "rapport": "node src/rapport.js",
     "voir": "node src/ouvrir.js"
   },

@@ -1,0 +1,26 @@
+#!/bin/sh
+# Refuse tout commit contenant des fichiers interdits.
+#
+# output/ contient les exports : mails et téléphones des responsables de clubs,
+# extraits des mandats. Ces données personnelles ne doivent jamais être publiées.
+# .gitignore suffit au quotidien, mais « git add -f » passerait outre : ce garde-fou non.
+#
+# Activé par « npm install » (core.hooksPath = .githooks). Pour l'activer à la main :
+#   git config core.hooksPath .githooks
+
+interdits=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^(output/|\.tessdata/|\.env)' || true)
+
+if [ -n "$interdits" ]; then
+  echo "" >&2
+  echo "  COMMIT REFUSÉ" >&2
+  echo "" >&2
+  echo "  Ces fichiers ne doivent jamais être versionnés :" >&2
+  echo "$interdits" | sed 's/^/    /' >&2
+  echo "" >&2
+  echo "  output/ contient les coordonnées personnelles des responsables de clubs." >&2
+  echo "" >&2
+  echo "  Pour les retirer de l'index :" >&2
+  echo "    git reset HEAD -- output/ .tessdata/ .env" >&2
+  echo "" >&2
+  exit 1
+fi
