@@ -1,95 +1,272 @@
-# ScrFta – scrapper des compétitions FFTA
+# ScrFta – les concours de tir à l'arc FFTA dans un tableur
 
-Récupère les compétitions à venir publiées sur <https://www.ffta.fr/competitions>, leur fiche détaillée
-(`/epreuve/<id>`) et leur mandat (PDF hébergé sur `extranet.ffta.fr`), filtrées par région
-(par défaut **Pays de la Loire** : 44, 49, 53, 72, 85).
+ScrFta récupère automatiquement les compétitions publiées sur le calendrier fédéral
+<https://www.ffta.fr/competitions>, lit la fiche de chaque concours et son mandat (le PDF d'invitation du club
+organisateur), puis range le tout dans un fichier CSV ouvrable dans Excel ou LibreOffice.
 
-## Fonctionnement
+Par défaut, il prend les concours des **Pays de la Loire** (44, 49, 53, 72, 85) sur les 12 prochains mois.
+Toute autre région, tout département ou toute la France sont possibles (voir [Choisir ce qu'on récupère](#choisir-ce-quon-récupère)).
 
-- `www.ffta.fr` est protégé par un challenge Cloudflare : les requêtes HTTP simples renvoient une page
-  « Just a moment… ». Le scrapper pilote donc un Chromium headless via **Playwright**, qui passe le challenge.
-- La liste est une vue Drupal filtrable par paramètres GET (`dep[]`, `start`, `end`, `discipline`, `page`).
-  Le mapping région → identifiants de départements est dans [src/config.js](src/config.js)
-  (repris de `drupalSettings.ffta_regions` du site).
-- Les PDF de mandat sont téléchargés directement (pas de Cloudflare sur l'extranet) puis analysés en trois couches :
-  1. **Texte positionnel** ([src/pdf.js](src/pdf.js)) : les mots sont regroupés par ligne et par colonne avec
-     pdf.js, les colonnes étant séparées par ` | `. Les tableaux (« Adultes | 9 € | 16 € ») sont ainsi conservés.
-  2. **OCR** : toute page (quasi) vide de texte est rendue en image et passée à **Tesseract** (français) via
-     `tesseract.js`. Les données de langue sont téléchargées une fois dans `.tessdata/`.
-  3. **Heuristiques** ([src/mandat.js](src/mandat.js)), sans aucun appel réseau ni token :
-     - grille tarifaire normalisée (adulte / jeune par nombre de départs), quelle que soit l'orientation du tableau ;
-     - **départs** reconstitués à partir des lignes « Ouverture du greffe | 13h00 | 8h30 | 13h30 »,
-       « Échauffement | … », « Début des tirs | … » : un départ par colonne, nom et date pris dans l'en-tête
-       (« Samedi après-midi », « DEPART 2 - 20/09 ») ou déduits (jour suivant quand l'heure repart en arrière),
-       avec `datetime` ISO prêt pour un formulaire ;
-     - jauge (« 96 archers par départ », « 3 x 48 places », « limité à 120 tireurs ») et nombre de cibles ;
-     - moyen d'inscription (lien, URL courte, mail, courrier), date limite en texte et en ISO (`date_limite_iso`) ;
-     - arbitres, blasons, distances, contacts, buvette.
-     Quand un mandat couvre un week-end alors que l'épreuve ffta.fr ne fait qu'un jour, les départs de l'autre
-     jour sont marqués `hors_epreuve`.
+Pour chaque concours, on obtient : dates, discipline, club organisateur, lieu, contacts, lien vers la fiche
+et vers le mandat, et quand le mandat est publié : les départs (horaires), les tarifs adulte / jeune, la date
+limite et le moyen d'inscription, la jauge.
 
-## Installation
+Dépôt : <https://gitlab.com/wicaonith/scrfta>
+
+---
+
+## 1. Installation
+
+### Prérequis
+
+- **Node.js** version 20 ou plus : <https://nodejs.org> (prendre la version « LTS », installation par défaut).
+- **Git** : <https://git-scm.com/downloads> (installation par défaut).
+
+Pour vérifier, ouvrir un terminal (sous Windows : menu Démarrer, taper `PowerShell`) et lancer :
+
+```bash
+node --version
+```
+
+Une ligne du type `v22.x.x` doit s'afficher.
+
+### Récupérer et installer le projet
+
+Dans le terminal, ligne par ligne :
+
+```bash
+git clone https://gitlab.com/wicaonith/scrfta.git
+```
+
+```bash
+cd scrfta
+```
 
 ```bash
 npm install
 ```
 
-(le `postinstall` télécharge Chromium pour Playwright)
+La dernière commande télécharge les bibliothèques et un navigateur Chromium (environ 150 Mo). Elle peut prendre
+une à trois minutes. C'est normal, et ce n'est fait qu'une fois.
 
-## Utilisation
+---
+
+## 2. Premier lancement
+
+Toujours dans le dossier `scrfta` :
 
 ```bash
-npm run scrape            # scrape + mandats (texte, OCR, heuristiques)
-npm run reparse           # ré-analyse les mandats d'un output existant sans re-scraper
+npm run scrape
 ```
 
-Sans option, le scrapper prend les Pays de la Loire sur les 12 prochains mois. Tous les filtres de la page
-ffta.fr/competitions sont disponibles (`node src/scrape.js --help`, `--list-filters` pour les valeurs acceptées) :
+Ce qui se passe, dans l'ordre :
 
-| Filtre | Description |
+1. Le navigateur (invisible) ouvre le calendrier FFTA et parcourt les pages de résultats.
+2. Chaque fiche de concours est visitée. Compter environ une seconde par concours, donc 3 à 4 minutes pour
+   200 concours.
+3. Les mandats PDF sont téléchargés puis analysés. Au tout premier lancement, un fichier de langue pour la
+   reconnaissance de texte (OCR, environ 15 Mo) est téléchargé.
+4. Les fichiers de résultat sont écrits, et la dernière ligne affichée indique où.
+
+Le terminal affiche la progression. Rien à faire pendant ce temps.
+
+### Où est le résultat ?
+
+Dans le dossier `output/` du projet :
+
+| Fichier | Contenu |
 | --- | --- |
-| `--region "<nom>"` | Une ou plusieurs régions séparées par des virgules (`"Bretagne, Pays de la Loire"`), ou `france` pour tout le calendrier |
-| `--dep 44,49` | Numéros de départements (`2A`, `974`… acceptés), remplace `--region` |
-| `--start` / `--end` | Bornes de dates `YYYY-MM-DD` (défaut : aujourd'hui → +1 an) |
-| `--discipline <code>` | `salle`, `tae`, `campagne`, `3d`, `nature`, `beursault`, `run_archery`, `jeunes`, `poussin`, `loisir`… ou libellé ffta.fr |
-| `--univers <code>` | `cibles`, `parcours`, `para`, `run_archery`, `beursault` |
-| `--search "<texte>"` | Recherche libre du site (titre, club, ville) |
-| `--restreint [0|1]` | Calendrier restreint uniquement (1) ou exclu (0) |
-| `--sort desc` | Ordre décroissant de date |
+| `output/competitions.csv` | Le tableau, une ligne par concours. À ouvrir dans Excel ou LibreOffice. |
+| `output/competitions.json` | Les mêmes données en détail, pour un usage informatique. |
+| `output/mandats/` | Les mandats PDF téléchargés. |
 
-Exemples :
+### Ouvrir le CSV dans Excel
+
+Le fichier est prêt pour Excel en français : un double-clic suffit, les colonnes et les accents sont corrects.
+Si les accents apparaissent mal, passer par « Données → À partir d'un fichier texte/CSV » et choisir
+l'encodage « UTF-8 » et le séparateur « point-virgule ».
+
+Astuce : fermer le fichier dans Excel avant de relancer le scrapper. Sinon, le nouveau résultat est écrit dans
+une copie horodatée à côté (`competitions.2026-09-10T....csv`) et le message le signale.
+
+### Relancer plus tard
+
+Relancer `npm run scrape` autant de fois que nécessaire. Les mandats déjà téléchargés ne sont repris que s'ils
+ont changé sur le serveur, et les colonnes `epreuve_maj_le` indiquent quelles fiches ont bougé depuis
+le dernier passage.
+
+---
+
+## 3. Choisir ce qu'on récupère
+
+Sans option, c'est Pays de la Loire, 12 mois à venir. Pour autre chose, on ajoute des options après
+`node src/scrape.js` (et non après `npm run scrape`). Exemples :
 
 ```bash
-node src/scrape.js                                        # Pays de la Loire, 12 mois
-node src/scrape.js --region "Bretagne, Pays de la Loire"  # deux régions
-node src/scrape.js --dep 44,85 --discipline salle         # salle en 44 et 85
+node src/scrape.js --region "Bretagne"
+```
+
+```bash
+node src/scrape.js --region "Bretagne, Pays de la Loire"
+```
+
+```bash
+node src/scrape.js --dep 44,85 --discipline salle
+```
+
+```bash
 node src/scrape.js --region france --univers para --start 2027-01-01 --end 2027-03-31
 ```
 
-Options de traitement :
+Les options disponibles :
 
-| Option | Description |
+| Option | Rôle |
 | --- | --- |
-| `--limit N` | Ne traiter que N compétitions |
-| `--no-details` | Ne pas visiter les fiches détaillées |
-| `--inclure-internes` | Garder les concours internes à un club (« INTERNE » dans le titre), exclus par défaut |
-| `--no-mandats` | Ne pas télécharger / analyser les mandats |
-| `--no-ocr` | Désactiver l'OCR des pages scannées |
-| `--headed` | Navigateur visible (si Cloudflare bloque le headless) |
-| `--browser chrome` | Utiliser Chrome / Edge installé plutôt que le Chromium de Playwright |
-| `--out <dir>` | Dossier de sortie (défaut `output`) |
+| `--region "<nom>"` | Une ou plusieurs régions séparées par des virgules, ou `france` pour tout le calendrier |
+| `--dep 44,49` | Numéros de départements (`2A`, `974`… acceptés). Remplace `--region` |
+| `--start` / `--end` | Dates de début et de fin au format `AAAA-MM-JJ` (défaut : aujourd'hui → +1 an) |
+| `--discipline <code>` | `salle`, `tae` (extérieur), `campagne`, `3d`, `nature`, `beursault`, `run_archery`, `jeunes`, `poussin`, `loisir`… |
+| `--univers <code>` | `cibles`, `parcours`, `para`, `run_archery`, `beursault` |
+| `--search "<texte>"` | Recherche libre du site (titre, club, ville) |
+| `--restreint 1` | Calendrier restreint uniquement (`0` pour l'exclure) |
+| `--sort desc` | Du plus lointain au plus proche |
+| `--out <dossier>` | Écrire les résultats ailleurs que dans `output/` |
+| `--list-filters` | Afficher toutes les valeurs acceptées (régions avec leurs départements, disciplines, univers) |
 
-Options de `node src/reparse.js` : `--out`, `--no-ocr`, `--inclure-internes`, `--force` (ré-extrait même si déjà analysé),
-`--id 24876,26477` (ne traiter que ces épreuves).
+Une valeur inconnue arrête le programme avec un message qui indique les valeurs possibles.
 
-## Sorties
+Les concours **internes** à un club (mot « INTERNE » dans le titre, réservés aux adhérents du club) sont écartés
+d'office. `--inclure-internes` les garde.
 
-- `output/competitions.json` : toutes les données (liste + fiche + mandat avec texte intégral).
-- `output/competitions.csv` : une ligne par compétition (séparateur `;`, UTF-8 BOM, ouvrable dans Excel).
-  Si le fichier est verrouillé (ouvert dans Excel), une copie horodatée est écrite à côté.
-- `output/mandats/*.pdf` : les mandats téléchargés (non retéléchargés s'ils existent déjà).
+Si vous suivez plusieurs périmètres (par exemple deux régions séparément), utilisez un dossier par périmètre
+avec `--out`, sinon le suivi des modifications mélangera les deux.
 
-Structure d'une compétition dans le JSON :
+Autres options, rarement utiles : `--limit N` (ne traiter que N concours, pour un essai rapide),
+`--no-details`, `--no-mandats`, `--no-ocr`, `--headed` (navigateur visible), `--browser chrome`.
+
+### Ré-analyser sans retourner sur le site
+
+```bash
+npm run reparse
+```
+
+Relit les mandats déjà téléchargés et régénère les fichiers de sortie, sans visiter ffta.fr. Utile après une
+mise à jour du programme. Options : `--force` (ré-extraire même ce qui l'a déjà été), `--id 24876,26477`
+(seulement ces concours), `--out`, `--no-ocr`, `--inclure-internes`.
+
+---
+
+## 4. En cas de problème
+
+| Symptôme | Cause probable et solution |
+| --- | --- |
+| `node` ou `npm` : commande introuvable | Node.js n'est pas installé, ou le terminal a été ouvert avant l'installation. Installer Node.js, puis fermer et rouvrir le terminal. |
+| `Bloqué par le challenge Cloudflare` | Le site a refusé le navigateur invisible. Relancer avec `node src/scrape.js --headed` (le navigateur s'affiche) ou `--browser chrome` si Chrome est installé. |
+| `competitions.csv est verrouillé` | Le fichier est ouvert dans Excel. Le résultat a été écrit dans une copie horodatée à côté. Fermer Excel et relancer pour mettre à jour le fichier principal. |
+| Le premier lancement semble figé au début | Téléchargement de Chromium (`npm install`) ou des données OCR (premier `npm run scrape`). Attendre. |
+| `0 compétitions trouvées` | Les filtres ne correspondent à rien (par exemple des dates passées). Vérifier avec `--list-filters` et les exemples ci-dessus. |
+| Colonnes `mandat_*` vides pour un concours | Le club n'a pas encore publié son mandat sur ffta.fr. Relancer plus tard. |
+| `mandat_tarifs_fiable` ou `mandat_departs_fiable` à `non` | Le mandat a été lu, mais les valeurs sont douteuses (document scanné, mise en page inhabituelle). Ouvrir le PDF dans `output/mandats/` pour vérifier. |
+
+---
+
+## 5. Les colonnes du CSV
+
+Une ligne par concours. Les colonnes `mandat_*` ne sont remplies que si le club a publié son mandat.
+
+### Le concours
+
+| Colonne | Contenu |
+| --- | --- |
+| `id` | Numéro du concours sur ffta.fr, stable dans le temps |
+| `titre` | Nom du concours |
+| `date_debut` / `date_fin` | Au format `AAAA-MM-JJ` ; identiques pour un concours d'un jour |
+| `dates_texte` | Dates telles qu'affichées sur le site |
+| `statut` | « Validée » en général |
+| `discipline` | Libellé ffta.fr (« Tir à 18m », « Para-tir à l'arc à 18m »…) |
+| `discipline_code` | Code court stable : `salle`, `tae`, `campagne`, `3d`, `nature`, `beursault`, `run_archery`, `loisir_*`… |
+| `discipline_id` | Identifiant de la discipline sur ffta.fr |
+| `discipline_base` | Libellé sans la mention para |
+| `para` | `oui` si concours para-tir à l'arc |
+| `championnat` | Championnat auquel le concours est rattaché |
+| `type` | Individuel, équipes… |
+| `duels` | Oui / Non |
+| `organisateur` | Club organisateur |
+| `departement` / `departement_nom` | Numéro et nom du département, déduits de l'adresse ou du comité |
+| `ville`, `lieu`, `adresse` | Localisation |
+| `comite_regional` / `comite_departemental` | Comités FFTA |
+| `email`, `telephone`, `site` | Contacts du club |
+| `url` | Lien vers la fiche ffta.fr |
+| `epreuve_vue_le` | Date de la première fois où ce concours est apparu dans un export |
+| `epreuve_maj_le` | Date du dernier changement constaté sur la fiche |
+| `epreuve_hash` | Empreinte de la fiche (usage technique) |
+
+### Le mandat
+
+| Colonne | Contenu |
+| --- | --- |
+| `mandat_url` / `mandat_fichier` | Lien du PDF et copie locale |
+| `mandat_modifie_le` | Date de dernière modification du PDF sur le serveur |
+| `mandat_ocr` | `oui` si au moins une page a dû être lue par reconnaissance de texte (document scanné) |
+| `mandat_departs` | Départs lisibles : « Samedi après-midi 2026-10-10 14:00 (48 pl.) \| Dimanche matin … » |
+| `mandat_departs_json` | Les mêmes départs en JSON : `[{"nom","debut","greffe","echauffement","tirs","places","cibles"}]` |
+| `mandat_departs_fiable` | `oui` si chaque départ a une date et une heure plausibles, sans passer par l'OCR |
+| `mandat_nb_departs`, `mandat_depart1_datetime` | Nombre de départs, date et heure du premier |
+| `mandat_jauge`, `mandat_cibles` | Places par départ et nombre de cibles, quand ils sont écrits |
+| `mandat_tarifs` | Tarifs lisibles : « 1 départ : adulte 9 € / jeune 7 € \| 2 départs : … » |
+| `mandat_tarifs_json` | Les mêmes en JSON : `[{"departs":1,"public":"adulte","montant_cents":900}, …]` |
+| `mandat_tarifs_fiable` | `oui` si montants plausibles et cohérents, sans passer par l'OCR |
+| `mandat_inscription_mode` | `url`, `mail` ou `courrier` |
+| `mandat_inscription_url` / `mandat_inscription_email` | Lien ou adresse d'inscription |
+| `mandat_date_limite_iso` / `mandat_date_limite` | Date limite d'inscription, en date et en texte d'origine |
+| `mandat_distances`, `mandat_blasons`, `mandat_arbitres`, `mandat_buvette` | Détails pratiques |
+| `mandat_emails`, `mandat_telephones` | Tous les contacts trouvés dans le PDF |
+
+Le fichier `competitions.json` contient en plus le texte intégral de chaque mandat et le détail de chaque départ.
+
+---
+
+## 6. Limites à connaître
+
+- Les mandats sont des documents libres. L'analyse couvre les mises en page courantes (tableaux d'horaires et
+  de tarifs, mentions d'inscription), pas les affiches purement graphiques. Les colonnes `*_fiable` disent
+  quand se méfier.
+- L'OCR ne peut rien contre du texte posé sur une image de fond ou en police décorative.
+- Les concours internes ne sont reconnus que par le mot « INTERNE » dans leur titre, seul marqueur disponible
+  sur le site.
+- Un même PDF partagé par plusieurs concours (week-end publié en deux épreuves) est analysé une fois, et seuls
+  les départs du jour concerné sont attribués à chaque épreuve.
+
+---
+
+## 7. Pour les développeurs : fonctionnement interne
+
+- `www.ffta.fr` est protégé par un challenge Cloudflare : les requêtes HTTP simples renvoient une page
+  « Just a moment… ». Le scrapper pilote donc un Chromium headless via **Playwright**, qui passe le challenge.
+- La liste est une vue Drupal filtrable par paramètres GET (`dep[]`, `start`, `end`, `discipline`, `univers`,
+  `inter`, `search`, `page`). La conversion des options CLI vers ces paramètres est dans
+  [src/filtres.js](src/filtres.js). Le mapping région → identifiants de départements, la table des
+  départements, des disciplines et des univers sont dans [src/config.js](src/config.js) (repris de
+  `drupalSettings.ffta_regions` et des `<select>` du formulaire du site).
+- Les PDF de mandat sont téléchargés directement (pas de Cloudflare sur `extranet.ffta.fr`), avec vérification
+  du `Last-Modified` pour ne retélécharger que ce qui a changé, puis analysés en trois couches :
+  1. **Texte positionnel** ([src/pdf.js](src/pdf.js)) : les mots sont regroupés par ligne et par colonne avec
+     pdf.js, les colonnes étant séparées par ` | `. Les tableaux (« Adultes | 9 € | 16 € ») sont ainsi conservés.
+  2. **OCR** : toute page (quasi) vide de texte est rendue en image et passée à **Tesseract** (français) via
+     `tesseract.js`. Les données de langue sont téléchargées une fois dans `.tessdata/`.
+  3. **Heuristiques** ([src/mandat.js](src/mandat.js)), sans aucun appel réseau :
+     - grille tarifaire normalisée (adulte / jeune par nombre de départs), quelle que soit l'orientation du tableau ;
+     - départs reconstitués à partir des lignes « Ouverture du greffe | 13h00 | 8h30 | 13h30 »,
+       « Échauffement | … », « Début des tirs | … » : un départ par colonne, nom et date pris dans l'en-tête
+       (« Samedi après-midi », « DEPART 2 - 20/09 ») ou déduits (jour suivant quand l'heure repart en arrière) ;
+     - jauge (« 96 archers par départ », « 3 x 48 places », « limité à 120 tireurs ») et nombre de cibles ;
+     - moyen d'inscription (lien, URL courte, mail, courrier), date limite en texte et en ISO ;
+     - arbitres, blasons, distances, contacts, buvette ;
+     - indicateurs de fiabilité : cohérence des valeurs et absence de bruit OCR à la source.
+- Le suivi des modifications ([src/output.js](src/output.js)) compare une empreinte de chaque fiche avec
+  l'export précédent du même dossier.
+
+Structure d'une compétition dans `competitions.json` :
 
 ```jsonc
 {
@@ -99,9 +276,12 @@ Structure d'une compétition dans le JSON :
   "dates_texte": "Du 19 au 20 septembre 2026",
   "date_debut": "2026-09-19", "date_fin": "2026-09-20",
   "statut": "valid", "univers": "parcours",
-  "discipline": "Tir 3d", "type": "Individuel",
+  "discipline": "Tir 3d", "discipline_info": { "id": 108, "code": "3d", "base": "Tir 3D", "para": false },
+  "type": "Individuel",
   "organisateur": "LES GARNA'ARCHERS", "ville": "LA GARNACHE",
+  "departement": { "code": "85", "nom": "Vendée" },
   "email": "...", "site": "...", "mandat_url": "https://extranet.ffta.fr/medias/documents_epreuves/....pdf",
+  "epreuve_vue_le": "...", "epreuve_maj_le": "...", "epreuve_hash": "...",
   "detail": {
     "statut": "Validée",
     "champs": { "discipline", "championnat", "duels", "comite_regional", "comite_departemental", "organisateur", "lieu" },
@@ -110,15 +290,17 @@ Structure d'une compétition dans le JSON :
     "documents": []
   },
   "mandat": {
-    "fichier": "mandats/....pdf", "pages": 3, "ocr": false, "ocr_pages": [],
+    "fichier": "mandats/....pdf", "pages": 3, "ocr": false, "ocr_pages": [], "modifie_le": "...",
     "infos": {
       "tarifs": {
         "grille": [{ "nb_departs": 1, "adulte": 10, "jeune": 8 }, { "nb_departs": 2, "adulte": 16, "jeune": 12 }],
         "tableaux": [ /* tableaux bruts reconstitués */ ],
-        "lignes": [ /* lignes contenant un montant */ ]
+        "lignes": [ /* lignes contenant un montant */ ],
+        "fiable": true
       },
       "departs": [{ "nom": "DEPART 1", "date": "2026-09-19", "heure_greffe": "13:00", "heure_echauffement": "13:00",
                     "heure_debut_tirs": "14:00", "heure_debut": "13:00", "datetime": "2026-09-19T13:00", "jauge": null, "cibles": null }],
+      "departs_fiable": true,
       "jauge": { "places": null, "cibles": null, "archers_par_cible": null, "texte": "..." },
       "date_limite_iso": "2026-09-16",
       "inscription": { "mode": "mail", "urls": [], "emails": ["..."], "texte": ["Les inscriptions sont à ..."] },
@@ -126,29 +308,22 @@ Structure d'une compétition dans le JSON :
       "date_limite_inscription": "...", "emails": [], "telephones": [], "urls": [],
       "dates": [], "arbitres": "...", "distances": [], "blasons": [], "buvette": true, "adresse": "..."
     },
-    "texte": "… texte intégral du PDF (mise en page conservée) …"
+    "texte": "… texte intégral du PDF (mise en page conservée) …",
+    "texte_ocr": "… texte des pages passées à l'OCR …"
   }
 }
 ```
 
-Dans le CSV, une ligne par compétition. Colonnes notables :
+Fichiers du projet :
 
-| Colonne | Contenu |
+| Fichier | Rôle |
 | --- | --- |
-| `id` | Identifiant d'épreuve ffta.fr, stable |
-| `date_debut` / `date_fin` | ISO ; `date_fin` = `date_debut` pour un concours d'un jour |
-| `discipline`, `discipline_code`, `discipline_id`, `discipline_base`, `para` | Libellé ffta.fr, code court stable du projet (`salle`, `tae`, `campagne`, `3d`, `nature`, `beursault`…), id de taxonomie ffta.fr, libellé sans la mention para, `para` oui/non |
-| `departement` / `departement_nom` | Déduits du code postal de l'adresse, sinon du comité départemental |
-| `epreuve_vue_le` / `epreuve_maj_le` / `epreuve_hash` | Première apparition dans un export, dernière modification constatée de la fiche (comparaison d'empreinte avec l'export précédent), empreinte |
-| `mandat_modifie_le` | `Last-Modified` du PDF côté serveur ; le PDF est retéléchargé s'il change |
-| `mandat_departs_json` | `[{"nom","debut","greffe","echauffement","tirs","places","cibles"}]` |
-| `mandat_tarifs_json` | `[{"departs":1,"public":"adulte","montant_cents":1200}, …]` |
-| `mandat_departs_fiable` / `mandat_tarifs_fiable` | oui/non : valeurs plausibles et cohérentes, aucune ligne source issue de l'OCR |
-| `mandat_departs`, `mandat_tarifs`, `mandat_inscription_*`, `mandat_date_limite_iso`… | Versions lisibles des mêmes informations |
-
-## Limites
-
-- Les mandats sont des documents libres : les heuristiques couvrent les mises en page courantes (tableaux
-  d'horaires et de tarifs, mentions d'inscription), pas les affiches purement graphiques.
-- L'OCR ne peut rien contre des affiches très graphiques (texte sur image de fond, polices décoratives).
-- Un même PDF partagé par plusieurs épreuves (concours sur deux jours) n'est analysé qu'une fois par exécution.
+| `src/scrape.js` | Point d'entrée : navigateur, liste, fiches, puis mandats et sorties |
+| `src/reparse.js` | Ré-analyse des mandats à partir d'un `competitions.json` existant |
+| `src/filtres.js` | Options CLI → paramètres de la vue ffta.fr |
+| `src/config.js` | Régions, départements, disciplines, univers, détection des concours internes |
+| `src/analyse.js` | Téléchargement et analyse des mandats, un PDF partagé n'étant traité qu'une fois |
+| `src/mandat.js` | Heuristiques d'extraction sur le texte du mandat |
+| `src/pdf.js` | Extraction du texte positionnel et OCR |
+| `src/dates.js` | Analyse des dates en français |
+| `src/output.js` | Département, discipline, suivi des modifications, écriture JSON et CSV |
