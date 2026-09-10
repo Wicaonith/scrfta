@@ -1,5 +1,7 @@
 # ScrFta – les concours de tir à l'arc FFTA dans un tableur
 
+[![pipeline](https://gitlab.com/wicaonith/scrfta/badges/main/pipeline.svg)](https://gitlab.com/wicaonith/scrfta/-/pipelines)
+[![couverture](https://gitlab.com/wicaonith/scrfta/badges/main/coverage.svg)](https://gitlab.com/wicaonith/scrfta/-/pipelines)
 [![licence](https://img.shields.io/gitlab/license/wicaonith%2Fscrfta)](LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D20-5FA04E?logo=node.js&logoColor=white)](https://nodejs.org)
 [![dernier commit](https://img.shields.io/gitlab/last-commit/wicaonith%2Fscrfta)](https://gitlab.com/wicaonith/scrfta/-/commits/main)
@@ -407,8 +409,16 @@ Fichiers du projet :
 npm test
 ```
 
-Lance `node --test`, le lanceur intégré à Node : aucune dépendance de test à installer. Environ 145 tests,
+Lance `node --test`, le lanceur intégré à Node : aucune dépendance de test à installer. 141 tests,
 moins d'une seconde, sans réseau ni navigateur.
+
+```bash
+npm run test:coverage
+```
+
+ajoute le rapport de couverture, environ 83 % des lignes. Ce pourcentage porte sur les modules que les tests
+chargent : l'analyse des mandats, les dates, les filtres, les sorties et la comparaison. La couche de scraping
+(`src/scrape.js`, `src/analyse.js`) n'y figure pas, puisqu'elle exige le réseau et un navigateur.
 
 | Fichier | Ce qu'il couvre |
 | --- | --- |

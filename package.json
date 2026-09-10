@@ -10,8 +10,10 @@
     "postinstall": "node scripts/install-hooks.mjs && playwright install chromium",
     "rapport": "node src/rapport.js",
     "voir": "node src/ouvrir.js",
-    "test": "node --test",
-    "snapshot": "node scripts/update-snapshot.mjs"
+    "test": "node --test \"test/*.test.js\"",
+    "snapshot": "node scripts/update-snapshot.mjs",
+    "test:coverage": "node --test --experimental-test-coverage \"test/*.test.js\"",
+    "test:ci": "node --test --experimental-test-coverage --test-reporter=spec --test-reporter-destination=stdout --test-reporter=junit --test-reporter-destination=junit.xml \"test/*.test.js\""
   },
   "license": "MIT",
   "dependencies": {
