@@ -263,3 +263,19 @@ describe("colonnes de repli quand la grille n'a pas pu être normalisée", () =>
     assert.match(csv.split("\r\n")[1].split(";")[i], /Ouverture du greffe 7 h 30/);
   });
 });
+
+describe("tarifs avec supplément par départ", () => {
+  test("la colonne lisible rappelle la règle du supplément", () => {
+    const m = {
+      fichier: "mandats/x.pdf",
+      infos: {
+        tarifs: { grille: [{ nb_departs: 1, adulte: 9, jeune: 7 }], tableaux: [], lignes: [], supplement: { adulte: 6, jeune: 4 } },
+        departs: [],
+        jauge: { places: null, cibles: null },
+        inscription: { mode: null, urls: [], emails: [] },
+      },
+    };
+    const csv = toCsv([concours({ mandat: m })]);
+    assert.match(csv, /1 départ : adulte 9 € \/ jeune 7 € \| départ supplémentaire : adulte \+6 € \/ jeune \+4 €/);
+  });
+});

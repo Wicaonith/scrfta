@@ -36,12 +36,17 @@ describe("non-régression sur les mandats réels", async () => {
   const ref = parId(reference.mandats);
   const now = parId(actuel);
 
-  test("les mêmes mandats sont analysés", () => {
-    const manquants = [...ref.keys()].filter((id) => !now.has(id));
+  // Un concours passé disparaît du calendrier, donc de l'export : c'est normal, pas une régression.
+  // Seul compte le cas d'une épreuve encore présente dont le mandat n'est plus analysé.
+  const presents = new Set(exporte.competitions.map((c) => String(c.id)));
+
+  test("les mandats encore au calendrier sont toujours analysés", () => {
+    const manquants = [...ref.keys()].filter((id) => presents.has(id) && !now.has(id));
     assert.deepEqual(manquants, [], "des mandats de la référence ne sont plus analysés");
   });
 
   for (const [id, attendu] of ref) {
+    if (!presents.has(id)) continue; // concours passé, sorti du calendrier
     test(`${id} — ${attendu.titre}`, () => {
       const obtenu = now.get(id);
       if (!obtenu) return; // déjà signalé par le test précédent

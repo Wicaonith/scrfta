@@ -377,6 +377,10 @@ function extractInfos(text, contexte = {}) {
   infos.jauge = extractJauge(text);
   infos.departs = extractDeparts(text, ref, infos.jauge);
 
+  // ---- Tarifs exprimés en « + X € par départ supplémentaire » : la grille est prolongée jusqu'au
+  // nombre de départs réellement proposés, maintenant qu'on le connaît.
+  etendreGrille(infos.tarifs, infos.departs.length);
+
   // ---- Fiabilité : cohérence des valeurs, et provenance du texte.
   //
   // Une information tirée d'une page reconnue par OCR est suspecte : la reconnaissance confond
@@ -880,54 +884,168 @@ function extractInscription(text, infos) {
 }
 
 // ---------------------------------------------------------------- Tarifs
+//
+// Le prix dépend presque toujours du nombre de départs, avec une réduction pour qui en tire
+// plusieurs : 10 € pour un départ, 15 € pour deux et non 20 €. La grille produite donne donc le
+// **prix total** pour chaque nombre de départs, réduction comprise, jamais un prix unitaire à
+// multiplier. C'est la forme qu'attend un formulaire d'inscription « tarif selon le nombre de
+// départs choisis ».
+//
+// Les clubs expriment cette réduction de deux façons, toutes deux prises en charge :
+//   - un prix par nombre de départs : « 1 tir 9 € | 2 tirs 16 € | 3 tirs 23 € » ;
+//   - un prix de base et un supplément : « 1 tir 7 € / tir supplémentaire + 6 € ». La grille est
+//     alors complétée pour chaque départ réellement proposé par le concours (voir `etendreGrille`).
 
 /**
- * Reconnaît une cellule d'en-tête de tableau tarifaire.
- *
- * Deux familles de mots : ceux qui désignent une **quantité** (« 1 tir », « 2 départs ») et ceux
- * qui désignent un **public** (« Adultes », « Jeunes », « U18 », « S1 »). Selon l'orientation du
- * tableau, l'un ou l'autre se trouve en tête de colonne.
- *
- * L'alternative vide au début autorise la cellule d'angle, souvent laissée blanche dans un tableau
- * croisé, ainsi que les libellés « Tarifs », « Engagements » ou « Inscriptions » qui l'occupent.
+ * Libellés de la cellule d'angle d'un tableau tarifaire, ou cellule vide.
+ * Le deux-points final est toléré : « TARIFS: », « ENGAGEMENT : ».
  */
-const HEADER_CELL = /^(tarifs?|engagements?|inscriptions?|)$|tirs?\b|d[ée]parts?|concours|adultes?|jeunes?|s[ée]niors?|\bU\d{2}\b|\bS[123]\b|tarif|montant|prix|unique/i;
+const CORNER = /^(tarifs?|engagements?|inscriptions?|cat[ée]gories?|droits? d.inscriptions?)?\s*:?$/i;
+
 /**
- * Reconnaît un montant en euros : « 9 € », « 12,50 € », « 15 euros ».
+ * Mots qui peuvent figurer en tête de colonne d'un tableau tarifaire.
+ *
+ * Deux familles : ceux qui désignent une **quantité** (« 1 tir », « 2 départs ») et ceux qui
+ * désignent un **public** (« Adultes », « Jeunes », « U18 », « S.1 », « Licence A »). Selon
+ * l'orientation du tableau, l'une ou l'autre se trouve en tête de colonne.
+ */
+const HEADER_WORD = /tirs?\b|d[ée]parts?|concours|adultes?|jeunes?|s[ée]niors?|\bU\d{2}\b|\bS\.?\s?[123]\b|tarif|montant|prix|unique|licences?/i;
+
+/**
+ * Vrai si la cellule peut appartenir à une ligne d'en-tête de tableau tarifaire.
+ * @param {string} c
+ */
+const estEnTete = (c) => CORNER.test(c) || HEADER_WORD.test(c);
+
+/**
+ * Reconnaît un montant en euros : « 9 € », « 12,50 € », « 15 euros », « 9.00 €uros ».
  * Le premier groupe capture le nombre, virgule décimale française comprise.
  */
 const MONTANT = /(\d+(?:[,.]\d{1,2})?)\s?(?:€|euros?)/i;
 
+/** Même motif en recherche globale, pour relever tous les montants d'une ligne. */
+const MONTANT_G = new RegExp(MONTANT.source, "gi");
+
 /**
- * Extrait les tarifs du mandat, sous trois formes de plus en plus exploitables.
+ * Cellule réduite à un nombre, sans symbole : « 6,00 ».
+ *
+ * Admise comme montant **uniquement dans un tableau déjà identifié par son en-tête**, où il ne
+ * peut s'agir que d'un prix. Hors de ce contexte, un nombre isolé peut être n'importe quoi : une
+ * distance, un nombre de cibles, un numéro de départ.
+ */
+const NOMBRE_SEUL = /^(\d{1,3}(?:[,.]\d{1,2})?)$/;
+
+/** Convertit « 12,50 » en 12.5. */
+const enNombre = (s) => Number(String(s).replace(",", "."));
+
+/**
+ * Découpe une ligne de tableau en cellules.
+ *
+ * Quand pdf.js a détecté des colonnes, elles sont séparées par « | ». Certains clubs alignent
+ * pourtant leurs prix avec des points de conduite, sans vraie colonne :
+ *
+ * ```
+ * Licences adultes ...............9 € ..............16 € ..............23 €
+ * ```
+ *
+ * On reconstitue alors les cellules en coupant sur les montants : le libellé, puis chaque prix.
+ *
+ * @param {string} ligne
+ * @returns {string[]}
+ */
+function cellulesDe(ligne) {
+  if (ligne.includes("|")) return ligne.split("|").map((c) => c.trim());
+  const montants = [...ligne.matchAll(MONTANT_G)];
+  if (!montants.length) return [ligne.trim()];
+  const libelle = ligne.slice(0, montants[0].index).replace(/[.…:\s]+$/, "").trim();
+  return [libelle, ...montants.map((m) => m[0])];
+}
+
+/**
+ * Public désigné par un libellé : jeune, adulte, tarif unique, ou inconnu.
+ *
+ * ## Pourquoi le public jeune est testé en premier
+ *
+ * Les catégories fédérales se recouvrent dans les libellés. Beaucoup de clubs regroupent les
+ * jeunes sous « U11 à U21 » : ce libellé contient U21, qui ailleurs désigne un adulte. Tester
+ * d'abord les marqueurs jeunes (le mot « jeune », une catégorie U11 à U18) règle l'ambiguïté :
+ * « U11 à U21 » est jeune, « U21 à Senior 3 » est adulte.
+ *
+ * Les seniors s'écrivent « S1 », « S 1 » ou « S.1 » selon les clubs ; « Licence A » et
+ * « Licence J » désignent les types de licence adulte et jeune. Les anciennes catégories (cadet,
+ * minime, benjamin, poussin) figurent encore dans beaucoup de mandats et sont reconnues.
+ *
+ * @param {string} label
+ * @returns {"adulte"|"jeune"|"tous"|null}
+ */
+function publicDe(label) {
+  if (/jeunes?|\bU1[0-8]\b|cadets?|minimes?|benjamins?|poussins?|licences?\s*j\b/i.test(label)) return "jeune";
+  if (/adultes?|s[ée]niors?|\bU21\b|\bS\.?\s?[123]\b|licences?\s*a\b/i.test(label)) return "adulte";
+  if (/unique|tous|tout public/i.test(label)) return "tous";
+  return null;
+}
+
+/**
+ * Public d'une ligne qui n'en mentionne qu'un seul.
+ *
+ * Utilisé par la lecture des tarifs en ligne, qui attribue tous les prix de la ligne à ce public.
+ * Une ligne citant à la fois adultes et jeunes, comme « 1 départ : Adultes 12 € - Jeunes 7 € »,
+ * relève d'une autre stratégie et renvoie `null` ici.
+ *
+ * @param {string} ligne
+ * @returns {"adulte"|"jeune"|null}
+ */
+function publicUnique(ligne) {
+  const jeune = /jeunes?|\bU1[0-8]\b|cadets?|minimes?|benjamins?|poussins?|licences?\s*j\b/i.test(ligne);
+  const adulte = /adultes?|s[ée]niors?|\bS\.?\s?[123]\b|licences?\s*a\b/i.test(ligne);
+  if (jeune === adulte) return null;
+  return jeune ? "jeune" : "adulte";
+}
+
+/**
+ * Extrait les tarifs du mandat, sous plusieurs formes de plus en plus exploitables.
  *
  * ## Ce qui est produit
  *
  * - `lignes` : toutes les lignes contenant un montant, telles quelles. Rien n'est perdu.
- * - `tableaux` : les tableaux reconstitués, dans leur orientation d'origine.
- * - `grille` : la forme normalisée `{ nb_departs, adulte, jeune }`, la seule à utiliser
- *   dans une application. Voir `normaliserGrille`.
+ * - `tableaux` : les tarifs reconstitués, dans leur orientation d'origine.
+ * - `grille` : la forme normalisée `{ nb_departs, adulte, jeune }`, prix total réduction
+ *   comprise. La seule à utiliser dans une application. Voir `normaliserGrille`.
+ * - `supplement` : le prix d'un départ supplémentaire par public, quand le mandat l'exprime
+ *   ainsi, ou `null`.
  *
- * ## Les deux stratégies
+ * ## Les trois stratégies
  *
- * **Les tableaux** d'abord. On repère une ligne d'en-tête, c'est-à-dire une ligne à plusieurs
- * cellules ne contenant aucun montant mais uniquement des mots de tarification, puis on lit les
- * lignes suivantes tant qu'elles portent des montants. Deux dispositions coexistent :
+ * **1. Les tableaux.** On repère une ligne d'en-tête (plusieurs cellules, aucun montant, que des
+ * mots de tarification), puis on lit les lignes suivantes tant qu'elles portent des prix :
  *
  * ```
- * Tarifs | 1 tir | 2 tirs         Adulte | Jeune
- * Adultes |  9 € |  16 €          1 tir  | 9 €  | 7 €
+ * CATÉGORIE | 1 TIR | 2 TIRS           Jeunes | Adultes
+ * Jeunes (U11 à U21) | 6 € | 10 €      1 Tir  | 6,00 | 8,00
  * ```
  *
  * À gauche une cellule d'angle occupe la première colonne ; à droite l'en-tête commence
  * directement par un public. `hasCorner` distingue les deux, faute de quoi les valeurs seraient
- * décalées d'une colonne.
+ * décalées d'une colonne. Dans un tableau ainsi identifié, un nombre sans symbole € est accepté
+ * comme prix. Une ligne parasite isolée (« -Blason unique ou trispot Vegas. ») est enjambée ;
+ * deux lignes sans prix d'affilée terminent le tableau.
  *
- * **Les phrases** ensuite, pour les mandats sans tableau : « 1 départ : Adultes : 12 € - Jeunes
- * 7 € ». On y suit un compteur de départs, incrémenté quand le mandat ne le précise pas.
+ * **2. Les phrases à deux publics** : « 1 départ : Adultes : 12 € - Jeunes 7 € », ou « Adulte :
+ * 13 € » suivi de « Jeune : 9 € ». On y suit un compteur de départs, incrémenté quand le mandat ne
+ * le précise pas.
+ *
+ * **3. Les lignes à un seul public**, où le nombre de départs accompagne chaque prix :
+ *
+ * ```
+ * Adultes : 1 tir 9.00 €uros 2 tirs 15 €uros | 6 € par départ supplémentaire
+ * Licence A : 9,00 € (1 tir) | 16,00 € (2 tirs)
+ * Jeunes 1 tir 7€ / tir supplémentaire + 6€
+ * ```
+ *
+ * C'est aussi là qu'est relevé le supplément par départ.
  *
  * Les pénalités de désistement sont exclues des lignes brutes : « sera facturé 5 € » ressemble à
- * un tarif mais n'en est pas un, et polluait la grille avant ce filtre.
+ * un tarif mais n'en est pas un.
  *
  * @param {string} text texte normalisé du mandat
  * @returns {import("./types.js").Tarifs}
@@ -945,32 +1063,38 @@ function extractTarifs(text) {
     const cells = l.split("|").map((c) => c.trim());
     // Toutes les cellules doivent appartenir au vocabulaire tarifaire, sinon c'est une ligne
     // ordinaire qui contient par hasard un séparateur
-    if (cells.length < 2 || !cells.every((c) => HEADER_CELL.test(c))) continue;
+    if (cells.length < 2 || !cells.every(estEnTete)) continue;
 
     // Cellule d'angle présente ou non : détermine à quelle colonne correspond la première valeur
-    const hasCorner = /^(tarifs?|engagements?|inscriptions?|cat[ée]gories?|)$/i.test(cells[0]);
+    const hasCorner = CORNER.test(cells[0]);
     const colonnes = hasCorner ? cells.slice(1) : cells;
 
-    let found = 0;
-    // Les lignes de valeurs suivent immédiatement l'en-tête ; dix lignes suffisent largement
+    let derniere = i; // dernière ligne consommée par ce tableau
+    let manques = 0; // lignes sans prix rencontrées d'affilée
+    // Les lignes de valeurs suivent l'en-tête de près ; dix lignes suffisent largement
     for (let j = i + 1; j < ls.length && j <= i + 10; j++) {
-      const row = ls[j].split("|").map((c) => c.trim());
-      const valeurs = row.filter((c) => MONTANT.test(c));
-      // Première ligne sans montant : le tableau est terminé
-      if (row.length < 2 || !valeurs.length) break;
+      const row = cellulesDe(ls[j]);
+      // Premier prix de la ligne. Un nombre sans symbole n'est admis qu'après le libellé :
+      // en première position, ce serait plutôt un numéro de départ.
+      const firstVal = row.findIndex((c, k) => MONTANT.test(c) || (k > 0 && NOMBRE_SEUL.test(c)));
+      if (row.length < 2 || firstVal < 0) {
+        // Une ligne parasite isolée peut s'intercaler ; deux d'affilée ferment le tableau
+        if (++manques > 1) break;
+        continue;
+      }
+      manques = 0;
 
-      // Tout ce qui précède le premier montant constitue le libellé de la ligne
-      const firstVal = row.findIndex((c) => MONTANT.test(c));
+      // Tout ce qui précède le premier prix constitue le libellé de la ligne
       const entry = { categorie: row.slice(0, firstVal).join(" ").trim() || `ligne ${j - i}` };
       row.slice(firstVal).forEach((c, k) => {
-        const m = c.match(MONTANT);
-        if (m) entry[colonnes[k] || `col${k + 1}`] = Number(m[1].replace(",", "."));
+        const m = c.match(MONTANT) || c.match(NOMBRE_SEUL);
+        if (m) entry[colonnes[k] || `col${k + 1}`] = enNombre(m[1]);
       });
       tableaux.push(entry);
-      found++;
+      derniere = j;
     }
-    // On saute les lignes déjà consommées, pour ne pas les relire comme un nouvel en-tête
-    if (found) i += found;
+    // On saute les lignes consommées, pour ne pas les relire comme un nouvel en-tête
+    i = derniere;
   }
 
   // ---- Lignes brutes, hors pénalités qui ressemblent à des tarifs sans en être
@@ -978,8 +1102,7 @@ function extractTarifs(text) {
     if (MONTANT.test(l) && !/factur|pénalit|penalit/i.test(l)) bruts.push(l.replace(/\s*\|\s*/g, " ").trim());
   }
 
-  // ---- Stratégie 2 : les tarifs rédigés en phrases
-  // « 1 départ : Adultes : 12 € - Jeunes 7 € », ou « Adulte : 13 € » suivi de « Jeune : 9 € ».
+  // ---- Stratégie 2 : les phrases à deux publics
   // `nbCourant` suit le nombre de départs : indiqué quand le mandat le précise, incrémenté sinon,
   // en supposant que les tarifs sont énoncés dans l'ordre croissant, ce qui est l'usage.
   let nbCourant = 1;
@@ -994,19 +1117,93 @@ function extractTarifs(text) {
       // même nombre de départs. On complète l'entrée précédente au lieu d'en créer une nouvelle,
       // sans quoi on obtenait deux tarifs à un départ au lieu d'un seul tarif complet.
       if (!nb && last?.categorie.endsWith("(déduit)") && ((adulte && !("Adulte" in last)) || (jeune && !("Jeune" in last)))) {
-        if (adulte) last.Adulte = Number(adulte[1].replace(",", "."));
-        if (jeune) last.Jeune = Number(jeune[1].replace(",", "."));
+        if (adulte) last.Adulte = enNombre(adulte[1]);
+        if (jeune) last.Jeune = enNombre(jeune[1]);
         continue;
       }
       tableaux.push({
         categorie: nb ? `${nbCourant} départ${nbCourant > 1 ? "s" : ""}` : `${nbCourant} départ (déduit)`,
-        ...(adulte && { Adulte: Number(adulte[1].replace(",", ".")) }),
-        ...(jeune && { Jeune: Number(jeune[1].replace(",", ".")) }),
+        ...(adulte && { Adulte: enNombre(adulte[1]) }),
+        ...(jeune && { Jeune: enNombre(jeune[1]) }),
       });
       if (!nb) nbCourant++;
     }
   }
-  return { tableaux, grille: normaliserGrille(tableaux), lignes: uniq(bruts) };
+
+  // ---- Stratégie 3 : les lignes à un seul public, et le supplément par départ
+  /** @type {{adulte?: number, jeune?: number}} */
+  const supplement = {};
+  for (const l of bruts) {
+    const pub = publicUnique(l);
+    if (!pub) continue;
+
+    const entry = { categorie: pub === "adulte" ? "Adulte" : "Jeune" };
+    let trouves = 0;
+    // « 2 tirs 15 € » : le nombre de départs précède le prix
+    for (const m of l.matchAll(/(\d)\s*(?:tirs?|d[ée]parts?)\s*:?\s*(\d+(?:[,.]\d{1,2})?)\s?(?:€|euros?)/gi)) {
+      entry[`${m[1]} tir`] ??= enNombre(m[2]);
+      trouves++;
+    }
+    // « 16,00 € (2 tirs) » : le prix précède le nombre de départs, entre parenthèses
+    for (const m of l.matchAll(/(\d+(?:[,.]\d{1,2})?)\s?(?:€|euros?)\s*\(\s*(\d)\s*(?:tirs?|d[ée]parts?)\s*\)/gi)) {
+      entry[`${m[2]} tir`] ??= enNombre(m[1]);
+      trouves++;
+    }
+    if (trouves) tableaux.push(entry);
+
+    // « tir supplémentaire + 6 € » ou « 6 € par départ supplémentaire »
+    // Deux recherches séparées plutôt qu'une alternative : dans « 7 € / tir supplémentaire + 6 € »,
+    // une alternative unique trouverait d'abord « 7 € / tir suppl… » et prendrait le prix de base
+    // pour le supplément. La barre oblique sépare ici le prix de base de la règle, elle ne veut
+    // pas dire « par ». Erreur réelle, attrapée par le test de non-régression sur Pornic.
+    const sup =
+      l.match(/(?:tirs?|d[ée]parts?)\s*suppl[ée]mentaires?\s*:?\s*\+?\s*(\d+(?:[,.]\d{1,2})?)\s?(?:€|euros?)/i) ||
+      l.match(/(\d+(?:[,.]\d{1,2})?)\s?(?:€|euros?)\s*par\s*(?:tir|d[ée]part)\s*suppl/i);
+    if (sup) supplement[pub] ??= enNombre(sup[1]);
+  }
+
+  return {
+    tableaux,
+    grille: normaliserGrille(tableaux),
+    lignes: uniq(bruts),
+    supplement: Object.keys(supplement).length ? supplement : null,
+  };
+}
+
+/**
+ * Complète la grille à partir du prix d'un départ supplémentaire.
+ *
+ * « 1 tir 7 € / tir supplémentaire + 6 € » ne donne explicitement que le prix d'un départ. Le prix
+ * de deux départs, 13 €, en découle pourtant sans ambiguïté : ce n'est pas une invention, c'est la
+ * règle énoncée par le club, appliquée.
+ *
+ * La grille n'est prolongée **que jusqu'au nombre de départs réellement proposés** par le concours.
+ * Calculer un tarif pour un troisième départ qui n'existe pas n'aurait aucun sens. Si les départs
+ * n'ont pas pu être lus, la grille reste en l'état et la règle reste disponible dans `supplement`.
+ *
+ * Une valeur déjà présente n'est jamais écrasée : un prix écrit en toutes lettres dans le mandat
+ * l'emporte toujours sur un prix déduit.
+ *
+ * @param {import("./types.js").Tarifs} tarifs modifiés en place
+ * @param {number} nbDeparts nombre de départs du concours
+ */
+function etendreGrille(tarifs, nbDeparts) {
+  const sup = tarifs.supplement;
+  if (!sup || nbDeparts < 2) return;
+
+  const grille = new Map(tarifs.grille.map((t) => [t.nb_departs, { ...t }]));
+  for (const pub of /** @type {const} */ (["adulte", "jeune"])) {
+    if (sup[pub] == null) continue;
+    for (let n = 2; n <= nbDeparts; n++) {
+      const precedent = grille.get(n - 1)?.[pub];
+      if (precedent == null) break; // rien sur quoi s'appuyer
+      const ligne = grille.get(n) || { nb_departs: n, adulte: null, jeune: null };
+      // Arrondi au centime : 0,1 + 0,2 ne fait pas exactement 0,3 en virgule flottante
+      ligne[pub] ??= Math.round((precedent + sup[pub]) * 100) / 100;
+      grille.set(n, ligne);
+    }
+  }
+  tarifs.grille = [...grille.values()].sort((a, b) => a.nb_departs - b.nb_departs);
 }
 
 /**
@@ -1044,28 +1241,12 @@ function normaliserGrille(tableaux) {
     return m ? Number(m[1]) : null;
   };
 
-  /**
-   * Reconnaît le public visé par un libellé.
-   *
-   * Les catégories fédérales servent d'indices : U21 et au-delà sont adultes, U11 à U18 sont
-   * jeunes, S1 à S3 désignent les seniors. Les anciennes appellations (cadet, minime, benjamin,
-   * poussin) figurent encore dans beaucoup de mandats et sont donc reconnues.
-   *
-   * @param {string} label
-   * @returns {"adulte"|"jeune"|"tous"|null}
-   */
-  const audience = (label) => {
-    if (/adulte|s[ée]nior|\bU21\b|\bS[123]\b|senior/i.test(label)) return "adulte";
-    if (/jeune|\bU1[0-8]\b|cadet|minime|benjamin|poussin/i.test(label)) return "jeune";
-    if (/unique|tous|tout public/i.test(label)) return "tous";
-    return null;
-  };
   const grille = new Map();
   for (const t of tableaux) {
     for (const [col, val] of Object.entries(t)) {
       if (col === "categorie") continue;
       const nb = nbDeparts(t.categorie) ?? nbDeparts(col);
-      const aud = audience(t.categorie) ?? audience(col);
+      const aud = publicDe(t.categorie) ?? publicDe(col);
       if (nb === null || aud === null) continue;
       const g = grille.get(nb) || { nb_departs: nb, adulte: null, jeune: null };
       if (aud === "tous") {

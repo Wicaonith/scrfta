@@ -107,3 +107,82 @@ Tarifs | 1 tir
 Adultes | 7 €
 Jeunes | 12 €`,
 };
+
+// ---------------------------------------------------------------- Tarifs multi-départs
+// Écritures réellement rencontrées pour la réduction accordée à qui tire plusieurs départs.
+
+/** Colonnes « 1 Départ | 2 Départs », catégories « U11 à U21 » (jeunes) et « S.1 à S.3 » (adultes). */
+export const categoriesFederales = {
+  contexte: { date_debut: "2026-11-21", date_fin: "2026-11-22" },
+  texte: `La tenue de l'archer doit être conforme selon le règlement de la FFTA
+Inscriptions
+1 Départ | 2 Départs
+U11 à U21 | 10€ | 15€
+S.1 à S.3 | 12€ | 20€
+Possibilité de faire un départ le samedi et un départ le dimanche`,
+};
+
+/** Cellule d'angle « CATÉGORIE », publics entre parenthèses. */
+export const angleCategorie = {
+  contexte: { date_debut: "2026-10-17", date_fin: "2026-10-18" },
+  texte: `TARIFS
+CATÉGORIE | 1 TIR | 2 TIRS
+Jeunes (U11 à U21) | 6 € | 10 €
+Adultes (S1 à S3) | 8 € | 14 €
+INFORMATIONS PRATIQUES :`,
+};
+
+/** Prix de base et supplément par départ, trois départs proposés. */
+export const supplementParTir = {
+  contexte: { date_debut: "2026-10-17", date_fin: "2026-10-18" },
+  texte: `Samedi Après-midi | Dimanche matin | Dimanche Après-midi
+Ouverture du greffe | 13 h 00 | 8 h 30 | 13 h 30
+Début des tirs | 14 h 00 | 9 h 30 | 14 h 30
+INSCRIPTIONS : Jeunes 1 tir 7€ / tir supplémentaire + 6€
+Adultes 1 tir 9€ / tir supplémentaire + 7€`,
+};
+
+/** Prix explicites pour un et deux départs, plus un supplément, sans horaires lisibles. */
+export const supplementSansDeparts = {
+  contexte: { date_debut: "2026-10-31", date_fin: "2026-11-01" },
+  texte: `Droits d'inscriptions :
+Adultes : | 1 tir 9.00 €uros 2 tirs 15 €uros | 6 € par départ supplémentaire
+Jeunes : | 1 tir 7.00 €uros 2 tirs 11 €uros | 4 € par départ supplémentaire`,
+};
+
+/** Nombre de tirs entre parenthèses après le prix, publics désignés par le type de licence. */
+export const prixPuisNombre = {
+  contexte: { date_debut: "2026-11-28", date_fin: "2026-11-29" },
+  texte: `Droits d'inscriptions
+Licence A : | 9,00 € (1 tir) | 16,00 € (2 tirs)
+Licence J : | 7,00 € (1 tir) | 12,00 € (2 tirs)`,
+};
+
+/** Montants sans symbole €, publics en colonnes. */
+export const montantsSansSymbole = {
+  contexte: { date_debut: "2026-10-17", date_fin: "2026-10-18" },
+  texte: `Tarifs :
+Jeunes | Adultes
+1 Tir | 6,00 | 8,00
+2 Tirs | 11,00 | 15,00
+3 Tirs | 16,00 | 22,00`,
+};
+
+/** Prix alignés par des points de conduite, sans colonnes détectées. */
+export const pointsDeConduite = {
+  contexte: { date_debut: "2026-11-28", date_fin: "2026-11-29" },
+  texte: `ENGAGEMENT : | 1 Tir | 2 Tirs | 3 Tirs
+Licences adultes ...............................9 € ....................... 16 €.......................23 €
+Licences jeunes ................................7 € ....................... 12 € ......................17 €
+MODALITÉS D'INSCRIPTION :`,
+};
+
+/** Lignes parasites intercalées dans le tableau. */
+export const tableauInterrompu = {
+  contexte: { date_debut: "2026-11-14", date_fin: "2026-11-15" },
+  texte: `TARIFS: | 1 Tir | 2 Tirs | 3 Tirs
+avec remise des récompenses après le tir.
+Licence U21 à S3 | 9€ | 16€ | 22€
+-Blason unique ou trispot Vegas.
+Licence U11 à U18 | 7€ | 12€ | 16€`,
+};

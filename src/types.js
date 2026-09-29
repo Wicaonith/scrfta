@@ -136,10 +136,16 @@
  * @property {LigneTarif[]} grille   Forme normalisée : un prix adulte et un prix jeune par nombre de départs
  * @property {Object<string,string|number>[]} tableaux  Tableaux reconstitués tels quels, clé `categorie` en tête
  * @property {string[]} lignes       Lignes du PDF contenant un montant
+ * @property {{adulte?: number, jeune?: number}|null} supplement  Prix d'un départ supplémentaire
+ *   par public, quand le mandat l'exprime ainsi (« tir supplémentaire + 6 € »). La grille est
+ *   déjà prolongée d'après cette règle jusqu'au nombre de départs proposés.
  * @property {boolean} [fiable]      Faux si les valeurs sont incohérentes ou proviennent de l'OCR
  */
 
 /**
+ * Prix **total** pour un nombre de départs, réduction multi-départs comprise : si un départ
+ * coûte 10 € et deux 15 €, la ligne à deux départs vaut 15, pas 10 par départ.
+ *
  * @typedef {object} LigneTarif
  * @property {number} nb_departs   Nombre de départs couverts par ce tarif : 1, 2, 3…
  * @property {number|null} adulte  Prix en euros pour un adulte (U21 et au-delà)

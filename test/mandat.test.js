@@ -241,3 +241,81 @@ describe("analyse d'un mandat depuis un vrai fichier PDF", () => {
     assert.equal(/\n{3,}/.test(m.texte), false, "jamais plus d'une ligne vide d'affilée");
   });
 });
+
+describe("tarifs multi-départs : la réduction est incluse dans le prix total", () => {
+  test("« U11 à U21 » désigne les jeunes, « S.1 à S.3 » les adultes", () => {
+    assert.deepEqual(lire(f.categoriesFederales).tarifs.grille, [
+      { nb_departs: 1, adulte: 12, jeune: 10 },
+      { nb_departs: 2, adulte: 20, jeune: 15 },
+    ]);
+  });
+
+  test("cellule d'angle « CATÉGORIE » et publics entre parenthèses", () => {
+    assert.deepEqual(lire(f.angleCategorie).tarifs.grille, [
+      { nb_departs: 1, adulte: 8, jeune: 6 },
+      { nb_departs: 2, adulte: 14, jeune: 10 },
+    ]);
+  });
+
+  test("« tir supplémentaire + 6 € » : grille prolongée jusqu'au nombre de départs proposés", () => {
+    const t = lire(f.supplementParTir).tarifs;
+    assert.deepEqual(t.grille, [
+      { nb_departs: 1, adulte: 9, jeune: 7 },
+      { nb_departs: 2, adulte: 16, jeune: 13 },
+      { nb_departs: 3, adulte: 23, jeune: 19 },
+    ]);
+    assert.deepEqual(t.supplement, { jeune: 6, adulte: 7 });
+    assert.equal(t.fiable, true);
+  });
+
+  test("le prix de base n'est pas pris pour le supplément", () => {
+    // « 9 € / tir supplémentaire + 7 € » : la barre oblique ne veut pas dire « par »
+    assert.equal(lire(f.supplementParTir).tarifs.supplement.adulte, 7);
+  });
+
+  test("sans départs lisibles, aucun tarif n'est inventé au-delà de ce qui est écrit", () => {
+    const t = lire(f.supplementSansDeparts).tarifs;
+    assert.deepEqual(t.grille, [
+      { nb_departs: 1, adulte: 9, jeune: 7 },
+      { nb_departs: 2, adulte: 15, jeune: 11 },
+    ]);
+    assert.deepEqual(t.supplement, { adulte: 6, jeune: 4 }, "la règle reste disponible");
+  });
+
+  test("« 16,00 € (2 tirs) » et licences A / J", () => {
+    assert.deepEqual(lire(f.prixPuisNombre).tarifs.grille, [
+      { nb_departs: 1, adulte: 9, jeune: 7 },
+      { nb_departs: 2, adulte: 16, jeune: 12 },
+    ]);
+  });
+
+  test("montants sans symbole €, dans un tableau identifié", () => {
+    assert.deepEqual(lire(f.montantsSansSymbole).tarifs.grille, [
+      { nb_departs: 1, adulte: 8, jeune: 6 },
+      { nb_departs: 2, adulte: 15, jeune: 11 },
+      { nb_departs: 3, adulte: 22, jeune: 16 },
+    ]);
+  });
+
+  test("prix alignés par des points de conduite", () => {
+    assert.deepEqual(lire(f.pointsDeConduite).tarifs.grille, [
+      { nb_departs: 1, adulte: 9, jeune: 7 },
+      { nb_departs: 2, adulte: 16, jeune: 12 },
+      { nb_departs: 3, adulte: 23, jeune: 17 },
+    ]);
+  });
+
+  test("une ligne parasite n'interrompt pas la lecture du tableau", () => {
+    assert.deepEqual(lire(f.tableauInterrompu).tarifs.grille, [
+      { nb_departs: 1, adulte: 9, jeune: 7 },
+      { nb_departs: 2, adulte: 16, jeune: 12 },
+      { nb_departs: 3, adulte: 22, jeune: 16 },
+    ]);
+  });
+
+  test("« U21 à Senior 3 » reste adulte", () => {
+    const grille = lire(f.colonnes).tarifs.grille;
+    assert.equal(grille[0].adulte, 10);
+    assert.equal(grille[0].jeune, 8);
+  });
+});

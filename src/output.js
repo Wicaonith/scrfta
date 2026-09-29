@@ -359,7 +359,15 @@ const join = (arr, sep = " | ") => (Array.isArray(arr) && arr.length ? arr.join(
 function tarifsResume(c) {
   const grille = c.mandat?.infos?.tarifs?.grille;
   if (grille?.length) {
-    return grille.map((t) => `${t.nb_departs} départ${t.nb_departs > 1 ? "s" : ""} : adulte ${t.adulte ?? "?"} € / jeune ${t.jeune ?? "?"} €`).join(" | ");
+    const texte = grille
+      .map((t) => `${t.nb_departs} départ${t.nb_departs > 1 ? "s" : ""} : adulte ${t.adulte ?? "?"} € / jeune ${t.jeune ?? "?"} €`)
+      .join(" | ");
+    // La règle du supplément est rappelée : elle vaut au-delà de la dernière ligne de la grille,
+    // quand les départs n'ont pas pu être lus et que la grille n'a donc pas pu être prolongée.
+    const sup = c.mandat.infos.tarifs.supplement;
+    if (!sup) return texte;
+    const parts = [sup.adulte != null && `adulte +${sup.adulte} €`, sup.jeune != null && `jeune +${sup.jeune} €`].filter(Boolean);
+    return `${texte} | départ supplémentaire : ${parts.join(" / ")}`;
   }
   const tab = c.mandat?.infos?.tarifs?.tableaux;
   if (tab?.length) {
