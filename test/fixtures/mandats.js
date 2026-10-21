@@ -186,3 +186,16 @@ Licence U21 à S3 | 9€ | 16€ | 22€
 -Blason unique ou trispot Vegas.
 Licence U11 à U18 | 7€ | 12€ | 16€`,
 };
+
+/** Libellés écrits sur la ligne au-dessus de leurs prix. */
+export const libelleAuDessus = {
+  contexte: { date_debut: "2026-11-08", date_fin: "2026-11-08" },
+  texte: `Montant de l'engagement :
+1 départ | 2 départs
+Catégories adulte
+9 € | 16 €
+(S1, S2 et S3)
+Catégories jeune
+7 € | 12 €
+Les inscriptions sont à retourner avec le règlement :`,
+};

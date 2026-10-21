@@ -1,185 +1,17 @@
 {
-  "genere_le": "2026-09-29T08:26:25.151Z",
-  "nb": 39,
+  "genere_le": "2026-10-21T14:20:03.066Z",
+  "nb": 54,
   "mandats": [
     {
-      "id": "26473",
-      "titre": "WEEK-END TIR EN CAMPAGNE à SAUMUR",
+      "id": "25839",
+      "titre": "CONCOURS SPÉCIAL DÉBUTANTS 2026-2027 à FONTENAY LE COMTE",
       "ocr": false,
-      "tarifs": [
-        {
-          "nb_departs": 1,
-          "adulte": 12,
-          "jeune": 10
-        },
-        {
-          "nb_departs": 2,
-          "adulte": 20,
-          "jeune": 16
-        }
-      ],
-      "tarifs_fiable": true,
+      "tarifs": [],
+      "tarifs_fiable": false,
       "departs": [
         {
-          "nom": "SAMEDI",
-          "debut": "2026-10-03T11:00",
-          "places": 96,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "DIMANCHE",
-          "debut": "2026-10-04T09:00",
-          "places": 96,
-          "hors_epreuve": true
-        }
-      ],
-      "departs_fiable": true,
-      "places": 96,
-      "cibles": 12,
-      "date_limite": "2026-09-29",
-      "inscription_mode": "url",
-      "nb_urls_inscription": 0,
-      "nb_emails_inscription": 1,
-      "distances": [],
-      "blasons": [],
-      "buvette": true
-    },
-    {
-      "id": "26474",
-      "titre": "WEEK-END TIR EN CAMPAGNE à SAUMUR",
-      "ocr": false,
-      "tarifs": [
-        {
-          "nb_departs": 1,
-          "adulte": 12,
-          "jeune": 10
-        },
-        {
-          "nb_departs": 2,
-          "adulte": 20,
-          "jeune": 16
-        }
-      ],
-      "tarifs_fiable": true,
-      "departs": [
-        {
-          "nom": "SAMEDI",
-          "debut": "2026-10-03T11:00",
-          "places": 96,
-          "hors_epreuve": true
-        },
-        {
-          "nom": "DIMANCHE",
-          "debut": "2026-10-04T09:00",
-          "places": 96,
-          "hors_epreuve": false
-        }
-      ],
-      "departs_fiable": true,
-      "places": 96,
-      "cibles": 12,
-      "date_limite": "2026-09-29",
-      "inscription_mode": "url",
-      "nb_urls_inscription": 0,
-      "nb_emails_inscription": 1,
-      "distances": [],
-      "blasons": [],
-      "buvette": true
-    },
-    {
-      "id": "26475",
-      "titre": "CONCOURS SELECTIF SALLE à LE POIRE SUR VIE",
-      "ocr": false,
-      "tarifs": [
-        {
-          "nb_departs": 1,
-          "adulte": 9,
-          "jeune": 7
-        },
-        {
-          "nb_departs": 2,
-          "adulte": 15,
-          "jeune": 11
-        },
-        {
-          "nb_departs": 3,
-          "adulte": 21,
-          "jeune": 15
-        }
-      ],
-      "tarifs_fiable": true,
-      "departs": [
-        {
-          "nom": "Samedi après-midi",
-          "debut": "2026-10-10T14:00",
-          "places": 48,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "Dimanche matin",
-          "debut": "2026-10-11T08:00",
-          "places": 48,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "Dimanche après-midi",
-          "debut": "2026-10-11T13:30",
-          "places": 48,
-          "hors_epreuve": false
-        }
-      ],
-      "departs_fiable": true,
-      "places": 48,
-      "cibles": null,
-      "date_limite": "2026-10-07",
-      "inscription_mode": null,
-      "nb_urls_inscription": 0,
-      "nb_emails_inscription": 0,
-      "distances": [
-        "18m",
-        "10m"
-      ],
-      "blasons": [
-        "blason de 40cm (tri-spots sur demande),",
-        "blason de 60cm, U11* sur blason de 60cm",
-        "blason de 60",
-        "blason de 40cm, (tri-spots sur demande)"
-      ],
-      "buvette": true
-    },
-    {
-      "id": "26476",
-      "titre": "CONCOURS SALLE CANDE 10 ET 11 OCT 2026 à CANDE",
-      "ocr": false,
-      "tarifs": [
-        {
-          "nb_departs": 1,
-          "adulte": 9,
-          "jeune": 9
-        },
-        {
-          "nb_departs": 2,
-          "adulte": 15,
-          "jeune": 15
-        }
-      ],
-      "tarifs_fiable": true,
-      "departs": [
-        {
-          "nom": "Départ 1",
-          "debut": "2026-10-10T14:15",
-          "places": null,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "Départ 2",
-          "debut": "2026-10-11T08:00",
-          "places": null,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "Départ 3",
-          "debut": "2026-10-11T13:00",
+          "nom": "le samedi 21 novembre 2026",
+          "debut": "2026-11-21T13:00",
           "places": null,
           "hors_epreuve": false
         }
@@ -187,638 +19,53 @@
       "departs_fiable": true,
       "places": null,
       "cibles": null,
-      "date_limite": "2026-10-09",
+      "date_limite": "2026-11-16",
+      "inscription_mode": "mail",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 1,
+      "distances": [
+        "15m",
+        "15m",
+        "10m"
+      ],
+      "blasons": [
+        "blasons suivants :",
+        "blason Ø40",
+        "blason Ø60",
+        "blason Ø80",
+        "blason Ø122",
+        "blason | Montant"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "25918",
+      "titre": "JOURNÉE DE L'ARCHÈRE à VERTOU",
+      "ocr": false,
+      "tarifs": [],
+      "tarifs_fiable": false,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-12-12T13:00",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": 12,
+      "date_limite": null,
       "inscription_mode": null,
       "nb_urls_inscription": 0,
       "nb_emails_inscription": 0,
-      "distances": [],
+      "distances": [
+        "18mètres"
+      ],
       "blasons": [
-        "blason tri spot » sur le bulletin",
-        "Blason"
+        "blasons variés à affronter sur des distances différentes"
       ],
       "buvette": false
-    },
-    {
-      "id": "26477",
-      "titre": "TIR 3D MESLINOIS à LOUVERNE",
-      "ocr": true,
-      "tarifs": [],
-      "tarifs_fiable": false,
-      "departs": [],
-      "departs_fiable": false,
-      "places": null,
-      "cibles": null,
-      "date_limite": "2026-10-07",
-      "inscription_mode": "mail",
-      "nb_urls_inscription": 0,
-      "nb_emails_inscription": 2,
-      "distances": [
-        "600m",
-        "500m"
-      ],
-      "blasons": [],
-      "buvette": true
-    },
-    {
-      "id": "26478",
-      "titre": "CONCOURS SALLE à LA FLECHE",
-      "ocr": false,
-      "tarifs": [
-        {
-          "nb_departs": 1,
-          "adulte": 9,
-          "jeune": 7
-        },
-        {
-          "nb_departs": 2,
-          "adulte": 16,
-          "jeune": 12
-        }
-      ],
-      "tarifs_fiable": true,
-      "departs": [
-        {
-          "nom": "Départ 1",
-          "debut": "2026-10-11T09:10",
-          "places": 48,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "Départ 2",
-          "debut": "2026-10-11T13:40",
-          "places": 48,
-          "hors_epreuve": false
-        }
-      ],
-      "departs_fiable": true,
-      "places": 48,
-      "cibles": null,
-      "date_limite": "2026-10-08",
-      "inscription_mode": null,
-      "nb_urls_inscription": 0,
-      "nb_emails_inscription": 0,
-      "distances": [
-        "18m"
-      ],
-      "blasons": [
-        "blason unique ou Trispot",
-        "Blason"
-      ],
-      "buvette": true
-    },
-    {
-      "id": "26480",
-      "titre": "CONCOURS SALLE OCTOBRE 2026 à LE BIGNON",
-      "ocr": false,
-      "tarifs": [
-        {
-          "nb_departs": 1,
-          "adulte": 10,
-          "jeune": 8
-        },
-        {
-          "nb_departs": 2,
-          "adulte": 10,
-          "jeune": 8
-        }
-      ],
-      "tarifs_fiable": true,
-      "departs": [
-        {
-          "nom": "MATIN",
-          "debut": "2026-10-11T08:00",
-          "places": null,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "APRES-MIDI",
-          "debut": "2026-10-11T13:30",
-          "places": null,
-          "hors_epreuve": false
-        }
-      ],
-      "departs_fiable": true,
-      "places": null,
-      "cibles": null,
-      "date_limite": null,
-      "inscription_mode": null,
-      "nb_urls_inscription": 0,
-      "nb_emails_inscription": 0,
-      "distances": [
-        "18m"
-      ],
-      "blasons": [],
-      "buvette": true
-    },
-    {
-      "id": "26481",
-      "titre": "TIR 3D GENESTOIS à ECHOLOGIA LOUVERNÉ",
-      "ocr": true,
-      "tarifs": [],
-      "tarifs_fiable": false,
-      "departs": [],
-      "departs_fiable": false,
-      "places": null,
-      "cibles": null,
-      "date_limite": "2026-10-07",
-      "inscription_mode": "mail",
-      "nb_urls_inscription": 0,
-      "nb_emails_inscription": 2,
-      "distances": [
-        "600m",
-        "500m"
-      ],
-      "blasons": [],
-      "buvette": true
-    },
-    {
-      "id": "26482",
-      "titre": "CONCOURS EVRON OUVERT HANDISPORT à EVRON",
-      "ocr": false,
-      "tarifs": [
-        {
-          "nb_departs": 1,
-          "adulte": 8,
-          "jeune": 6
-        },
-        {
-          "nb_departs": 2,
-          "adulte": 14,
-          "jeune": 10
-        }
-      ],
-      "tarifs_fiable": true,
-      "departs": [
-        {
-          "nom": "SAMEDI 17 OCTOBRE",
-          "debut": "2026-10-17T13:30",
-          "places": null,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "DIMANCHE 18 OCTOBRE",
-          "debut": "2026-10-18T13:00",
-          "places": null,
-          "hors_epreuve": false
-        }
-      ],
-      "departs_fiable": true,
-      "places": null,
-      "cibles": null,
-      "date_limite": "2026-10-11",
-      "inscription_mode": "url",
-      "nb_urls_inscription": 1,
-      "nb_emails_inscription": 0,
-      "distances": [
-        "18m"
-      ],
-      "blasons": [],
-      "buvette": true
-    },
-    {
-      "id": "26483",
-      "titre": "CONCOURS EVRON OUVERT HANDISPORT à EVRON",
-      "ocr": false,
-      "tarifs": [
-        {
-          "nb_departs": 1,
-          "adulte": 8,
-          "jeune": 6
-        },
-        {
-          "nb_departs": 2,
-          "adulte": 14,
-          "jeune": 10
-        }
-      ],
-      "tarifs_fiable": true,
-      "departs": [
-        {
-          "nom": "SAMEDI 17 OCTOBRE",
-          "debut": "2026-10-17T13:30",
-          "places": null,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "DIMANCHE 18 OCTOBRE",
-          "debut": "2026-10-18T13:00",
-          "places": null,
-          "hors_epreuve": false
-        }
-      ],
-      "departs_fiable": true,
-      "places": null,
-      "cibles": null,
-      "date_limite": "2026-10-11",
-      "inscription_mode": "url",
-      "nb_urls_inscription": 1,
-      "nb_emails_inscription": 0,
-      "distances": [
-        "18m"
-      ],
-      "blasons": [],
-      "buvette": true
-    },
-    {
-      "id": "26484",
-      "titre": "TIR EN SALLE 18 M à PORNIC",
-      "ocr": false,
-      "tarifs": [
-        {
-          "nb_departs": 1,
-          "adulte": 9,
-          "jeune": 7
-        },
-        {
-          "nb_departs": 2,
-          "adulte": 16,
-          "jeune": 13
-        },
-        {
-          "nb_departs": 3,
-          "adulte": 23,
-          "jeune": 19
-        }
-      ],
-      "tarifs_fiable": true,
-      "departs": [
-        {
-          "nom": "Samedi Après-midi",
-          "debut": "2026-10-17T13:00",
-          "places": null,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "Dimanche matin",
-          "debut": "2026-10-18T08:30",
-          "places": null,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "Dimanche Après-midi",
-          "debut": "2026-10-18T13:30",
-          "places": null,
-          "hors_epreuve": false
-        }
-      ],
-      "departs_fiable": true,
-      "places": null,
-      "cibles": null,
-      "date_limite": "2026-10-12",
-      "inscription_mode": "url",
-      "nb_urls_inscription": 1,
-      "nb_emails_inscription": 0,
-      "distances": [
-        "18m",
-        "360M"
-      ],
-      "blasons": [
-        "blason de 40 cm"
-      ],
-      "buvette": true
-    },
-    {
-      "id": "26485",
-      "titre": "TIR EN SALLE 18 M à PORNIC",
-      "ocr": false,
-      "tarifs": [
-        {
-          "nb_departs": 1,
-          "adulte": 9,
-          "jeune": 7
-        },
-        {
-          "nb_departs": 2,
-          "adulte": 16,
-          "jeune": 13
-        },
-        {
-          "nb_departs": 3,
-          "adulte": 23,
-          "jeune": 19
-        }
-      ],
-      "tarifs_fiable": true,
-      "departs": [
-        {
-          "nom": "Samedi Après-midi",
-          "debut": "2026-10-17T13:00",
-          "places": null,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "Dimanche matin",
-          "debut": "2026-10-18T08:30",
-          "places": null,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "Dimanche Après-midi",
-          "debut": "2026-10-18T13:30",
-          "places": null,
-          "hors_epreuve": false
-        }
-      ],
-      "departs_fiable": true,
-      "places": null,
-      "cibles": null,
-      "date_limite": "2026-10-12",
-      "inscription_mode": "url",
-      "nb_urls_inscription": 1,
-      "nb_emails_inscription": 0,
-      "distances": [
-        "18m",
-        "360M"
-      ],
-      "blasons": [
-        "blason de 40 cm"
-      ],
-      "buvette": true
-    },
-    {
-      "id": "26487",
-      "titre": "TIR A 18M à MONTAIGU VENDEE",
-      "ocr": false,
-      "tarifs": [
-        {
-          "nb_departs": 1,
-          "adulte": 8,
-          "jeune": 10
-        },
-        {
-          "nb_departs": 2,
-          "adulte": 18,
-          "jeune": 18
-        },
-        {
-          "nb_departs": 3,
-          "adulte": 18,
-          "jeune": 24
-        }
-      ],
-      "tarifs_fiable": false,
-      "departs": [
-        {
-          "nom": "Départ 1",
-          "debut": "2026-10-17T18:45",
-          "places": null,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "Départ 2",
-          "debut": "2026-10-18T08:00",
-          "places": null,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "Départ 3",
-          "debut": "2026-10-18T13:00",
-          "places": null,
-          "hors_epreuve": false
-        }
-      ],
-      "departs_fiable": true,
-      "places": null,
-      "cibles": null,
-      "date_limite": "2026-10-06",
-      "inscription_mode": "mail",
-      "nb_urls_inscription": 0,
-      "nb_emails_inscription": 1,
-      "distances": [
-        "10m"
-      ],
-      "blasons": [
-        "Blasons  Arc classique : catégories U18 - U21 et SENIOR 1 - 2 - 3 : sur blason de 40cm (tri-spots sur demande), U13 –",
-        "blason de 60cm (tri-spots sur demande), U11 tir à 10m sur blason de 60cm*",
-        "blason de 40cm (tri-spots sur demande), U15 – U18 sur blason de 60cm,"
-      ],
-      "buvette": true
-    },
-    {
-      "id": "26488",
-      "titre": "TIR A 18M à MONTAIGU VENDEE",
-      "ocr": false,
-      "tarifs": [
-        {
-          "nb_departs": 1,
-          "adulte": 8,
-          "jeune": 10
-        },
-        {
-          "nb_departs": 2,
-          "adulte": 18,
-          "jeune": 18
-        },
-        {
-          "nb_departs": 3,
-          "adulte": 18,
-          "jeune": 24
-        }
-      ],
-      "tarifs_fiable": false,
-      "departs": [
-        {
-          "nom": "Départ 1",
-          "debut": "2026-10-17T18:45",
-          "places": null,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "Départ 2",
-          "debut": "2026-10-18T08:00",
-          "places": null,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "Départ 3",
-          "debut": "2026-10-18T13:00",
-          "places": null,
-          "hors_epreuve": false
-        }
-      ],
-      "departs_fiable": true,
-      "places": null,
-      "cibles": null,
-      "date_limite": "2026-10-06",
-      "inscription_mode": "mail",
-      "nb_urls_inscription": 0,
-      "nb_emails_inscription": 1,
-      "distances": [
-        "10m"
-      ],
-      "blasons": [
-        "Blasons  Arc classique : catégories U18 - U21 et SENIOR 1 - 2 - 3 : sur blason de 40cm (tri-spots sur demande), U13 –",
-        "blason de 60cm (tri-spots sur demande), U11 tir à 10m sur blason de 60cm*",
-        "blason de 40cm (tri-spots sur demande), U15 – U18 sur blason de 60cm,"
-      ],
-      "buvette": true
-    },
-    {
-      "id": "26489",
-      "titre": "CONCOURS SALLE à LE LUART",
-      "ocr": false,
-      "tarifs": [
-        {
-          "nb_departs": 1,
-          "adulte": 9,
-          "jeune": 7
-        },
-        {
-          "nb_departs": 2,
-          "adulte": 14,
-          "jeune": 12
-        },
-        {
-          "nb_departs": 3,
-          "adulte": 23,
-          "jeune": null
-        }
-      ],
-      "tarifs_fiable": true,
-      "departs": [
-        {
-          "nom": "Samedi AP",
-          "debut": "2026-10-17T14:00",
-          "places": null,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "Dimanche matin",
-          "debut": "2026-10-18T08:30",
-          "places": null,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "Dimanche après midi",
-          "debut": "2026-10-18T13:00",
-          "places": null,
-          "hors_epreuve": false
-        }
-      ],
-      "departs_fiable": true,
-      "places": null,
-      "cibles": null,
-      "date_limite": "2026-10-14",
-      "inscription_mode": null,
-      "nb_urls_inscription": 0,
-      "nb_emails_inscription": 0,
-      "distances": [],
-      "blasons": [
-        "blasons de 40 ou trispots"
-      ],
-      "buvette": true
-    },
-    {
-      "id": "26490",
-      "titre": "CONCOURS SALLE à LE LUART",
-      "ocr": false,
-      "tarifs": [
-        {
-          "nb_departs": 1,
-          "adulte": 9,
-          "jeune": 7
-        },
-        {
-          "nb_departs": 2,
-          "adulte": 14,
-          "jeune": 12
-        },
-        {
-          "nb_departs": 3,
-          "adulte": 23,
-          "jeune": null
-        }
-      ],
-      "tarifs_fiable": true,
-      "departs": [
-        {
-          "nom": "Samedi AP",
-          "debut": "2026-10-17T14:00",
-          "places": null,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "Dimanche matin",
-          "debut": "2026-10-18T08:30",
-          "places": null,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "Dimanche après midi",
-          "debut": "2026-10-18T13:00",
-          "places": null,
-          "hors_epreuve": false
-        }
-      ],
-      "departs_fiable": true,
-      "places": null,
-      "cibles": null,
-      "date_limite": "2026-10-14",
-      "inscription_mode": null,
-      "nb_urls_inscription": 0,
-      "nb_emails_inscription": 0,
-      "distances": [],
-      "blasons": [
-        "blasons de 40 ou trispots"
-      ],
-      "buvette": true
-    },
-    {
-      "id": "26491",
-      "titre": "CONCOURS SALLE à LE MAY SUR EVRE",
-      "ocr": false,
-      "tarifs": [
-        {
-          "nb_departs": 1,
-          "adulte": 8,
-          "jeune": 6
-        },
-        {
-          "nb_departs": 2,
-          "adulte": 15,
-          "jeune": 11
-        },
-        {
-          "nb_departs": 3,
-          "adulte": 22,
-          "jeune": 16
-        }
-      ],
-      "tarifs_fiable": true,
-      "departs": [
-        {
-          "nom": "Départ 1",
-          "debut": "2026-10-17T14:30",
-          "places": null,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "Départ 2",
-          "debut": "2026-10-18T08:00",
-          "places": null,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "Départ 3",
-          "debut": "2026-10-18T13:30",
-          "places": null,
-          "hors_epreuve": false
-        }
-      ],
-      "departs_fiable": true,
-      "places": null,
-      "cibles": null,
-      "date_limite": null,
-      "inscription_mode": "mail",
-      "nb_urls_inscription": 0,
-      "nb_emails_inscription": 1,
-      "distances": [
-        "18m"
-      ],
-      "blasons": [
-        "Blasons 40 cm ou 60 cm unique pour les BB et les classiques, Trispot VEGAS.pour les arcs à poulies. Possibilité de"
-      ],
-      "buvette": true
     },
     {
       "id": "26492",
@@ -998,6 +245,102 @@
       "buvette": true
     },
     {
+      "id": "26497",
+      "titre": "TIR À 18M à LE MANS",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 9,
+          "jeune": 7
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 16,
+          "jeune": 12
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-10-25T08:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-10-25T13:00",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-10-21",
+      "inscription_mode": null,
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 0,
+      "distances": [
+        "18m"
+      ],
+      "blasons": [
+        "Blasons selon règlementation FFTA. Trispots disponibles sur demande.",
+        "Blason Montant",
+        "Blason : préciser « trispot » si souhaité."
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26498",
+      "titre": "TIR À 18M à LE MANS",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 9,
+          "jeune": 7
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 16,
+          "jeune": 12
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-10-25T08:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-10-25T13:00",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-10-21",
+      "inscription_mode": null,
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 0,
+      "distances": [
+        "18m"
+      ],
+      "blasons": [
+        "Blasons selon règlementation FFTA. Trispots disponibles sur demande.",
+        "Blason Montant",
+        "Blason : préciser « trispot » si souhaité."
+      ],
+      "buvette": true
+    },
+    {
       "id": "26499",
       "titre": "TIR EN SALLE 18M LA HAYE FOUASSIÈRE à LA HAYE FOUASSIÈRE",
       "ocr": false,
@@ -1069,6 +412,142 @@
       "distances": [],
       "blasons": [
         "blason"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26503",
+      "titre": "TIR A 18 M à LAIGNE ST GERVAIS",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 8,
+          "jeune": 7
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 15,
+          "jeune": 12
+        },
+        {
+          "nb_departs": 3,
+          "adulte": 22,
+          "jeune": 18
+        },
+        {
+          "nb_departs": 4,
+          "adulte": 29,
+          "jeune": 24
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-10-31T12:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-10-31T18:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 3",
+          "debut": "2026-11-01T08:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 4",
+          "debut": "2026-11-01T13:30",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": null,
+      "inscription_mode": "mail",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 2,
+      "distances": [],
+      "blasons": [
+        "BLASONS | FORMALITÉS",
+        "Blasons selon la règlementation Fédérale | Tenue pour les archers",
+        "blason (trispot ?)"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26504",
+      "titre": "TIR A 18 M à LAIGNE ST GERVAIS",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 8,
+          "jeune": 7
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 15,
+          "jeune": 12
+        },
+        {
+          "nb_departs": 3,
+          "adulte": 22,
+          "jeune": 18
+        },
+        {
+          "nb_departs": 4,
+          "adulte": 29,
+          "jeune": 24
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-10-31T12:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-10-31T18:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 3",
+          "debut": "2026-11-01T08:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 4",
+          "debut": "2026-11-01T13:30",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": null,
+      "inscription_mode": "mail",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 2,
+      "distances": [],
+      "blasons": [
+        "BLASONS | FORMALITÉS",
+        "Blasons selon la règlementation Fédérale | Tenue pour les archers",
+        "blason (trispot ?)"
       ],
       "buvette": true
     },
@@ -1151,6 +630,282 @@
       ],
       "blasons": [
         "Blasons : les archers évoluant sur blason de 40 et souhaitant concourir sur Trispot doivent le"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26509",
+      "titre": "CLISSON-TAS 2027 à CLISSON",
+      "ocr": true,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 9,
+          "jeune": 7
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 16,
+          "jeune": 12
+        },
+        {
+          "nb_departs": 3,
+          "adulte": 22,
+          "jeune": 16
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-11-07T14:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-11-07T14:45",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 3",
+          "debut": "2026-11-07T15:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 4",
+          "debut": "2026-11-08T08:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 5",
+          "debut": "2026-11-08T08:15",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 6",
+          "debut": "2026-11-08T08:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 7",
+          "debut": "2026-11-08T13:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 8",
+          "debut": "2026-11-08T13:45",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 9",
+          "debut": "2026-11-08T14:00",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": null,
+      "inscription_mode": "url",
+      "nb_urls_inscription": 1,
+      "nb_emails_inscription": 0,
+      "distances": [],
+      "blasons": [
+        "Blason suivant catégorie (Tri spots sur demande).",
+        "BLASON | DEPART"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26510",
+      "titre": "CLISSON-TAS 2027 à CLISSON",
+      "ocr": true,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 9,
+          "jeune": 7
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 16,
+          "jeune": 12
+        },
+        {
+          "nb_departs": 3,
+          "adulte": 22,
+          "jeune": 16
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-11-07T14:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-11-07T14:45",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 3",
+          "debut": "2026-11-07T15:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 4",
+          "debut": "2026-11-08T08:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 5",
+          "debut": "2026-11-08T08:15",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 6",
+          "debut": "2026-11-08T08:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 7",
+          "debut": "2026-11-08T13:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 8",
+          "debut": "2026-11-08T13:45",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 9",
+          "debut": "2026-11-08T14:00",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": null,
+      "inscription_mode": "url",
+      "nb_urls_inscription": 1,
+      "nb_emails_inscription": 0,
+      "distances": [],
+      "blasons": [
+        "Blason suivant catégorie (Tri spots sur demande).",
+        "BLASON | DEPART"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26511",
+      "titre": "CLISSON-TAS 2027 à CLISSON",
+      "ocr": true,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 9,
+          "jeune": 7
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 16,
+          "jeune": 12
+        },
+        {
+          "nb_departs": 3,
+          "adulte": 22,
+          "jeune": 16
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-11-07T14:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-11-07T14:45",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 3",
+          "debut": "2026-11-07T15:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 4",
+          "debut": "2026-11-08T08:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 5",
+          "debut": "2026-11-08T08:15",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 6",
+          "debut": "2026-11-08T08:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 7",
+          "debut": "2026-11-08T13:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 8",
+          "debut": "2026-11-08T13:45",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 9",
+          "debut": "2026-11-08T14:00",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": null,
+      "inscription_mode": "url",
+      "nb_urls_inscription": 1,
+      "nb_emails_inscription": 0,
+      "distances": [],
+      "blasons": [
+        "Blason suivant catégorie (Tri spots sur demande).",
+        "BLASON | DEPART"
       ],
       "buvette": true
     },
@@ -1269,6 +1024,220 @@
       "buvette": true
     },
     {
+      "id": "26514",
+      "titre": "TIR EN SALLE 2X18M à BEAUPREAU EN MAUGES",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 8,
+          "jeune": 6
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 14,
+          "jeune": 10
+        },
+        {
+          "nb_departs": 3,
+          "adulte": 18,
+          "jeune": 14
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-11-07T17:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-11-08T08:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 3",
+          "debut": "2026-11-08T13:30",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-11-03",
+      "inscription_mode": "mail",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 0,
+      "distances": [],
+      "blasons": [
+        "Blasons suivant catégories."
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26516",
+      "titre": "CONCOURS SALLE 18 M à SAINT-NAZAIRE",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 9,
+          "jeune": 7
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 9,
+          "jeune": 7
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Samedi Après-midi",
+          "debut": "2026-11-07T13:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Samedi Soir",
+          "debut": "2026-11-07T17:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Dimanche Matin",
+          "debut": "2026-11-08T08:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Dimanche Après-midi",
+          "debut": "2026-11-08T13:00",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": 10,
+      "date_limite": null,
+      "inscription_mode": null,
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 0,
+      "distances": [
+        "18m"
+      ],
+      "blasons": [
+        "Blason | ou | (sur demande à l’inscription)",
+        "Blason | ou | (sur demande à l'inscription)"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26517",
+      "titre": "TIR EN SALLE 18M à LE GENEST SAINT ISLE",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 9,
+          "jeune": 7
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 17,
+          "jeune": 13
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Samedi après-midi",
+          "debut": "2026-11-07T13:00",
+          "places": 60,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Dimanche matin",
+          "debut": "2026-11-08T08:00",
+          "places": 60,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Dimanche après-midi",
+          "debut": "2026-11-08T13:00",
+          "places": 60,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": 60,
+      "cibles": null,
+      "date_limite": "2026-11-04",
+      "inscription_mode": "mail",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 1,
+      "distances": [
+        "18m"
+      ],
+      "blasons": [],
+      "buvette": true
+    },
+    {
+      "id": "26518",
+      "titre": "TIR EN SALLE 18M à LE GENEST SAINT ISLE",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 9,
+          "jeune": 7
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 17,
+          "jeune": 13
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Samedi après-midi",
+          "debut": "2026-11-07T13:00",
+          "places": 60,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Dimanche matin",
+          "debut": "2026-11-08T08:00",
+          "places": 60,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Dimanche après-midi",
+          "debut": "2026-11-08T13:00",
+          "places": 60,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": 60,
+      "cibles": null,
+      "date_limite": "2026-11-04",
+      "inscription_mode": "mail",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 1,
+      "distances": [
+        "18m"
+      ],
+      "blasons": [],
+      "buvette": true
+    },
+    {
       "id": "26519",
       "titre": "RENCONTRE DES PRIMEVÈRES à SAINT GERVAIS",
       "ocr": false,
@@ -1311,6 +1280,51 @@
         "blasons de 40 pour les arcs classiques (trispot sur demande)",
         "blason de 40 pour les arcs nus (trispot sur demande)",
         "Blasons de 60 pour les minimes U13 et les benjamins U15 (trispot sur demande)"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26520",
+      "titre": "CONCOURS ECOUFLANT TIR EN SALLE à ÉCOUFLANT",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 9,
+          "jeune": 7
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 16,
+          "jeune": 12
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-11-08T08:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-11-08T13:30",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": null,
+      "inscription_mode": "mail",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 1,
+      "distances": [],
+      "blasons": [
+        "blason unique (par",
+        "Blason | Départ 1 Départ 2 Montant"
       ],
       "buvette": true
     },
@@ -1376,6 +1390,277 @@
       "buvette": true
     },
     {
+      "id": "26523",
+      "titre": "TIR EN SALLE ANGERS à ANGERS",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 9,
+          "jeune": 7
+        },
+        {
+          "nb_departs": 3,
+          "adulte": 9,
+          "jeune": 7
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "SAMEDI APRÈS-MIDI",
+          "debut": "2026-11-14T13:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "DIMANCHE MATIN",
+          "debut": "2026-11-15T08:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "DIMANCHE APRÈS-MIDI",
+          "debut": "2026-11-15T13:30",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-11-10",
+      "inscription_mode": "mail",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 1,
+      "distances": [
+        "18M",
+        "18m"
+      ],
+      "blasons": [
+        "Blasons selon la catégorie : 60 unique ou trispot de 60 ; 40 unique ou",
+        "blason) :",
+        "blasons 60 ou 40 selon la catégorie · à partir de U13, U11 | Licence compétition FFTA avec photo ou pièce d'identité à présenter"
+      ],
+      "buvette": false
+    },
+    {
+      "id": "26524",
+      "titre": "TIR EN SALLE à VERTOU",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 9,
+          "jeune": 7
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "SAMEDI",
+          "debut": "2026-11-14T14:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "DIMANCHE",
+          "debut": "2026-11-15T08:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "DIMANCHE",
+          "debut": "2026-11-15T13:00",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-11-08",
+      "inscription_mode": "url",
+      "nb_urls_inscription": 1,
+      "nb_emails_inscription": 0,
+      "distances": [
+        "18m"
+      ],
+      "blasons": [
+        "blason de 60 - U18 / U21 et Seniors 1/ 2 / 3 : blason de 40 ou Vegas -",
+        "blason de 40 ou Vegas : le signaler lors de l’inscription",
+        "blason Vegas.",
+        "BLASON | 1er 2ème 3ème MONTANT"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26525",
+      "titre": "TIR EN SALLE à VERTOU",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 9,
+          "jeune": 7
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "SAMEDI",
+          "debut": "2026-11-14T14:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "DIMANCHE",
+          "debut": "2026-11-15T08:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "DIMANCHE",
+          "debut": "2026-11-15T13:00",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-11-08",
+      "inscription_mode": "url",
+      "nb_urls_inscription": 1,
+      "nb_emails_inscription": 0,
+      "distances": [
+        "18m"
+      ],
+      "blasons": [
+        "blason de 60 - U18 / U21 et Seniors 1/ 2 / 3 : blason de 40 ou Vegas -",
+        "blason de 40 ou Vegas : le signaler lors de l’inscription",
+        "blason Vegas.",
+        "BLASON | 1er 2ème 3ème MONTANT"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26527",
+      "titre": "TIR À 18M 2026-2027 à FONTENAY LE COMTE",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 10,
+          "jeune": 8
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 18,
+          "jeune": 13
+        },
+        {
+          "nb_departs": 3,
+          "adulte": 22,
+          "jeune": 18
+        },
+        {
+          "nb_departs": 4,
+          "adulte": 26,
+          "jeune": 22
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-11-14T12:45",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-11-14T17:45",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 3",
+          "debut": "2026-11-15T08:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 4",
+          "debut": "2026-11-15T13:00",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-11-10",
+      "inscription_mode": "mail",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 1,
+      "distances": [
+        "18m",
+        "10m"
+      ],
+      "blasons": [
+        "Blasons :"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26528",
+      "titre": "SÉLECTIF LA BAULE à LA BAULE",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 9,
+          "jeune": 7
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 15,
+          "jeune": 10
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-11-15T08:15",
+          "places": 100,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-11-15T13:00",
+          "places": 100,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": 100,
+      "cibles": null,
+      "date_limite": "2026-11-11T23:00",
+      "inscription_mode": "url",
+      "nb_urls_inscription": 2,
+      "nb_emails_inscription": 0,
+      "distances": [
+        "18m"
+      ],
+      "blasons": [
+        "Blasons selon règlementation FFTA",
+        "blason classique de 40"
+      ],
+      "buvette": true
+    },
+    {
       "id": "26532",
       "titre": "SALLE NOVEMBRE à SABLE SUR SARTHE",
       "ocr": true,
@@ -1422,15 +1707,102 @@
       "buvette": true
     },
     {
-      "id": "27174",
-      "titre": "CONCOURS JEUNES ET ADULTES DEBUTANTS à MONTAIGU",
+      "id": "26533",
+      "titre": "TIR À 18M à SAUMUR",
       "ocr": false,
-      "tarifs": [],
-      "tarifs_fiable": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 9,
+          "jeune": 7
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 16,
+          "jeune": 12
+        },
+        {
+          "nb_departs": 3,
+          "adulte": 21,
+          "jeune": 15
+        }
+      ],
+      "tarifs_fiable": true,
       "departs": [
         {
-          "nom": "Samedi après-midi",
-          "debut": "2026-10-17T13:00",
+          "nom": "Samedi",
+          "debut": "2026-11-21T13:00",
+          "places": 36,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Dimanche",
+          "debut": "2026-11-22T08:30",
+          "places": 36,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Dimanche",
+          "debut": "2026-11-22T13:00",
+          "places": 36,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": 36,
+      "cibles": null,
+      "date_limite": "2026-11-18",
+      "inscription_mode": "mail",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 1,
+      "distances": [
+        "18m"
+      ],
+      "blasons": [
+        "Blason Unique et Tri-spot FITA - Rythme AB/CD",
+        "Blason Tri-spot VEGAS",
+        "Blason FITA Unique ou Tri-spot"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26534",
+      "titre": "CONCOURS SALLE à ST HERBLAIN",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": null,
+          "jeune": 7
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 9,
+          "jeune": null
+        },
+        {
+          "nb_departs": 3,
+          "adulte": 22,
+          "jeune": null
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-11-21T13:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-11-22T08:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 3",
+          "debut": "2026-11-22T13:00",
           "places": null,
           "hors_epreuve": false
         }
@@ -1438,17 +1810,579 @@
       "departs_fiable": true,
       "places": null,
       "cibles": null,
-      "date_limite": "2026-10-06",
+      "date_limite": null,
       "inscription_mode": "mail",
       "nb_urls_inscription": 0,
       "nb_emails_inscription": 1,
       "distances": [
-        "18mètres",
-        "15mètres",
+        "18m"
+      ],
+      "blasons": [
+        "Blason en fonction de l’arme et de la catégorie selon la réglementation en vigueur, trispot"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26535",
+      "titre": "CONCOURS SALLE à ST HERBLAIN",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": null,
+          "jeune": 7
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 9,
+          "jeune": null
+        },
+        {
+          "nb_departs": 3,
+          "adulte": 22,
+          "jeune": null
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-11-21T13:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-11-22T08:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 3",
+          "debut": "2026-11-22T13:00",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": null,
+      "inscription_mode": "mail",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 1,
+      "distances": [
+        "18m"
+      ],
+      "blasons": [
+        "Blason en fonction de l’arme et de la catégorie selon la réglementation en vigueur, trispot"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26536",
+      "titre": "CONCOURS SALLE à ST HERBLAIN",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": null,
+          "jeune": 7
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 9,
+          "jeune": null
+        },
+        {
+          "nb_departs": 3,
+          "adulte": 22,
+          "jeune": null
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-11-21T13:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-11-21T08:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 3",
+          "debut": "2026-11-21T13:00",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": null,
+      "inscription_mode": "mail",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 1,
+      "distances": [
+        "18m"
+      ],
+      "blasons": [
+        "Blason en fonction de l’arme et de la catégorie selon la réglementation en vigueur, trispot"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26537",
+      "titre": "COMPAGNIE ST GEORGES DE LAVAL à LAVAL",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 8,
+          "jeune": 6
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 14,
+          "jeune": 10
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-11-21T08:15",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-11-21T13:15",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-11-18",
+      "inscription_mode": "mail",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 1,
+      "distances": [
+        "18mètres"
+      ],
+      "blasons": [
+        "Blasons :"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26538",
+      "titre": "COMPAGNIE ST GEORGES DE LAVAL à LAVAL",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 5,
+          "jeune": 3
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-11-21T13:15",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-11-18",
+      "inscription_mode": "mail",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 1,
+      "distances": [
+        "10m",
+        "15m"
+      ],
+      "blasons": [
+        "Blasons :",
+        "Blason/distance 80 à 10 m | 80 à 15 m | 60 à 15 m | 40 à 15 m"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26551",
+      "titre": "CONCOURS SÉLECTIF à DAUMERAY",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 2,
+          "adulte": null,
+          "jeune": 10
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-11-29T08:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-11-29T13:30",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-11-24",
+      "inscription_mode": null,
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 0,
+      "distances": [
+        "18m"
+      ],
+      "blasons": [
+        "BLASON Dimanche | Dimanche"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26557",
+      "titre": "SALLE à NANTES",
+      "ocr": true,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 9,
+          "jeune": 7
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 17,
+          "jeune": 13
+        },
+        {
+          "nb_departs": 3,
+          "adulte": 25,
+          "jeune": 19
+        },
+        {
+          "nb_departs": 4,
+          "adulte": 33,
+          "jeune": null
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-12-05T10:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-12-05T12:15",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 3",
+          "debut": "2026-12-05T14:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 4",
+          "debut": "2026-12-05T16:45",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 5",
+          "debut": "2026-12-06T08:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 6",
+          "debut": "2026-12-06T13:30",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": null,
+      "inscription_mode": "url",
+      "nb_urls_inscription": 1,
+      "nb_emails_inscription": 1,
+      "distances": [
+        "18m",
+        "10m"
+      ],
+      "blasons": [
+        "blasons :"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26559",
+      "titre": "CONCOURS ECOMMOY à ECOMMOY",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 9,
+          "jeune": 7
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 21,
+          "jeune": null
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-12-05T14:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-12-06T08:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 3",
+          "debut": "2026-12-06T13:00",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-12-02",
+      "inscription_mode": "mail",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 1,
+      "distances": [
         "10mètres"
       ],
       "blasons": [
-        "blasons adaptés au niveau du tireur (niveau 3, 2, 1, As) ; et pour les U11 blason"
+        "blason de 60), U13, U15, U18, U21, S1, S2, S3",
+        "blasons Vegas",
+        "Blason | Départ"
+      ],
+      "buvette": false
+    },
+    {
+      "id": "26562",
+      "titre": "CONCOUR SALLE 2026 à CHOLET",
+      "ocr": false,
+      "tarifs": [],
+      "tarifs_fiable": false,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-12-12T12:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-12-13T08:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 3",
+          "debut": "2026-12-13T13:30",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2025-11-27",
+      "inscription_mode": "mail",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 1,
+      "distances": [
+        "18m"
+      ],
+      "blasons": [
+        "Blasons et distance selon le règlement FFTA (trispots verticaux sur demande pour Classiques et",
+        "Blason Trispot"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26568",
+      "titre": "SELECTIF SALLE 2027 à MONTOIR DE BRETAGNE",
+      "ocr": true,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 8,
+          "jeune": 5
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 13,
+          "jeune": 8
+        },
+        {
+          "nb_departs": 3,
+          "adulte": 18,
+          "jeune": 11
+        },
+        {
+          "nb_departs": 4,
+          "adulte": 23,
+          "jeune": 14
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Samedi",
+          "debut": "2026-12-19T13:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Samedi",
+          "debut": "2026-12-19T17:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Dimanche",
+          "debut": "2026-12-20T08:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Dimanche",
+          "debut": "2026-12-20T13:30",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-12-16",
+      "inscription_mode": null,
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 0,
+      "distances": [],
+      "blasons": [
+        "Blason classique ou trispots Vertical au choix à spécifier sur la fiche d’inscription"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26598",
+      "titre": "CONCOURS SALLE 2X18 M à SAINT FLORENT LE VIEIL",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 9,
+          "jeune": 9
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 15,
+          "jeune": 15
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Dimanche Matin",
+          "debut": "2027-01-10T08:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Dimanche Après-Midi",
+          "debut": "2027-01-10T13:30",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2027-01-04",
+      "inscription_mode": null,
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 0,
+      "distances": [],
+      "blasons": [
+        "Blason suivant catégorie (Possibilité de demander à tirer sur Trispot à signaler lors de l’inscription."
+      ],
+      "buvette": true
+    },
+    {
+      "id": "27184",
+      "titre": "CONCOURS LES SABLES à LES SABLES D'OLONNE",
+      "ocr": false,
+      "tarifs": [],
+      "tarifs_fiable": false,
+      "departs": [
+        {
+          "nom": "samedi après-midi",
+          "debut": "2026-10-31T13:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "dimanche matin",
+          "debut": "2026-11-01T08:30",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "dimanche après-midi",
+          "debut": "2026-11-01T13:30",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": null,
+      "inscription_mode": "url",
+      "nb_urls_inscription": 2,
+      "nb_emails_inscription": 1,
+      "distances": [],
+      "blasons": [
+        "blasons : conformément à la réglementation FFTA (Trispot sur demande)"
       ],
       "buvette": true
     },
@@ -1559,6 +2493,61 @@
       "nb_emails_inscription": 1,
       "distances": [],
       "blasons": [],
+      "buvette": true
+    },
+    {
+      "id": "27808",
+      "titre": "TIR EN SALLE 2X18M à LE FUILET",
+      "ocr": true,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 9,
+          "jeune": 7
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 16,
+          "jeune": 12
+        },
+        {
+          "nb_departs": 3,
+          "adulte": 19,
+          "jeune": 15
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-11-21T14:15",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-11-22T08:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 3",
+          "debut": "2026-11-22T13:15",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-11-15",
+      "inscription_mode": null,
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 0,
+      "distances": [],
+      "blasons": [
+        "Blason suivant catégorie (Possibilité de demander à tirer sur Trispot uniquement Vegas)."
+      ],
       "buvette": true
     },
     {

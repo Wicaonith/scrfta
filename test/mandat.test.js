@@ -319,3 +319,27 @@ describe("tarifs multi-départs : la réduction est incluse dans le prix total",
     assert.equal(grille[0].jeune, 8);
   });
 });
+
+describe("provenance des tarifs et libellés séparés des prix", () => {
+  test("un libellé écrit au-dessus de ses prix est rattaché à la bonne ligne", () => {
+    assert.deepEqual(lire(f.libelleAuDessus).tarifs.grille, [
+      { nb_departs: 1, adulte: 9, jeune: 7 },
+      { nb_departs: 2, adulte: 16, jeune: 12 },
+    ]);
+  });
+
+  test("du bruit OCR sur une autre page ne discrédite pas un tableau lu en texte natif", () => {
+    const infos = reextractInfos(f.lignes.texte + "\n\n0/20 ; L % LA. V2 Av PES 7 € A\n% 14045 € , Pa P 4", {
+      ...f.lignes.contexte,
+      texte_ocr: "0/20 ; L % LA. V2 Av PES 7 € A\n% 14045 € , Pa P 4",
+    });
+    assert.equal(infos.tarifs.grille.length, 2);
+    assert.equal(infos.tarifs.fiable, true);
+  });
+
+  test("les lignes ayant produit la grille sont exposées", () => {
+    const t = lire(f.lignes).tarifs;
+    assert.ok(t.sources.some((l) => /Adultes/.test(l)));
+    assert.ok(t.sources.some((l) => /Jeunes/.test(l)));
+  });
+});

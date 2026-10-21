@@ -136,6 +136,7 @@
  * @property {LigneTarif[]} grille   Forme normalisée : un prix adulte et un prix jeune par nombre de départs
  * @property {Object<string,string|number>[]} tableaux  Tableaux reconstitués tels quels, clé `categorie` en tête
  * @property {string[]} lignes       Lignes du PDF contenant un montant
+ * @property {string[]} sources      Lignes qui ont réellement alimenté `tableaux`, et donc `grille`
  * @property {{adulte?: number, jeune?: number}|null} supplement  Prix d'un départ supplémentaire
  *   par public, quand le mandat l'exprime ainsi (« tir supplémentaire + 6 € »). La grille est
  *   déjà prolongée d'après cette règle jusqu'au nombre de départs proposés.

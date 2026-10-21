@@ -426,7 +426,8 @@ function extractInfos(text, contexte = {}) {
  * 3. **Le jeune ne paie pas plus que l'adulte.** L'inverse est constant dans la discipline ; une
  *    grille qui l'enfreint trahit deux colonnes interverties.
  * 4. **Le prix croît avec le nombre de départs.** Tirer deux fois ne coûte jamais moins qu'une.
- * 5. **Aucune ligne source ne vient de l'OCR**, dont les confusions de chiffres sont fréquentes.
+ * 5. **Aucune ligne ayant alimenté la grille ne vient de l'OCR**, dont les confusions de chiffres
+ *    sont fréquentes. Les autres lignes du document n'entrent pas en compte.
  *
  * @param {import("./types.js").Tarifs} tarifs la grille et ses sources
  * @param {(ligne: string) => boolean} vientDeOcr dit si une ligne provient d'une page reconnue
@@ -450,8 +451,10 @@ function fiabiliteTarifs(tarifs, vientDeOcr) {
     if (a.jeune !== null && b.jeune !== null && b.jeune < a.jeune) return false;
   }
 
-  // 5. Provenance du texte
-  if (tarifs.lignes.some((l) => MONTANT.test(l) && vientDeOcr(l))) return false;
+  // 5. Provenance du texte. On ne regarde que les lignes qui ont réellement alimenté la grille :
+  //    une page annexe passée à l'OCR, un plan d'accès par exemple, produit du bruit contenant
+  //    parfois un symbole €, qui ne doit pas discréditer un tableau lu sur une page de texte natif.
+  if (tarifs.sources.some(vientDeOcr)) return false;
 
   return true;
 }
@@ -1054,6 +1057,8 @@ function extractTarifs(text) {
   const ls = lines(text);
   const tableaux = [];
   const bruts = [];
+  /** Lignes du mandat qui ont réellement alimenté les tableaux : base du contrôle de provenance. */
+  const sources = [];
 
   // ---- Stratégie 1 : les tableaux
   for (let i = 0; i < ls.length; i++) {
@@ -1071,6 +1076,7 @@ function extractTarifs(text) {
 
     let derniere = i; // dernière ligne consommée par ce tableau
     let manques = 0; // lignes sans prix rencontrées d'affilée
+    let libelleEnAttente = null; // libellé écrit sur la ligne au-dessus de ses prix
     // Les lignes de valeurs suivent l'en-tête de près ; dix lignes suffisent largement
     for (let j = i + 1; j < ls.length && j <= i + 10; j++) {
       const row = cellulesDe(ls[j]);
@@ -1078,19 +1084,31 @@ function extractTarifs(text) {
       // en première position, ce serait plutôt un numéro de départ.
       const firstVal = row.findIndex((c, k) => MONTANT.test(c) || (k > 0 && NOMBRE_SEUL.test(c)));
       if (row.length < 2 || firstVal < 0) {
+        // Certains clubs écrivent le libellé seul, puis les prix sur la ligne suivante :
+        // « Catégories adulte » puis « 9 € | 16 € ». Une ligne sans prix qui nomme un public
+        // ou un nombre de départs est retenue pour qualifier la ligne de prix qui suit.
+        const brut = ls[j].trim();
+        if (publicDe(brut) || nbDepartsDe(brut)) {
+          libelleEnAttente = brut;
+          continue;
+        }
         // Une ligne parasite isolée peut s'intercaler ; deux d'affilée ferment le tableau
         if (++manques > 1) break;
         continue;
       }
       manques = 0;
 
-      // Tout ce qui précède le premier prix constitue le libellé de la ligne
-      const entry = { categorie: row.slice(0, firstVal).join(" ").trim() || `ligne ${j - i}` };
+      // Tout ce qui précède le premier prix constitue le libellé de la ligne ; à défaut, le
+      // libellé lu sur la ligne précédente
+      const libelle = row.slice(0, firstVal).join(" ").trim() || libelleEnAttente || `ligne ${j - i}`;
+      libelleEnAttente = null;
+      const entry = { categorie: libelle };
       row.slice(firstVal).forEach((c, k) => {
         const m = c.match(MONTANT) || c.match(NOMBRE_SEUL);
         if (m) entry[colonnes[k] || `col${k + 1}`] = enNombre(m[1]);
       });
       tableaux.push(entry);
+      sources.push(ls[j]);
       derniere = j;
     }
     // On saute les lignes consommées, pour ne pas les relire comme un nouvel en-tête
@@ -1126,6 +1144,7 @@ function extractTarifs(text) {
         ...(adulte && { Adulte: enNombre(adulte[1]) }),
         ...(jeune && { Jeune: enNombre(jeune[1]) }),
       });
+      sources.push(l);
       if (!nb) nbCourant++;
     }
   }
@@ -1149,7 +1168,10 @@ function extractTarifs(text) {
       entry[`${m[2]} tir`] ??= enNombre(m[1]);
       trouves++;
     }
-    if (trouves) tableaux.push(entry);
+    if (trouves) {
+      tableaux.push(entry);
+      sources.push(l);
+    }
 
     // « tir supplémentaire + 6 € » ou « 6 € par départ supplémentaire »
     // Deux recherches séparées plutôt qu'une alternative : dans « 7 € / tir supplémentaire + 6 € »,
@@ -1166,8 +1188,19 @@ function extractTarifs(text) {
     tableaux,
     grille: normaliserGrille(tableaux),
     lignes: uniq(bruts),
+    sources: uniq(sources),
     supplement: Object.keys(supplement).length ? supplement : null,
   };
+}
+
+/**
+ * Extrait un nombre de départs d'un libellé : « 2 tirs » donne 2, « 1er départ » donne 1.
+ * @param {string} label
+ * @returns {number|null}
+ */
+function nbDepartsDe(label) {
+  const m = label.match(/(\d)\s*(?:er|ème|e)?\s*(tirs?|d[ée]parts?|concours)/i);
+  return m ? Number(m[1]) : null;
 }
 
 /**
@@ -1231,21 +1264,11 @@ function etendreGrille(tarifs, nbDeparts) {
  * @returns {import("./types.js").LigneTarif[]} grille triée par nombre de départs croissant
  */
 function normaliserGrille(tableaux) {
-  /**
-   * Extrait un nombre de départs d'un libellé : « 2 tirs » donne 2.
-   * @param {string} label
-   * @returns {number|null}
-   */
-  const nbDeparts = (label) => {
-    const m = label.match(/(\d)\s*(?:er|ème|e)?\s*(tirs?|d[ée]parts?|concours)/i);
-    return m ? Number(m[1]) : null;
-  };
-
   const grille = new Map();
   for (const t of tableaux) {
     for (const [col, val] of Object.entries(t)) {
       if (col === "categorie") continue;
-      const nb = nbDeparts(t.categorie) ?? nbDeparts(col);
+      const nb = nbDepartsDe(t.categorie) ?? nbDepartsDe(col);
       const aud = publicDe(t.categorie) ?? publicDe(col);
       if (nb === null || aud === null) continue;
       const g = grille.get(nb) || { nb_departs: nb, adulte: null, jeune: null };
