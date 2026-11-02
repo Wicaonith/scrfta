@@ -472,14 +472,7 @@ ce contrôle quand un résultat vide est attendu.
 
 ---
 
-## 8. Notes d'analyse
-
-- [docs/standalone.md](docs/standalone.md) — intérêt et faisabilité d'un logiciel autonome à double-cliquer,
-  face à l'alternative d'un relevé hébergé. Note d'analyse, aucune décision prise.
-
----
-
-## 9. Licence
+## 8. Licence
 
 MIT, voir [LICENSE](LICENSE). Utilisation, modification et redistribution libres, sans garantie.
 
