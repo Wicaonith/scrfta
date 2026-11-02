@@ -1,7 +1,7 @@
 # Pistes de logo
 
-Trois propositions pour l'avatar du projet, à comparer dans [comparaison.png](comparaison.png) qui les montre
-en grand puis aux tailles réelles d'affichage sur GitLab (64, 40 et 24 pixels).
+Trois propositions de logo pour le projet, à comparer dans [comparaison.png](comparaison.png) qui les montre
+en grand puis aux petites tailles d'affichage (64, 40 et 24 pixels).
 
 | Fichier | Idée | Verdict |
 | --- | --- | --- |
@@ -9,14 +9,16 @@ en grand puis aux tailles réelles d'affichage sur GitLab (64, 40 et 24 pixels).
 | `b-cible.svg` | Une cible classique traversée par une flèche | Le plus lisible en petit, lecture immédiate |
 | `c-cible-tableau.svg` | Une cible dont les anneaux sont des lignes de tableau | L'idée disparaît en dessous de 128 pixels, à écarter |
 
-Chaque `.svg` a son `.png` exporté en 256 × 256, la taille conseillée pour un avatar GitLab.
+Chaque `.svg` a son `.png` exporté en 256 × 256.
 Pour régénérer les PNG après modification d'un SVG :
 
 ```bash
 node scripts/logo-export.mjs
 ```
 
-Pour poser l'avatar : **Settings → General → Project avatar → Upload**, puis choisir le `.png`.
+Sur GitHub, un dépôt personnel n'a pas d'avatar propre : le logo sert en tête du README (`![logo](docs/logo/b-cible.svg)`)
+et dans l'image de partage du dépôt, **Settings → General → Social preview** (image de 1280 × 640 pixels, à composer
+à partir du SVG).
 
 ## Palette
 

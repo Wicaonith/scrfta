@@ -1,0 +1,71 @@
+# Lance la suite de tests à chaque poussée sur main et sur chaque pull request,
+# puis publie le pourcentage de couverture pour le badge du README.
+#
+# --ignore-scripts saute le postinstall : ni Chromium ni hooks git ne sont utiles ici,
+# les tests ne touchent ni au réseau ni au navigateur.
+#
+# Le badge de couverture : GitHub n'en fournit pas nativement. Le job écrit un petit fichier
+# coverage.json sur la branche orpheline « badges », que shields.io lit via son badge « endpoint ».
+# Il n'y a rien à configurer : le jeton GITHUB_TOKEN fourni au job suffit (permissions ci-dessous).
+
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Installer les dépendances
+        run: npm ci --ignore-scripts
+
+      - name: Lancer les tests avec couverture
+        run: npm run test:ci | tee tests.log
+
+      - name: Rapport JUnit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit
+          path: junit.xml
+          retention-days: 7
+
+      # Alimente le badge de couverture : dernière ligne du rapport de node --test,
+      # « all files | lignes | branches | fonctions ». On publie le pourcentage de lignes,
+      # comme le faisait l'ancien badge GitLab (le README explique pourquoi le chiffre des branches
+      # est la mesure honnête).
+      - name: Publier le badge de couverture
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          PCT=$(grep -E 'all files\s*\|' tests.log | tail -1 | awk -F'|' '{gsub(/ /,"",$2); print $2}')
+          if [ -z "$PCT" ]; then echo "Couverture introuvable dans tests.log"; exit 1; fi
+          COLOR=red
+          if awk "BEGIN{exit !($PCT >= 90)}"; then COLOR=brightgreen
+          elif awk "BEGIN{exit !($PCT >= 75)}"; then COLOR=yellow; fi
+          printf '{"schemaVersion":1,"label":"couverture","message":"%s%%","color":"%s"}\n' "$PCT" "$COLOR" > coverage.json
+          cat coverage.json
+          mkdir badges && cd badges
+          git init -q -b badges
+          cp ../coverage.json .
+          git -c user.name=github-actions -c user.email=github-actions@github.com add coverage.json
+          git -c user.name=github-actions -c user.email=github-actions@github.com commit -q -m "Couverture ${PCT} % (${GITHUB_SHA::7})"
+          git push -q --force "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" badges
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

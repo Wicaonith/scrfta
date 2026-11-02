@@ -122,7 +122,7 @@ Le projet dispose déjà de tout ce qu'il faut pour l'option inverse : `output/r
 autonome, sans serveur ni base de données.
 
 Le scénario : le relevé tourne une fois par semaine sur un petit serveur, et la page est publiée en ligne,
-par exemple via GitLab Pages qui est gratuit pour un projet public.
+par exemple via GitHub Pages qui est gratuit pour un projet public.
 
 | Critère | Standalone | Hébergé |
 | --- | --- | --- |

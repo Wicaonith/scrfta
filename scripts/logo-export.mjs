@@ -1,5 +1,5 @@
 // Exporte les logos SVG de docs/logo/ en PNG carrés, et produit une planche de comparaison.
-//   node scripts/logo-export.mjs [taille]        (défaut : 256, la taille conseillée pour GitLab)
+//   node scripts/logo-export.mjs [taille]        (défaut : 256)
 import fs from "node:fs/promises";
 import path from "node:path";
 import { chromium } from "playwright";
@@ -22,7 +22,7 @@ for (const f of svgs) {
   console.log(`${png} (${taille}×${taille})`);
 }
 
-// Planche de comparaison : chaque logo en grand et à la taille réelle d'un avatar GitLab
+// Planche de comparaison : chaque logo en grand et aux petites tailles d'affichage
 const cases = await Promise.all(
   svgs.map(async (f) => ({ nom: f.replace(/\.svg$/, ""), svg: await fs.readFile(path.join(dir, f), "utf8") }))
 );

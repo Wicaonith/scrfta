@@ -27,6 +27,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/wicaonith/scrfta.git"
+    "url": "https://github.com/Wicaonith/scrfta.git"
+  },
+  "homepage": "https://github.com/Wicaonith/scrfta#readme",
+  "bugs": {
+    "url": "https://github.com/Wicaonith/scrfta/issues"
   }
 }

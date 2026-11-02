@@ -1,10 +1,10 @@
 # ScrFta – les concours de tir à l'arc FFTA dans un tableur
 
-[![pipeline](https://gitlab.com/wicaonith/scrfta/badges/main/pipeline.svg)](https://gitlab.com/wicaonith/scrfta/-/pipelines)
-[![couverture](https://gitlab.com/wicaonith/scrfta/badges/main/coverage.svg)](https://gitlab.com/wicaonith/scrfta/-/pipelines)
-[![licence](https://img.shields.io/gitlab/license/wicaonith%2Fscrfta)](LICENSE)
+[![tests](https://github.com/Wicaonith/scrfta/actions/workflows/ci.yml/badge.svg)](https://github.com/Wicaonith/scrfta/actions/workflows/ci.yml)
+[![couverture](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/Wicaonith/scrfta/badges/coverage.json)](https://github.com/Wicaonith/scrfta/actions/workflows/ci.yml)
+[![licence](https://img.shields.io/github/license/Wicaonith/scrfta)](LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D20-5FA04E?logo=node.js&logoColor=white)](https://nodejs.org)
-[![dernier commit](https://img.shields.io/gitlab/last-commit/wicaonith%2Fscrfta)](https://gitlab.com/wicaonith/scrfta/-/commits/main)
+[![dernier commit](https://img.shields.io/github/last-commit/Wicaonith/scrfta)](https://github.com/Wicaonith/scrfta/commits/main)
 
 > **English** — ScrFta turns the French archery federation (FFTA) competition calendar at
 > <https://www.ffta.fr/competitions> into a CSV you can open in Excel: event details, plus start times,
@@ -24,7 +24,7 @@ Pour chaque concours, on obtient : dates, discipline, club organisateur, lieu, c
 et vers le mandat, et quand le mandat est publié : les départs (horaires), les tarifs adulte / jeune, la date
 limite et le moyen d'inscription, la jauge.
 
-Dépôt : <https://gitlab.com/wicaonith/scrfta>
+Dépôt : <https://github.com/Wicaonith/scrfta>
 
 ---
 
@@ -48,7 +48,7 @@ Une ligne du type `v22.x.x` doit s'afficher.
 Dans le terminal, ligne par ligne :
 
 ```bash
-git clone https://gitlab.com/wicaonith/scrfta.git
+git clone https://github.com/Wicaonith/scrfta.git
 ```
 
 ```bash

@@ -1,7 +1,82 @@
 {
-  "genere_le": "2026-10-21T14:20:03.066Z",
-  "nb": 54,
+  "genere_le": "2026-11-02T10:48:35.946Z",
+  "nb": 50,
   "mandats": [
+    {
+      "id": "25499",
+      "titre": "DOUBLE MIXTE CHOLET à CHOLET",
+      "ocr": false,
+      "tarifs": [],
+      "tarifs_fiable": false,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-12-12T17:00",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-11-27",
+      "inscription_mode": "mail",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 1,
+      "distances": [],
+      "blasons": [
+        "Blasons et distance selon le règlement FFTA spécifique au trophée des mixtes",
+        "Blason 60cm",
+        "Blason 40cm",
+        "Blason 40cm (4 spots)"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "25662",
+      "titre": "24 H DE DONGES à DONGES",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": null,
+          "jeune": 5
+        },
+        {
+          "nb_departs": 2,
+          "adulte": null,
+          "jeune": 52
+        },
+        {
+          "nb_departs": 3,
+          "adulte": null,
+          "jeune": 52
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Samedi 20 Février 2027",
+          "debut": "2027-02-20T12:00",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2027-02-12",
+      "inscription_mode": null,
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 0,
+      "distances": [
+        "18m"
+      ],
+      "blasons": [
+        "Blasons trispot VEGAS et 40 unique"
+      ],
+      "buvette": true
+    },
     {
       "id": "25839",
       "titre": "CONCOURS SPÉCIAL DÉBUTANTS 2026-2027 à FONTENAY LE COMTE",
@@ -68,163 +143,21 @@
       "buvette": false
     },
     {
-      "id": "26492",
-      "titre": "TARGET À LA TURBALLE à LA TURBALLE",
-      "ocr": false,
-      "tarifs": [
-        {
-          "nb_departs": 1,
-          "adulte": 17,
-          "jeune": 14
-        }
-      ],
-      "tarifs_fiable": true,
-      "departs": [
-        {
-          "nom": "Samedi",
-          "debut": "2026-10-24T09:00",
-          "places": null,
-          "hors_epreuve": false
-        }
-      ],
-      "departs_fiable": true,
-      "places": null,
-      "cibles": null,
-      "date_limite": "2026-10-19",
-      "inscription_mode": "mail",
-      "nb_urls_inscription": 0,
-      "nb_emails_inscription": 1,
-      "distances": [],
-      "blasons": [
-        "Blason suivant catégorie, possibilité de tirer sur tri spot en ligne pour les classiques (à préciser)"
-      ],
-      "buvette": true
-    },
-    {
-      "id": "26493",
-      "titre": "TOURNOI DES DAMES à LE MANS",
-      "ocr": false,
+      "id": "26452",
+      "titre": "TOURNOI POUSSIN à COUÉRON",
+      "ocr": true,
       "tarifs": [],
       "tarifs_fiable": false,
       "departs": [
         {
-          "nom": "Samedi 24 octobre 2026",
-          "debut": "2026-10-24T13:30",
-          "places": null,
-          "hors_epreuve": false
-        }
-      ],
-      "departs_fiable": true,
-      "places": null,
-      "cibles": null,
-      "date_limite": "2026-10-21",
-      "inscription_mode": null,
-      "nb_urls_inscription": 0,
-      "nb_emails_inscription": 0,
-      "distances": [
-        "18m"
-      ],
-      "blasons": [
-        "Blasons selon règlementation FFTA. Trispots disponibles sur demande.",
-        "Blason Montant"
-      ],
-      "buvette": true
-    },
-    {
-      "id": "26494",
-      "titre": "TOURNOI DES DAMES à LE MANS",
-      "ocr": false,
-      "tarifs": [],
-      "tarifs_fiable": false,
-      "departs": [
-        {
-          "nom": "Samedi 24 octobre 2026",
-          "debut": "2026-10-24T13:30",
-          "places": null,
-          "hors_epreuve": false
-        }
-      ],
-      "departs_fiable": true,
-      "places": null,
-      "cibles": null,
-      "date_limite": "2026-10-21",
-      "inscription_mode": null,
-      "nb_urls_inscription": 0,
-      "nb_emails_inscription": 0,
-      "distances": [
-        "18m"
-      ],
-      "blasons": [
-        "Blasons selon règlementation FFTA. Trispots disponibles sur demande.",
-        "Blason Montant"
-      ],
-      "buvette": true
-    },
-    {
-      "id": "26495",
-      "titre": "TIR ROSE LA HAYE FOUASSIÈRE à LA HAIE FOUASSIERE",
-      "ocr": false,
-      "tarifs": [
-        {
-          "nb_departs": 1,
-          "adulte": 9,
-          "jeune": 6.5
-        },
-        {
-          "nb_departs": 2,
-          "adulte": 9,
-          "jeune": 6.5
-        }
-      ],
-      "tarifs_fiable": true,
-      "departs": [
-        {
-          "nom": "APRÈS-MIDI",
-          "debut": "2026-10-24T14:30",
-          "places": null,
-          "hors_epreuve": false
-        }
-      ],
-      "departs_fiable": true,
-      "places": null,
-      "cibles": null,
-      "date_limite": "2026-10-21",
-      "inscription_mode": "courrier",
-      "nb_urls_inscription": 0,
-      "nb_emails_inscription": 0,
-      "distances": [
-        "18m"
-      ],
-      "blasons": [],
-      "buvette": true
-    },
-    {
-      "id": "26496",
-      "titre": "LA TURBALLE EN SALLE à LA TURBALLE",
-      "ocr": false,
-      "tarifs": [
-        {
-          "nb_departs": 1,
-          "adulte": 9,
-          "jeune": 6
-        },
-        {
-          "nb_departs": 2,
-          "adulte": 13,
-          "jeune": 9
-        }
-      ],
-      "tarifs_fiable": true,
-      "departs": [
-        {
           "nom": "Départ 1",
-          "debut": "2026-10-25T08:30",
+          "debut": "2027-03-13T14:30",
           "places": null,
           "hors_epreuve": false
         },
         {
           "nom": "Départ 2",
-          "debut": "2026-10-25T13:00",
+          "debut": "2027-03-13T15:15",
           "places": null,
           "hors_epreuve": false
         }
@@ -232,156 +165,16 @@
       "departs_fiable": true,
       "places": null,
       "cibles": null,
-      "date_limite": "2026-10-19",
-      "inscription_mode": "mail",
-      "nb_urls_inscription": 0,
-      "nb_emails_inscription": 1,
-      "distances": [
-        "18M"
-      ],
-      "blasons": [
-        "Blason suivant catégorie (Possibilité de demander à tirer sur Trispot Vegas)."
-      ],
-      "buvette": true
-    },
-    {
-      "id": "26497",
-      "titre": "TIR À 18M à LE MANS",
-      "ocr": false,
-      "tarifs": [
-        {
-          "nb_departs": 1,
-          "adulte": 9,
-          "jeune": 7
-        },
-        {
-          "nb_departs": 2,
-          "adulte": 16,
-          "jeune": 12
-        }
-      ],
-      "tarifs_fiable": true,
-      "departs": [
-        {
-          "nom": "Départ 1",
-          "debut": "2026-10-25T08:00",
-          "places": null,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "Départ 2",
-          "debut": "2026-10-25T13:00",
-          "places": null,
-          "hors_epreuve": false
-        }
-      ],
-      "departs_fiable": true,
-      "places": null,
-      "cibles": null,
-      "date_limite": "2026-10-21",
+      "date_limite": "2027-03-03",
       "inscription_mode": null,
       "nb_urls_inscription": 0,
       "nb_emails_inscription": 0,
       "distances": [
-        "18m"
+        "10m"
       ],
       "blasons": [
-        "Blasons selon règlementation FFTA. Trispots disponibles sur demande.",
-        "Blason Montant",
-        "Blason : préciser « trispot » si souhaité."
+        "blasons | Les catégories et les blasons utilisés sont ceux définis par le règlement FFTA."
       ],
-      "buvette": true
-    },
-    {
-      "id": "26498",
-      "titre": "TIR À 18M à LE MANS",
-      "ocr": false,
-      "tarifs": [
-        {
-          "nb_departs": 1,
-          "adulte": 9,
-          "jeune": 7
-        },
-        {
-          "nb_departs": 2,
-          "adulte": 16,
-          "jeune": 12
-        }
-      ],
-      "tarifs_fiable": true,
-      "departs": [
-        {
-          "nom": "Départ 1",
-          "debut": "2026-10-25T08:00",
-          "places": null,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "Départ 2",
-          "debut": "2026-10-25T13:00",
-          "places": null,
-          "hors_epreuve": false
-        }
-      ],
-      "departs_fiable": true,
-      "places": null,
-      "cibles": null,
-      "date_limite": "2026-10-21",
-      "inscription_mode": null,
-      "nb_urls_inscription": 0,
-      "nb_emails_inscription": 0,
-      "distances": [
-        "18m"
-      ],
-      "blasons": [
-        "Blasons selon règlementation FFTA. Trispots disponibles sur demande.",
-        "Blason Montant",
-        "Blason : préciser « trispot » si souhaité."
-      ],
-      "buvette": true
-    },
-    {
-      "id": "26499",
-      "titre": "TIR EN SALLE 18M LA HAYE FOUASSIÈRE à LA HAYE FOUASSIÈRE",
-      "ocr": false,
-      "tarifs": [
-        {
-          "nb_departs": 1,
-          "adulte": 9,
-          "jeune": 6.5
-        },
-        {
-          "nb_departs": 2,
-          "adulte": 16,
-          "jeune": 10
-        }
-      ],
-      "tarifs_fiable": true,
-      "departs": [
-        {
-          "nom": "MATIN",
-          "debut": "2026-10-25T08:00",
-          "places": null,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "APRÈS-MIDI",
-          "debut": "2026-10-25T13:00",
-          "places": null,
-          "hors_epreuve": false
-        }
-      ],
-      "departs_fiable": true,
-      "places": null,
-      "cibles": null,
-      "date_limite": "2026-10-21",
-      "inscription_mode": "courrier",
-      "nb_urls_inscription": 0,
-      "nb_emails_inscription": 0,
-      "distances": [
-        "18m"
-      ],
-      "blasons": [],
       "buvette": true
     },
     {
@@ -1661,6 +1454,52 @@
       "buvette": true
     },
     {
+      "id": "26531",
+      "titre": "SALLE NOVEMBRE à SABLE SUR SARTHE",
+      "ocr": true,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 9,
+          "jeune": 7
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 16,
+          "jeune": 12
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-11-15T08:00",
+          "places": 48,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-11-15T13:00",
+          "places": 48,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": 48,
+      "cibles": null,
+      "date_limite": "2026-11-12",
+      "inscription_mode": "mail",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 1,
+      "distances": [
+        "18M"
+      ],
+      "blasons": [
+        "blasons utilisés sont ceux définis par le règlement FFTA."
+      ],
+      "buvette": true
+    },
+    {
       "id": "26532",
       "titre": "SALLE NOVEMBRE à SABLE SUR SARTHE",
       "ocr": true,
@@ -1943,6 +1782,43 @@
       "tarifs": [
         {
           "nb_departs": 1,
+          "adulte": 5,
+          "jeune": 3
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Départ 1",
+          "debut": "2026-11-21T13:15",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-11-18",
+      "inscription_mode": "mail",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 1,
+      "distances": [
+        "10m",
+        "15m"
+      ],
+      "blasons": [
+        "Blasons :",
+        "Blason/distance 80 à 10 m | 80 à 15 m | 60 à 15 m | 40 à 15 m"
+      ],
+      "buvette": true
+    },
+    {
+      "id": "26538",
+      "titre": "COMPAGNIE ST GEORGES DE LAVAL à LAVAL",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
           "adulte": 8,
           "jeune": 6
         },
@@ -1978,44 +1854,49 @@
         "18mètres"
       ],
       "blasons": [
-        "Blasons :"
+        "Blasons :",
+        "Blason Départ Départ Sand"
       ],
       "buvette": true
     },
     {
-      "id": "26538",
-      "titre": "COMPAGNIE ST GEORGES DE LAVAL à LAVAL",
+      "id": "26548",
+      "titre": "CONCOURS SALLE à SAINT AUBIN DES ORMEAUX",
       "ocr": false,
-      "tarifs": [
-        {
-          "nb_departs": 1,
-          "adulte": 5,
-          "jeune": 3
-        }
-      ],
-      "tarifs_fiable": true,
+      "tarifs": [],
+      "tarifs_fiable": false,
       "departs": [
         {
           "nom": "Départ 1",
-          "debut": "2026-11-21T13:15",
+          "debut": "2026-11-28T14:15",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 2",
+          "debut": "2026-11-29T08:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Départ 3",
+          "debut": "2026-11-29T13:00",
           "places": null,
           "hors_epreuve": false
         }
       ],
       "departs_fiable": true,
       "places": null,
-      "cibles": null,
-      "date_limite": "2026-11-18",
-      "inscription_mode": "mail",
+      "cibles": 12,
+      "date_limite": "2026-11-17",
+      "inscription_mode": null,
       "nb_urls_inscription": 0,
-      "nb_emails_inscription": 1,
+      "nb_emails_inscription": 0,
       "distances": [
-        "10m",
-        "15m"
+        "18M"
       ],
       "blasons": [
-        "Blasons :",
-        "Blason/distance 80 à 10 m | 80 à 15 m | 60 à 15 m | 40 à 15 m"
+        "Blasons CL - Arc nu - AMP Selon la règlementation FFTA"
       ],
       "buvette": true
     },
@@ -2194,6 +2075,52 @@
         "Blason | Départ"
       ],
       "buvette": false
+    },
+    {
+      "id": "26561",
+      "titre": "COUCOURS SALLE à MAZÉ",
+      "ocr": false,
+      "tarifs": [
+        {
+          "nb_departs": 1,
+          "adulte": 9,
+          "jeune": 6
+        },
+        {
+          "nb_departs": 2,
+          "adulte": 14,
+          "jeune": 10
+        }
+      ],
+      "tarifs_fiable": true,
+      "departs": [
+        {
+          "nom": "Matin",
+          "debut": "2026-12-06T08:00",
+          "places": null,
+          "hors_epreuve": false
+        },
+        {
+          "nom": "Après-midi",
+          "debut": "2026-12-06T13:30",
+          "places": null,
+          "hors_epreuve": false
+        }
+      ],
+      "departs_fiable": true,
+      "places": null,
+      "cibles": null,
+      "date_limite": "2026-11-23",
+      "inscription_mode": "url",
+      "nb_urls_inscription": 0,
+      "nb_emails_inscription": 1,
+      "distances": [
+        "18m"
+      ],
+      "blasons": [
+        "blason de 40 cm"
+      ],
+      "buvette": true
     },
     {
       "id": "26562",
@@ -2384,73 +2311,6 @@
       "blasons": [
         "blasons : conformément à la réglementation FFTA (Trispot sur demande)"
       ],
-      "buvette": true
-    },
-    {
-      "id": "27656",
-      "titre": "CONCOURS NATURE LE MANS à LE MANS",
-      "ocr": false,
-      "tarifs": [],
-      "tarifs_fiable": false,
-      "departs": [
-        {
-          "nom": "Départ 1",
-          "debut": "2026-10-24T07:30",
-          "places": 84,
-          "hors_epreuve": false
-        }
-      ],
-      "departs_fiable": true,
-      "places": 84,
-      "cibles": 21,
-      "date_limite": null,
-      "inscription_mode": null,
-      "nb_urls_inscription": 0,
-      "nb_emails_inscription": 0,
-      "distances": [],
-      "blasons": [],
-      "buvette": true
-    },
-    {
-      "id": "27657",
-      "titre": "CONCOURS 3D LE MANS à LE MANS",
-      "ocr": true,
-      "tarifs": [
-        {
-          "nb_departs": 1,
-          "adulte": 13,
-          "jeune": 9
-        },
-        {
-          "nb_departs": 2,
-          "adulte": 20,
-          "jeune": 13
-        }
-      ],
-      "tarifs_fiable": true,
-      "departs": [
-        {
-          "nom": "Départ 1",
-          "debut": "2026-10-25T07:30",
-          "places": 120,
-          "hors_epreuve": false
-        },
-        {
-          "nom": "Départ 2",
-          "debut": "2026-10-25T11:30",
-          "places": 120,
-          "hors_epreuve": false
-        }
-      ],
-      "departs_fiable": true,
-      "places": 120,
-      "cibles": 24,
-      "date_limite": null,
-      "inscription_mode": null,
-      "nb_urls_inscription": 0,
-      "nb_emails_inscription": 0,
-      "distances": [],
-      "blasons": [],
       "buvette": true
     },
     {
